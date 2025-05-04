@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - V-PEDIA TopUp &amp; H2H Integration</title>
+  <link
+    crossorigin="anonymous"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      scroll-behavior: smooth;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body.dark {
+      background-color: #0f172a;
+      color: #cbd5e1;
+    }
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover, a:focus {
+      color: #1e40af;
+      outline: none;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+    /* Utility */
+    .hidden {
+      display: none !important;
+    }
+    .flex {
+      display: flex;
+    }
+    .flex-col {
+      flex-direction: column;
+    }
+    .flex-grow {
+      flex-grow: 1;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .gap-2 {
+      gap: 0.5rem;
+    }
+    .gap-3 {
+      gap: 0.75rem;
+    }
+    .gap-4 {
+      gap: 1rem;
+    }
+    .gap-6 {
+      gap: 1.5rem;
+    }
+    .gap-8 {
+      gap: 2rem;
+    }
+    .p-4 {
+      padding: 1rem;
+    }
+    .p-6 {
+      padding: 1.5rem;
+    }
+    .p-8 {
+      padding: 2rem;
+    }
+    .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    .px-5 {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    .py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .py-3 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+    .mb-8 {
+      margin-bottom: 2rem;
+    }
+    .mt-1 {
+      margin-top: 0.25rem;
+    }
+    .mt-2 {
+      margin-top: 0.5rem;
+    }
+    .mt-4 {
+      margin-top: 1rem;
+    }
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .max-w-xl {
+      max-width: 36rem;
+    }
+    .max-w-7xl {
+      max-width: 80rem;
+    }
+    .min-w-220 {
+      min-width: 220px;
+    }
+    .min-w-280 {
+      min-width: 280px;
+    }
+    .min-h-screen {
+      min-height: 100vh;
+    }
+    .overflow-y-auto {
+      overflow-y: auto;
+    }
+    .rounded-xl {
+      border-radius: 0.75rem;
+    }
+    .rounded-3xl {
+      border-radius: 1.5rem;
+    }
+    .rounded-full {
+      border-radius: 9999px;
+    }
+    .shadow-lg {
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.2);
+    }
+    .shadow-inner {
+      box-shadow: inset 0 -4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .shadow-md {
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    .shadow-sm {
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.1);
+    }
+    .shadow-xl {
+      box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4), 0 10px 10px -5px rgba(37, 99, 235, 0.3);
+    }
+    .text-center {
+      text-align: center;
+    }
+    .text-left {
+      text-align: left;
+    }
+    .text-lg {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+    .text-xl {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+    .text-2xl {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    .text-3xl {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+    .text-4xl {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+    .font-semibold {
+      font-weight: 600;
+    }
+    .font-bold {
+      font-weight: 700;
+    }
+    .font-extrabold {
+      font-weight: 800;
+    }
+    .select-none {
+      user-select: none;
+    }
+    .truncate {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .cursor-pointer {
+      cursor: pointer;
+    }
+    .cursor-default {
+      cursor: default;
+    }
+    .transition-colors {
+      transition-property: color, background-color;
+      transition-duration: 0.3s;
+      transition-timing-function: ease;
+    }
+    .transition-shadow {
+      transition-property: box-shadow;
+      transition-duration: 0.3s;
+      transition-timing-function: ease;
+    }
+    .focus-outline {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
+    /* Layout */
+    #app {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: row;
+      position: relative;
+    }
+    aside#sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 18rem;
+      height: 100vh;
+      background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+      box-shadow: 4px 0 12px rgba(37, 99, 235, 0.3);
+      z-index: 1100;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+    .sidebar-header {
+      font-weight: 800;
+      font-size: 1.75rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sidebar-header i {
+      font-size: 1.8rem;
+      color: #ffcc00;
+      text-shadow: 0 0 8px #ffcc00;
+    }
+    nav.nav-links {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    nav.nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background-color: transparent;
+      color: white;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      text-decoration: none;
+    }
+    nav.nav-links a.active,
+    nav.nav-links a:hover,
+    nav.nav-links a:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      outline: none;
+    }
+    nav.nav-links a i {
+      font-size: 1.3rem;
+      min-width: 22px;
+      text-align: center;
+    }
+    /* Overlay for mobile sidebar */
+    #sidebarOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1050;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      will-change: opacity;
+    }
+    #sidebarOverlay.show {
+      display: block;
+      opacity: 1;
+    }
+    /* Main content */
+    main#mainContent {
+      margin-left: 18rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f1f5f9;
+      transition: margin-left 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+      padding-bottom: 6rem;
+      overflow: hidden;
+      color: #1e293b;
+      position: relative;
+      z-index: 1;
+    }
+    body.dark main#mainContent {
+      background-color: #0f172a;
+      color: #cbd5e1;
+    }
+    /* Header */
+    header {
+      background: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      color: #2563eb;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      flex-shrink: 0;
+    }
+    body.dark header {
+      background: #1e293b;
+      color: #93c5fd;
+    }
+    button.menu-toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #2563eb;
+      user-select: none;
+      display: none;
+      transition: color 0.3s ease;
+    }
+    button.menu-toggle:focus {
+      outline-offset: 2px;
+      outline: 2px solid #2563eb;
+    }
+    .header-title {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #2563eb;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70vw;
+    }
+    body.dark .header-title {
+      color: #93c5fd;
+    }
+    /* Profile dropdown */
+    .profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      color: #2563eb;
+      flex-shrink: 0;
+      transition: color 0.3s ease;
+    }
+    body.dark .profile {
+      color: #93c5fd;
+    }
+    .profile:hover,
+    .profile:focus-within {
+      color: #1e40af;
+      outline: none;
+    }
+    .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2563eb;
+      box-shadow: 0 0 6px #2563eb;
+      transition: box-shadow 0.3s ease;
+    }
+    body.dark .profile img {
+      border-color: #93c5fd;
+      box-shadow: 0 0 6px #93c5fd;
+    }
+    .profile:hover img,
+    .profile:focus-within img {
+      box-shadow: 0 0 12px #1e40af;
+      outline: none;
+    }
+    .profile-name {
+      font-weight: 600;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+    .dropdown {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+      min-width: 180px;
+      display: none;
+      flex-direction: column;
+      z-index: 1100;
+      color: #1e293b;
+      transition: background-color 0.3s ease, color 0.3s ease, opacity 0.25s ease, transform 0.25s ease;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
+    body.dark .dropdown {
+      background: #1e293b;
+      color: #cbd5e1;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    .dropdown.show {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .dropdown a,
+    .dropdown button {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      transition: background-color 0.3s ease;
+      color: inherit;
+      background: none;
+      border: none;
+      text-align: left;
+      width: 100%;
+      cursor: pointer;
+    }
+    body.dark .dropdown a,
+    body.dark .dropdown button {
+      border-bottom: 1px solid #334155;
+    }
+    .dropdown a:last-child,
+    .dropdown button:last-child {
+      border-bottom: none;
+    }
+    .dropdown a:hover,
+    .dropdown a:focus,
+    .dropdown button:hover,
+    .dropdown button:focus {
+      background-color: #2563eb22;
+      outline: none;
+    }
+    /* Buttons */
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus {
+      background-color: #1e40af;
+      box-shadow: 0 6px 16px rgba(30, 64, 175, 0.6);
+      outline: none;
+    }
+    .btn-primary:disabled,
+    .btn-primary[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      background-color: transparent;
+      border: 2.5px solid #2563eb;
+      color: #2563eb;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      padding: 0.6rem 1.2rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+      background-color: #2563eb;
+      color: white;
+      outline: none;
+    }
+    /* Dashboard content */
+    .dashboard {
+      flex-grow: 1;
+      padding: 2rem 3rem 0 3rem;
+      color: inherit;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .dashboard h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #2563eb;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    body.dark .dashboard h2 {
+      color: #93c5fd;
+    }
+    /* Cards container */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      user-select: none;
+      transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+    body.dark .card {
+      background: #1e293b;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    .card:hover,
+    .card:focus-within {
+      box-shadow: 0 12px 36px rgba(37, 99, 235, 0.5);
+      outline: none;
+    }
+    .card h3 {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #2563eb;
+    }
+    body.dark .card h3 {
+      color: #93c5fd;
+    }
+    .card p {
+      color: inherit;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    /* Table container with scroll for history only */
+    .table-container {
+      overflow-y: auto;
+      flex-grow: 1;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+      background: white;
+      transition: background-color 0.3s ease;
+      max-height: 400px;
+    }
+    body.dark .table-container {
+      background: #1e293b;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: inherit;
+      transition: color 0.3s ease;
+    }
+    thead {
+      background-color: #2563eb;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+      transition: background-color 0.2s ease;
+      cursor: default;
+    }
+    body.dark tbody tr {
+      border-bottom: 1px solid #334155;
+    }
+    tbody tr:hover,
+    tbody tr:focus-within {
+      background-color: #f0f9ff;
+      outline: none;
+    }
+    body.dark tbody tr:hover,
+    body.dark tbody tr:focus-within {
+      background-color: #334155;
+    }
+    thead th {
+      padding: 1rem 1.25rem;
+      font-weight: 800;
+      font-size: 1rem;
+      text-align: left;
+      user-select: none;
+    }
+    tbody td {
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    /* Status badges */
+    .status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: white;
+      display: inline-block;
+      user-select: none;
+    }
+    .status.pending {
+      background-color: #facc15;
+      color: #78350f;
+    }
+    .status.success {
+      background-color: #22c55e;
+      color: white;
+    }
+    .status.failed {
+      background-color: #ef4444;
+      color: white;
+    }
+    /* Transfer page styles */
+    #transferPage {
+      max-width: 36rem;
+      margin: 2rem auto 0 auto;
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+      padding: 2rem 2.5rem;
+      user-select: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      color: #1e293b;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      display: none;
+    }
+    body.dark #transferPage {
+      background: #1e293b;
+      color: #cbd5e1;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    #transferPage.active {
+      display: flex;
+    }
+    #transferPage h2 {
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: #2563eb;
+      user-select: none;
+    }
+    body.dark #transferPage h2 {
+      color: #93c5fd;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #2563eb;
+    }
+    body.dark label {
+      color: #93c5fd;
+    }
+    input[type="text"],
+    input[type="number"] {
+      padding: 0.6rem 1rem;
+      border-radius: 0.75rem;
+      border: 2.5px solid #cce7ff;
+      font-size: 1rem;
+      outline-offset: 3px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      font-weight: 500;
+    }
+    body.dark input[type="text"],
+    body.dark input[type="number"] {
+      background-color: #1e293b;
+      color: #cbd5e1;
+      border-color: #2563eb;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+      outline: none;
+      background-color: white;
+    }
+    body.dark input[type="text"]:focus,
+    body.dark input[type="number"]:focus {
+      background-color: #2563eb;
+      color: white;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background-color: #2563eb22;
+      color: #2563eb;
+      font-weight: 600;
+      user-select: none;
+    }
+    .user-info img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2563eb;
+      box-shadow: 0 0 6px #2563ebaa;
+    }
+    .user-info .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .user-info .user-fullname {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .user-info .user-username {
+      font-size: 0.9rem;
+      color: #475569;
+    }
+    /* Footer */
+    footer {
+      background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+      color: #dbeafe;
+      font-size: 0.9rem;
+      user-select: none;
+      box-shadow: 0 -4px 12px rgba(37, 99, 235, 0.3);
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 1000;
+      margin-left: 18rem;
+      transition: margin-left 0.3s ease;
+    }
+    footer > div {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+    footer section {
+      flex: 1 1 280px;
+      min-width: 280px;
+    }
+    footer section:nth-child(2) {
+      flex: 1 1 220px;
+      min-width: 220px;
+    }
+    footer h4 {
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #bfdbfe;
+    }
+    footer p,
+    footer ul {
+      color: #dbeafe;
+    }
+    footer ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    footer ul li {
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    footer ul li a {
+      color: #dbeafe;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    footer ul li a:hover,
+    footer ul li a:focus {
+      color: #93c5fd;
+      outline: none;
+    }
+    footer div[aria-label="Sosial media"] {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 1.3rem;
+      color: #dbeafe;
+    }
+    footer div[aria-label="Sosial media"] a {
+      color: #dbeafe;
+      transition: color 0.3s ease;
+    }
+    footer div[aria-label="Sosial media"] a:hover,
+    footer div[aria-label="Sosial media"] a:focus {
+      color: #93c5fd;
+      outline: none;
+    }
+    /* Responsive */
+    @media (max-width: 1024px) {
+      aside#sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      aside#sidebar.show {
+        transform: translateX(0);
+      }
+      main#mainContent {
+        margin-left: 0;
+        width: 100%;
+      }
+      button.menu-toggle {
+        display: block;
+      }
+      footer {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+      }
+      .cards {
+        grid-template-columns: 1fr !important;
+        margin-bottom: 1rem;
+      }
+      .table-container {
+        max-height: 300px;
+        border-radius: 1rem;
+      }
+      footer {
+        padding: 1.5rem 1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .cards {
+        grid-template-columns: 1fr !important;
+      }
+      .card h3 {
+        font-size: 1.1rem;
+      }
+      .card p {
+        font-size: 0.9rem;
+      }
+      thead th,
+      tbody td {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+      }
+      .btn-primary {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+      .header-title {
+        max-width: 50vw;
+      }
+      footer {
+        padding: 1rem 0.75rem;
+      }
+      #transferPage {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside aria-label="Sidebar navigation" id="sidebar">
+      <div class="sidebar-header" tabindex="0">
+        <i aria-hidden="true" class="fas fa-layer-group"></i>
+        V-PEDIA
+      </div>
+      <nav aria-label="Main navigation" class="nav-links" role="navigation">
+        <a class="active" href="#" tabindex="0" id="navDashboard">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+        <a href="#" tabindex="0" id="navTopup">
+          <i class="fas fa-mobile-alt"></i>
+          Topup Pulsa
+        </a>
+        <a href="#" tabindex="0" id="navH2H">
+          <i class="fas fa-network-wired"></i>
+          Integrasi H2H
+        </a>
+        <a href="#" tabindex="0" id="navHistory">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Riwayat Transaksi
+        </a>
+        <a href="#" tabindex="0" id="navTransfer">
+          <i class="fas fa-exchange-alt"></i>
+          Transfer
+        </a>
+        <a href="#" tabindex="0" id="navSettings">
+          <i class="fas fa-cogs"></i>
+          Pengaturan
+        </a>
+      </nav>
+    </aside>
+
+    <div id="sidebarOverlay" tabindex="-1" aria-hidden="true"></div>
+
+    <main id="mainContent" tabindex="-1">
+      <header>
+        <button
+          aria-controls="sidebar"
+          aria-expanded="false"
+          aria-label="Toggle sidebar menu"
+          class="menu-toggle"
+          id="menuToggle"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-title" tabindex="0" id="headerTitle">Dashboard</div>
+        <div
+          aria-controls="profileDropdown"
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="profile"
+          id="profileMenu"
+          tabindex="0"
+        >
+          <img alt="Foto profil pengguna" height="40" id="profileImage" src="" width="40" />
+          <span class="profile-name" id="profileName">...</span>
+          <i aria-hidden="true" class="fas fa-chevron-down"></i>
+          <div aria-label="Profile menu" class="dropdown" id="profileDropdown" role="menu">
+            <button id="darkModeToggle" type="button" class="btn-primary" style="margin:0.5rem 1rem; font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+              <i class="fas fa-moon" id="darkModeIcon"></i> Mode Gelap
+            </button>
+            <a href="#" role="menuitem" tabindex="-1" id="profileLink">
+              <i class="fas fa-user"></i> Profil Saya
+            </a>
+            <a href="#" role="menuitem" tabindex="-1" id="settingsLink">
+              <i class="fas fa-cog"></i> Pengaturan
+            </a>
+            <a href="#" role="menuitem" tabindex="-1" id="logoutLink">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <section aria-label="Dashboard main content" class="dashboard" id="dashboardContent">
+        <h2 id="welcomeMessage">Selamat datang, ...</h2>
+        <div aria-label="Ringkasan akun" class="cards" id="dashboardCards">
+          <article aria-label="Saldo akun" class="card" tabindex="0">
+            <h3>Saldo Akun</h3>
+            <p id="saldoAmount" style="font-size: 2rem; font-weight: 700; color: #2563eb;">...</p>
+            <button aria-label="Isi ulang saldo" class="btn-primary" id="btnTopupSaldo">
+              Isi Saldo <i class="fas fa-wallet"></i>
+            </button>
+          </article>
+          <article aria-label="Transaksi hari ini" class="card" tabindex="0">
+            <h3>Transaksi Hari Ini</h3>
+            <p id="transaksiHariIni" style="font-size: 2rem; font-weight: 700; color: #2563eb;">...</p>
+            <button aria-label="Lihat riwayat transaksi" class="btn-primary" id="btnLihatRiwayat">
+              Lihat Riwayat <i class="fas fa-history"></i>
+            </button>
+          </article>
+          <article aria-label="Status integrasi H2H" class="card" tabindex="0">
+            <h3>Status Integrasi H2H</h3>
+            <p id="statusH2H" style="font-size: 1.2rem; font-weight: 600; color: #16a34a;">...</p>
+            <button aria-label="Kelola integrasi H2H" class="btn-primary" id="btnKelolaH2H">
+              Kelola Integrasi <i class="fas fa-network-wired"></i>
+            </button>
+          </article>
+        </div>
+
+        <section aria-label="Riwayat transaksi terbaru" class="historySection" tabindex="0" style="flex-grow:1; display:flex; flex-direction:column;">
+          <h3 style="color: #2563eb; font-weight: 700; margin-bottom: 1rem; flex-shrink: 0;">Riwayat Transaksi Terbaru</h3>
+          <div class="table-container" style="flex-grow:1; overflow-y:auto; border-radius:1.5rem; box-shadow:0 8px 24px rgba(37, 99, 235, 0.3); background: white;">
+            <table aria-describedby="transactionDesc" role="table" tabindex="0" class="transactionTable" style="width:100%; border-collapse:collapse; color: #1e293b;">
+              <caption class="sr-only" id="transactionDesc">Daftar transaksi terbaru dengan status dan tanggal</caption>
+              <thead style="background-color: #2563eb; color: white; position: sticky; top: 0; z-index: 10;">
+                <tr>
+                  <th scope="col" style="padding: 1rem 1.25rem; font-weight: 700; font-size: 1rem; text-align: left; user-select:none;">ID Transaksi</th>
+                  <th scope="col" style="padding: 1rem 1.25rem; font-weight: 700; font-size: 1rem; text-align: left; user-select:none;">Aktivitas</th>
+                  <th scope="col" style="padding: 1rem 1.25rem; font-weight: 700; font-size: 1rem; text-align: left; user-select:none;">Nominal</th>
+                  <th scope="col" style="padding: 1rem 1.25rem; font-weight: 700; font-size: 1rem; text-align: left; user-select:none;">Tanggal</th>
+                  <th scope="col" style="padding: 1rem 1.25rem; font-weight: 700; font-size: 1rem; text-align: left; user-select:none;">Status</th>
+                </tr>
+              </thead>
+              <tbody class="transactionBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section aria-label="Halaman transfer saldo" id="transferPage" tabindex="0" style="display:none; max-width:600px; margin:2rem auto 0 auto; background: white; border-radius: 1.5rem; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3); padding: 2rem 2.5rem; user-select:none; flex-direction: column; gap: 1.5rem; color: #1e293b; transition: color 0.3s ease, background-color 0.3s ease;">
+          <h2 style="font-weight: 800; font-size: 1.8rem; color: #2563eb; user-select:none;">Transfer Saldo</h2>
+          <div class="form-group" style="display:flex; flex-direction: column; gap: 0.4rem;">
+            <label for="recipientUsername" style="font-weight: 600; font-size: 1rem; color: #2563eb;">Cari Username Penerima</label>
+            <input type="text" id="recipientUsername" placeholder="Masukkan username penerima" autocomplete="off" style="padding: 0.6rem 1rem; border-radius: 0.75rem; border: 2.5px solid #cce7ff; font-size: 1rem; outline-offset: 3px; transition: border-color 0.3s ease, box-shadow 0.3s ease; background-color: #f1f5f9; color: #1e293b; font-weight: 500;" />
+            <div id="recipientError" style="color:#ef4444; font-weight:600; min-height:1.2em; margin-top:0.3rem;"></div>
+          </div>
+          <div id="recipientInfo" class="user-info" style="display:none; flex: 1 1 auto; align-items: center; gap: 1rem; padding: 1rem; border-radius: 0.75rem; background-color: #2563eb22; color: #2563eb; font-weight: 600; user-select: none;">
+            <img alt="Foto profil penerima" id="recipientProfileImg" src="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #2563eb; box-shadow: 0 0 6px #2563ebaa;" />
+            <div class="user-details" style="display:flex; flex-direction: column; gap: 0.15rem;">
+              <div class="user-fullname" id="recipientFullname" style="font-size: 1.1rem; font-weight: 700;"></div>
+              <div class="user-username" id="recipientUsernameDisplay" style="font-size: 0.9rem; color: #475569;"></div>
+            </div>
+          </div>
+          <div class="form-group" id="amountGroup" style="display:none; flex-direction: column; gap: 0.4rem;">
+            <label for="transferAmount" style="font-weight: 600; font-size: 1rem; color: #2563eb;">Jumlah Transfer (Rp)</label>
+            <input type="number" id="transferAmount" min="1" placeholder="Masukkan nominal transfer" style="padding: 0.6rem 1rem; border-radius: 0.75rem; border: 2.5px solid #cce7ff; font-size: 1rem; outline-offset: 3px; transition: border-color 0.3s ease, box-shadow 0.3s ease; background-color: #f1f5f9; color: #1e293b; font-weight: 500;" />
+            <div id="amountError" style="color:#ef4444; font-weight:600; min-height:1.2em; margin-top:0.3rem;"></div>
+          </div>
+          <div class="btn-group" style="display:flex; gap:1rem; margin-top:1rem;">
+            <button class="btn-primary" id="btnCheckUser" style="background-color: #2563eb; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; user-select: none; transition: background-color 0.3s ease, box-shadow 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+              Cari
+            </button>
+            <button class="btn-primary" id="btnTransfer" disabled style="background-color: #2563eb; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; user-select: none; transition: background-color 0.3s ease, box-shadow 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; opacity: 0.5; cursor: not-allowed;">
+              Transfer
+            </button>
+            <button class="btn-secondary" id="btnCancelTransfer" style="background-color: transparent; border: 2.5px solid #2563eb; color: #2563eb; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; user-select: none; padding: 0.6rem 1.2rem; transition: background-color 0.3s ease, color 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+              Batal
+            </button>
+          </div>
+          <div id="transferMessage" style="margin-top:1rem; font-weight:600; min-height:1.2em;"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div>
+      <section aria-labelledby="footer-about">
+        <h4 id="footer-about">Tentang Kami</h4>
+        <p>V-PEDIA adalah platform terpercaya yang menyediakan layanan topup pulsa dan integrasi H2H untuk memudahkan bisnis Anda dalam transaksi digital.</p>
+      </section>
+      <section aria-labelledby="footer-links">
+        <h4 id="footer-links">Tautan Cepat</h4>
+        <ul>
+          <li>
+            <a aria-label="Beranda" href="/auth/register" target="_blank" rel="noopener">
+              <i class="fa-solid fa-angle-right"></i> Beranda
+            </a>
+          </li>
+          <li>
+            <a aria-label="Fitur" href="/auth/register" target="_blank" rel="noopener">
+              <i class="fa-solid fa-angle-right"></i> Fitur
+            </a>
+          </li>
+          <li>
+            <a aria-label="Harga" href="/auth/register" target="_blank" rel="noopener">
+              <i class="fa-solid fa-angle-right"></i> Harga
+            </a>
+          </li>
+          <li>
+            <a aria-label="Kontak" href="https://t.me/rerezz_official" target="_blank" rel="noopener">
+              <i class="fa-solid fa-angle-right"></i> Kontak
+            </a>
+          </li>
+          <li>
+            <a aria-label="Bantuan" href="https://wa.me/6285216955233" target="_blank" rel="noopener">
+              <i class="fa-solid fa-angle-right"></i> Bantuan
+            </a>
+          </li>
+        </ul>
+      </section>
+      <section aria-labelledby="footer-contact">
+        <h4 id="footer-contact">Kontak Kami</h4>
+        <ul>
+          <li>
+            <i aria-hidden="true" class="fas fa-map-marker-alt"></i> Kota Sukabumi, Jawa Barat, Indonesia
+          </li>
+          <li>
+            <i aria-hidden="true" class="fas fa-phone-alt"></i>
+            <a aria-label="Telepon +62 21 1234 5678" href="tel:+6285216955233">+62 852 1695 5233</a>
+          </li>
+          <li>
+            <i aria-hidden="true" class="fas fa-envelope"></i>
+            <a aria-label="Email rerezzofficial@gmail.com" href="mailto:rerezzofficial@gmail.com">rerezzofficial@gmail.com</a>
+          </li>
+        </ul>
+        <div aria-label="Sosial media">
+          <a aria-label="Facebook" href="#" rel="noopener" target="_blank">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a aria-label="Twitter" href="#" rel="noopener" target="_blank">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a aria-label="Instagram" href="#" rel="noopener" target="_blank">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a aria-label="LinkedIn" href="#" rel="noopener" target="_blank">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </section>
+    </div>
+  </footer>
+
+  <script>
+    // Sidebar toggle for mobile devices
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const mainContent = document.getElementById('mainContent');
+
+    // Function to open sidebar
+    function openSidebar() {
+      sidebar.classList.add('show');
+      sidebarOverlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      menuToggle.setAttribute('aria-expanded', 'true');
+      sidebarOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    // Function to close sidebar
+    function closeSidebar() {
+      sidebar.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+      document.body.style.overflow = '';
+      menuToggle.setAttribute('aria-expanded', 'false');
+      sidebarOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    // Toggle sidebar when menu button is clicked
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebar.classList.contains('show')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    // Close sidebar when clicking on overlay
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target)) {
+        closeSidebar();
+      }
+    });
+
+    // Close sidebar with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('show')) {
+        closeSidebar();
+      }
+    });
+
+    // Handle window resize
+    function handleResize() {
+      if (window.innerWidth > 1024) {
+        // Desktop view - show sidebar always
+        sidebar.classList.remove('collapsed', 'show');
+        sidebarOverlay.classList.remove('show');
+        document.body.style.overflow = '';
+        menuToggle.setAttribute('aria-expanded', 'false');
+      } else {
+        // Mobile view - hide sidebar by default
+        sidebar.classList.add('collapsed');
+      }
+    }
+
+    // Initialize and listen for resize events
+    window.addEventListener('load', handleResize);
+    window.addEventListener('resize', handleResize);
+
+    // Profile dropdown toggle
+    const profileMenu = document.getElementById('profileMenu');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const darkModeToggleBtn = document.getElementById('darkModeToggle');
+    const darkModeIcon = document.getElementById('darkModeIcon');
+
+    function closeDropdown() {
+      profileDropdown.classList.remove('show');
+      profileMenu.setAttribute('aria-expanded', 'false');
+    }
+
+    profileMenu.addEventListener('click', () => {
+      const isOpen = profileDropdown.classList.toggle('show');
+      profileMenu.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    // Close dropdown on outside click or Escape key
+    document.addEventListener('click', (e) => {
+      if (!profileMenu.contains(e.target) && !profileDropdown.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDropdown();
+        profileMenu.focus();
+      }
+    });
+
+    // Keyboard navigation for profile menu
+    const dropdownLinks = profileDropdown.querySelectorAll('a, button');
+    profileMenu.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        profileDropdown.classList.add('show');
+        profileMenu.setAttribute('aria-expanded', 'true');
+        dropdownLinks[0].focus();
+      }
+    });
+    dropdownLinks.forEach((link, i) => {
+      link.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (i + 1 < dropdownLinks.length) dropdownLinks[i + 1].focus();
+          else dropdownLinks[0].focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (i - 1 >= 0) dropdownLinks[i - 1].focus();
+          else dropdownLinks[dropdownLinks.length - 1].focus();
+        } else if (e.key === 'Escape') {
+          closeDropdown();
+          profileMenu.focus();
+        }
+      });
+    });
+
+    // Dark mode toggle in profile dropdown
+    function setDarkMode(enabled) {
+      if (enabled) {
+        document.body.classList.add('dark');
+        darkModeIcon.classList.remove('fa-moon');
+        darkModeIcon.classList.add('fa-sun');
+        darkModeToggleBtn.textContent = '';
+        darkModeToggleBtn.appendChild(darkModeIcon);
+        darkModeToggleBtn.insertAdjacentText('beforeend', ' Mode Terang');
+        localStorage.setItem('v-pedia-dark-mode', 'true');
+      } else {
+        document.body.classList.remove('dark');
+        darkModeIcon.classList.remove('fa-sun');
+        darkModeIcon.classList.add('fa-moon');
+        darkModeToggleBtn.textContent = '';
+        darkModeToggleBtn.appendChild(darkModeIcon);
+        darkModeToggleBtn.insertAdjacentText('beforeend', ' Mode Gelap');
+        localStorage.setItem('v-pedia-dark-mode', 'false');
+      }
+    }
+    darkModeToggleBtn.addEventListener('click', () => {
+      setDarkMode(!document.body.classList.contains('dark'));
+    });
+
+    // Initialize dark mode from localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const darkModeStored = localStorage.getItem('v-pedia-dark-mode');
+      if (darkModeStored === 'true') {
+        setDarkMode(true);
+      } else {
+        setDarkMode(false);
+      }
+      loadUserProfile();
+    });
+
+    // Format currency to Indonesian Rupiah
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
+    }
+
+    // Format date to readable string
+    function formatDate(dateStr) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('id-ID', options);
+    }
+
+    // Map status to badge class and label
+    function getStatusBadge(status) {
+      const s = status.toLowerCase();
+      if (s === 'berhasil' || s === 'success' || s === 'sukses') {
+        return '<span aria-label="Berhasil" class="status success">Berhasil</span>';
+      } else if (s === 'menunggu' || s === 'pending') {
+        return '<span aria-label="Menunggu" class="status pending">Menunggu</span>';
+      } else if (s === 'gagal' || s === 'failed') {
+        return '<span aria-label="Gagal" class="status failed">Gagal</span>';
+      }
+      return `<span class="status">${status}</span>`;
+    }
+
+    // Fetch user profile and update dashboard
+    async function loadUserProfile() {
+      try {
+        const res = await fetch('/profile/users', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch user profile');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Failed to load user data');
+
+        const user = data.user;
+
+        // Update profile info
+        document.getElementById('profileName').textContent = user.fullname || user.username || 'User';
+        document.getElementById('profileImage').src = user.profileUrl || 'https://placehold.co/80x80?text=User&font=roboto&bg=blue&fg=white';
+        document.getElementById('headerTitle').textContent = `Dashboard - ${user.username || ''}`;
+        document.getElementById('welcomeMessage').textContent = `Selamat datang, ${user.fullname || user.username || 'User'}!`;
+
+        // Update saldo
+        const saldoElem = document.getElementById('saldoAmount');
+        saldoElem.textContent = user.saldo != null ? formatRupiah(user.saldo) : 'Rp 0';
+
+        // Update transaksi hari ini count (count history items with today's date)
+        const today = new Date().toISOString().slice(0, 10);
+        const transaksiHariIniCount = user.history ? user.history.filter(tx => tx.tanggal && tx.tanggal.startsWith(today)).length : 0;
+        document.getElementById('transaksiHariIni').textContent = transaksiHariIniCount;
+
+        // Update status H2H
+        const statusH2HElem = document.getElementById('statusH2H');
+        statusH2HElem.textContent = user.isVerified ? 'Terhubung' : 'Tidak Terhubung';
+        statusH2HElem.style.color = user.isVerified ? '#16a34a' : '#ef4444';
+
+        // Populate dashboard transaction table
+        populateTransactionTables(user.history || []);
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+        alert('Gagal memuat data pengguna. Silakan coba lagi.');
+      }
+    }
+
+    // Populate all transaction tables with given history array
+    function populateTransactionTables(history) {
+      const tables = document.querySelectorAll('.transactionBody');
+      tables.forEach(tbody => {
+        tbody.innerHTML = '';
+        if (history.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 5;
+          td.style.textAlign = 'center';
+          td.style.padding = '1rem';
+          td.textContent = 'Belum ada riwayat transaksi.';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        // Sort descending by tanggal
+        const sortedHistory = history.slice().sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+        const lastFive = sortedHistory.slice(0, 5);
+        lastFive.forEach(tx => {
+          const tr = document.createElement('tr');
+          tr.tabIndex = 0;
+          tr.style.cursor = 'default';
+          tr.onfocus = () => tr.style.backgroundColor = '#f0f9ff';
+          tr.onblur = () => tr.style.backgroundColor = '';
+
+          const idTd = document.createElement('td');
+          idTd.textContent = tx.code || 'N/A';
+          idTd.style.padding = '1rem 1.25rem';
+          tr.appendChild(idTd);
+
+          const aktivitasTd = document.createElement('td');
+          aktivitasTd.textContent = tx.aktivitas || 'N/A';
+          aktivitasTd.style.padding = '1rem 1.25rem';
+          tr.appendChild(aktivitasTd);
+
+          const nominalTd = document.createElement('td');
+          nominalTd.textContent = tx.nominal != null ? formatRupiah(tx.nominal) : 'Rp 0';
+          nominalTd.style.padding = '1rem 1.25rem';
+          tr.appendChild(nominalTd);
+
+          const tanggalTd = document.createElement('td');
+          tanggalTd.textContent = tx.tanggal ? formatDate(tx.tanggal) : '-';
+          tanggalTd.style.padding = '1rem 1.25rem';
+          tr.appendChild(tanggalTd);
+
+          const statusTd = document.createElement('td');
+          statusTd.innerHTML = getStatusBadge(tx.status || 'Unknown');
+          statusTd.style.padding = '1rem 1.25rem';
+          tr.appendChild(statusTd);
+
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    // Load full history for Riwayat Transaksi page
+    async function loadFullHistory() {
+      try {
+        const res = await fetch('/history/all', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch full history');
+        const data = await res.json();
+        if (!data.success) throw new Error('Failed to load full history');
+
+        // Populate all transaction tables with full history
+        populateTransactionTables(data.history || []);
+      } catch (error) {
+        console.error('Error loading full history:', error);
+        alert('Gagal memuat riwayat transaksi. Silakan coba lagi.');
+      }
+    }
+
+    // Transfer page elements
+    const transferPage = document.getElementById('transferPage');
+    const dashboardCards = document.getElementById('dashboardCards');
+    const historySections = document.querySelectorAll('.historySection');
+    const navTransfer = document.getElementById('navTransfer');
+    const navDashboard = document.getElementById('navDashboard');
+    const navHistory = document.getElementById('navHistory');
+    const headerTitle = document.getElementById('headerTitle');
+
+    // Transfer inputs and buttons
+    const recipientUsernameInput = document.getElementById('recipientUsername');
+    const recipientError = document.getElementById('recipientError');
+    const recipientInfo = document.getElementById('recipientInfo');
+    const recipientProfileImg = document.getElementById('recipientProfileImg');
+    const recipientFullname = document.getElementById('recipientFullname');
+    const recipientUsernameDisplay = document.getElementById('recipientUsernameDisplay');
+    const amountGroup = document.getElementById('amountGroup');
+    const transferAmountInput = document.getElementById('transferAmount');
+    const amountError = document.getElementById('amountError');
+    const btnCheckUser = document.getElementById('btnCheckUser');
+    const btnTransfer = document.getElementById('btnTransfer');
+    const btnCancelTransfer = document.getElementById('btnCancelTransfer');
+    const transferMessage = document.getElementById('transferMessage');
+
+    // Show transfer page, hide dashboard and history
+    navTransfer.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveNav(navTransfer);
+      headerTitle.textContent = 'Transfer Saldo';
+      dashboardCards.style.display = 'none';
+      historySections.forEach(s => s.style.display = 'none');
+      transferPage.style.display = 'flex';
+      clearTransferForm();
+      closeSidebarOnMobile();
+    });
+
+    // Show dashboard page, hide transfer and history
+    navDashboard.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveNav(navDashboard);
+      headerTitle.textContent = 'Dashboard';
+      dashboardCards.style.display = 'grid';
+      historySections.forEach(s => s.style.display = 'flex');
+      transferPage.style.display = 'none';
+      clearTransferForm();
+      loadUserProfile();
+      closeSidebarOnMobile();
+    });
+
+    // Show full history page, hide dashboard and transfer
+    navHistory.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveNav(navHistory);
+      headerTitle.textContent = 'Riwayat Transaksi';
+      dashboardCards.style.display = 'none';
+      historySections.forEach(s => s.style.display = 'flex');
+      transferPage.style.display = 'none';
+      clearTransferForm();
+      loadFullHistory();
+      closeSidebarOnMobile();
+    });
+
+    // Set active nav link
+    function setActiveNav(activeLink) {
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+      activeLink.classList.add('active');
+    }
+
+    // Clear transfer form and messages
+    function clearTransferForm() {
+      recipientUsernameInput.value = '';
+      recipientError.textContent = '';
+      recipientInfo.style.display = 'none';
+      recipientProfileImg.src = '';
+      recipientFullname.textContent = '';
+      recipientUsernameDisplay.textContent = '';
+      amountGroup.style.display = 'none';
+      transferAmountInput.value = '';
+      amountError.textContent = '';
+      btnTransfer.disabled = true;
+      transferMessage.textContent = '';
+    }
+
+    // Check user existence
+    btnCheckUser.addEventListener('click', async () => {
+      const username = recipientUsernameInput.value.trim();
+      recipientError.textContent = '';
+      transferMessage.textContent = '';
+      amountError.textContent = '';
+      amountGroup.style.display = 'none';
+      btnTransfer.disabled = true;
+      recipientInfo.style.display = 'none';
+
+      if (!username) {
+        recipientError.textContent = 'Username penerima harus diisi.';
+        return;
+      }
+
+      try {
+        const res = await fetch('/check-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          recipientError.textContent = data.message || 'User tidak ditemukan.';
+          return;
+        }
+        // Show recipient info
+        recipientInfo.style.display = 'flex';
+        recipientProfileImg.src = data.user.profileUrl || 'https://placehold.co/80x80?text=User&font=roboto&bg=blue&fg=white';
+        recipientFullname.textContent = data.user.fullname || 'N/A';
+        recipientUsernameDisplay.textContent = '@' + (data.user.username || 'N/A');
+        amountGroup.style.display = 'flex';
+        btnTransfer.disabled = false;
+      } catch (error) {
+        recipientError.textContent = 'Gagal memeriksa user. Coba lagi.';
+        console.error(error);
+      }
+    });
+
+    // Transfer saldo
+    btnTransfer.addEventListener('click', async () => {
+      transferMessage.textContent = '';
+      amountError.textContent = '';
+      const amount = Number(transferAmountInput.value);
+      if (!amount || amount <= 0) {
+        amountError.textContent = 'Masukkan nominal transfer yang valid.';
+        return;
+      }
+      btnTransfer.disabled = true;
+      btnCheckUser.disabled = true;
+      recipientUsernameInput.disabled = true;
+      transferAmountInput.disabled = true;
+
+      try {
+        const res = await fetch('/transfer-saldo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            recipientUsername: recipientUsernameInput.value.trim(),
+            amount
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          transferMessage.style.color = '#ef4444';
+          transferMessage.textContent = data.message || 'Transfer gagal.';
+          btnTransfer.disabled = false;
+          btnCheckUser.disabled = false;
+          recipientUsernameInput.disabled = false;
+          transferAmountInput.disabled = false;
+          return;
+        }
+        transferMessage.style.color = '#22c55e';
+        transferMessage.textContent = 'Transfer berhasil! Saldo baru: ' + formatRupiah(data.newBalance);
+        // Update saldo display
+        document.getElementById('saldoAmount').textContent = formatRupiah(data.newBalance);
+        // Reset form after success
+        setTimeout(() => {
+          clearTransferForm();
+        }, 3000);
+      } catch (error) {
+        transferMessage.style.color = '#ef4444';
+        transferMessage.textContent = 'Terjadi kesalahan jaringan. Coba lagi.';
+        console.error(error);
+      } finally {
+        btnTransfer.disabled = false;
+        btnCheckUser.disabled = false;
+        recipientUsernameInput.disabled = false;
+        transferAmountInput.disabled = false;
+      }
+    });
+
+    // Cancel transfer
+    btnCancelTransfer.addEventListener('click', () => {
+      navDashboard.click();
+    });
+
+    // Close sidebar on mobile after navigation
+    function closeSidebarOnMobile() {
+      if (window.innerWidth < 1024) {
+        closeSidebar();
+      }
+    }
+  </script>
+</body>
+</html>
