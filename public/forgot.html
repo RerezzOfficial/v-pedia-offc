@@ -1,0 +1,259 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Reset Password
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
+      background-image: radial-gradient(circle, #c3d9ff 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+ </head>
+ <body class="min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white max-w-md w-full rounded-2xl shadow-lg p-8 sm:p-10 border border-blue-200" role="main">
+   <div class="flex flex-col items-center mb-8">
+    <img alt="Blue lock icon symbolizing security and password reset" class="mb-4" height="80" src="https://storage.googleapis.com/a1aa/image/bb8a7b26-ccf0-4616-9565-6bbbe8431798.jpg" width="80"/>
+    <h1 class="text-3xl font-semibold text-blue-600">
+     Reset Password
+    </h1>
+    <p class="text-blue-500 mt-1 text-center max-w-xs">
+     Enter your email to receive an OTP and reset your password securely.
+    </p>
+   </div>
+   <!-- Step 1: Enter Email -->
+   <form class="flex flex-col space-y-5" id="step1">
+    <label class="text-blue-700 font-medium flex items-center gap-2" for="email">
+     <i class="fas fa-envelope text-blue-500"></i>
+     Email Address
+    </label>
+    <input autocomplete="email" class="border-2 border-blue-400 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" id="email" name="email" placeholder="you@example.com" required="" type="email"/>
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" id="sendOtpBtn" type="button">
+     <i class="fas fa-paper-plane"></i>
+     Send OTP
+    </button>
+    <p class="text-center text-sm min-h-[1.25rem]" id="message1"></p>
+   </form>
+   <!-- Step 2: Enter OTP and New Password -->
+   <form class="hidden flex flex-col space-y-5" id="step2" novalidate="">
+    <label class="text-blue-700 font-medium flex items-center gap-2" for="otp">
+     <i class="fas fa-key text-blue-500"></i>
+     Enter OTP
+    </label>
+    <input autocomplete="one-time-code" class="border-2 border-blue-400 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" id="otp" inputmode="numeric" name="otp" pattern="\d{6}" placeholder="6-digit OTP" required="" type="text"/>
+    <label class="text-blue-700 font-medium flex items-center gap-2" for="newPassword">
+     <i class="fas fa-lock text-blue-500"></i>
+     New Password
+    </label>
+    <div class="relative">
+     <input autocomplete="new-password" class="border-2 border-blue-400 rounded-lg px-4 py-3 pr-14 text-blue-900 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition w-full" id="newPassword" name="newPassword" placeholder="Enter new password" required="" type="password"/>
+     <button aria-label="Toggle password visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-800 focus:outline-none" id="togglePassword" type="button">
+      <i class="fas fa-eye"></i>
+     </button>
+    </div>
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" id="resetButton" type="submit">
+     <i class="fas fa-redo-alt"></i>
+     Reset Password
+    </button>
+    <p class="text-center text-sm min-h-[1.25rem]" id="message2"></p>
+    <p class="text-center text-red-600 font-semibold text-sm min-h-[1.25rem]" id="timer"></p>
+   </form>
+  </div>
+  <script>
+   (() => {
+      const step1Form = document.getElementById('step1');
+      const step2Form = document.getElementById('step2');
+      const message1 = document.getElementById('message1');
+      const message2 = document.getElementById('message2');
+      const timerDiv = document.getElementById('timer');
+      const sendOtpBtn = document.getElementById('sendOtpBtn');
+      const resetButton = document.getElementById('resetButton');
+      const togglePasswordBtn = document.getElementById('togglePassword');
+      const newPasswordInput = document.getElementById('newPassword');
+
+      let userEmail = '';
+      let penaltyTime = parseInt(localStorage.getItem('penaltyTime')) || 0;
+      let countdownIntervalId = null;
+
+      // Toggle password visibility
+      togglePasswordBtn.addEventListener('click', () => {
+        if (newPasswordInput.type === 'password') {
+          newPasswordInput.type = 'text';
+          togglePasswordBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+          newPasswordInput.type = 'password';
+          togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+      });
+
+      // Send OTP handler
+      sendOtpBtn.addEventListener('click', async () => {
+        message1.textContent = '';
+        const emailInput = step1Form.email.value.trim();
+
+        if (!emailInput) {
+          message1.textContent = 'Email is required';
+          message1.className = 'text-red-600 font-medium';
+          return;
+        }
+
+        // Basic email format validation
+        const emailRegex =
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput)) {
+          message1.textContent = 'Please enter a valid email address';
+          message1.className = 'text-red-600 font-medium';
+          return;
+        }
+
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending...`;
+
+        try {
+          const response = await fetch('/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailInput }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            message1.textContent = data.message;
+            message1.className = 'text-blue-600 font-semibold';
+            userEmail = emailInput;
+            setTimeout(() => {
+              step1Form.classList.add('hidden');
+              step2Form.classList.remove('hidden');
+              message1.textContent = '';
+            }, 1500);
+          } else {
+            message1.textContent = data.message || 'Failed to send OTP';
+            message1.className = 'text-red-600 font-medium';
+          }
+        } catch (error) {
+          message1.textContent = 'An error occurred. Please try again.';
+          message1.className = 'text-red-600 font-medium';
+        } finally {
+          sendOtpBtn.disabled = false;
+          sendOtpBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Send OTP`;
+        }
+      });
+
+      // Reset password handler
+      step2Form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        message2.textContent = '';
+        timerDiv.textContent = '';
+
+        if (penaltyTime > 0) {
+          message2.textContent = `Please wait ${penaltyTime} second${penaltyTime > 1 ? 's' : ''} before trying again.`;
+          message2.className = 'text-red-600 font-semibold';
+          return;
+        }
+
+        const otp = step2Form.otp.value.trim();
+        const newPassword = step2Form.newPassword.value.trim();
+
+        if (!otp || !newPassword) {
+          message2.textContent = 'All fields are required';
+          message2.className = 'text-red-600 font-medium';
+          return;
+        }
+
+        if (!/^\d{6}$/.test(otp)) {
+          message2.textContent = 'OTP must be a 6-digit number';
+          message2.className = 'text-red-600 font-medium';
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          message2.textContent = 'Password must be at least 6 characters';
+          message2.className = 'text-red-600 font-medium';
+          return;
+        }
+
+        resetButton.disabled = true;
+        resetButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+
+        try {
+          const response = await fetch('/auth/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userEmail, otp, newPassword }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            message2.textContent = 'Password has been reset successfully';
+            message2.className = 'text-blue-600 font-semibold';
+            timerDiv.textContent = '';
+            localStorage.removeItem('penaltyTime');
+            penaltyTime = 0;
+            setTimeout(() => {
+              window.location.href = '/auth/login';
+            }, 2000);
+          } else {
+            message2.textContent = data.message || 'Invalid OTP or error resetting password.';
+            message2.className = 'text-red-600 font-semibold';
+
+            // Increase penalty time by 10 seconds per failure
+            penaltyTime += 10;
+            localStorage.setItem('penaltyTime', penaltyTime);
+            startTimer();
+          }
+        } catch (error) {
+          message2.textContent = 'An error occurred. Please try again.';
+          message2.className = 'text-red-600 font-medium';
+        } finally {
+          if (penaltyTime === 0) {
+            resetButton.disabled = false;
+            resetButton.innerHTML = `<i class="fas fa-redo-alt"></i> Reset Password`;
+          }
+        }
+      });
+
+      // Timer function for penalty countdown
+      function startTimer() {
+        resetButton.disabled = true;
+        let remaining = penaltyTime;
+
+        if (countdownIntervalId) clearInterval(countdownIntervalId);
+
+        timerDiv.textContent = `Please wait ${remaining} second${remaining > 1 ? 's' : ''} before trying again.`;
+
+        countdownIntervalId = setInterval(() => {
+          remaining--;
+          if (remaining > 0) {
+            timerDiv.textContent = `Please wait ${remaining} second${remaining > 1 ? 's' : ''} before trying again.`;
+          } else {
+            clearInterval(countdownIntervalId);
+            timerDiv.textContent = '';
+            resetButton.disabled = false;
+            resetButton.innerHTML = `<i class="fas fa-redo-alt"></i> Reset Password`;
+            penaltyTime = 0;
+            localStorage.removeItem('penaltyTime');
+          }
+        }, 1000);
+      }
+
+      // On page load, if penaltyTime exists, start timer
+      if (penaltyTime > 0) {
+        startTimer();
+        // Show step2 if penalty exists (assuming user was on step2)
+        step1Form.classList.add('hidden');
+        step2Form.classList.remove('hidden');
+      }
+    })();
+  </script>
+ </body>
+</html>
