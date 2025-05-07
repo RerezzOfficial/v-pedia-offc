@@ -4,7 +4,6 @@ const session = require('express-session');
 const nodemailer = require('nodemailer');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
-const puppeteer = require('puppeteer');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const qrcode = require('qrcode');
@@ -189,13 +188,16 @@ app.post('/auth/login', async (req, res) => {
 app.get('/dashboard', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
+app.get('/transfer', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'transfer.html'));
+});
 
 app.get('/profile', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
-app.get('/ganti/email', requireLogin, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'email.html'));
+app.get('/docs', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'docs.html'));
 });
 
 app.get('/admin', requireAdmin, (req, res) => {
@@ -208,7 +210,8 @@ app.get('/auth/logout', (req, res) => {
 });
 
 function generateApiKey() {
-  return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+  const randomPart = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+  return `V-Pedia-${randomPart}`;
 }
 
 function generateReferralCode(username) {
@@ -736,7 +739,6 @@ app.post('/profile/verify-email', requireLogin, async (req, res) => {
   }
 });
 
-// Endpoint untuk cek user
 app.post('/check-user', requireLogin, async (req, res) => {
   const { username } = req.body;
   if (!username) {
@@ -761,7 +763,6 @@ app.post('/check-user', requireLogin, async (req, res) => {
   }
 });
 
-// Endpoint untuk transfer saldo dengan status sukses/gagal
 app.post('/transfer-saldo', requireLogin, async (req, res) => {
   const { recipientUsername, amount } = req.body;
   if (!recipientUsername || !amount || amount <= 0) {
@@ -798,15 +799,12 @@ app.post('/transfer-saldo', requireLogin, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Recipient not found' });
     }
 
-    // Generate reference ID
     const refId = 'TRX-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const transactionDate = new Date();
 
-    // Update saldo
     sender.saldo -= amount;
     recipient.saldo += amount;
 
-    // Tambahkan history sukses untuk pengirim
     sender.history.push({
       aktivitas: `Transfer - From ${sender.username}`,
       nominal: amount,
@@ -815,7 +813,6 @@ app.post('/transfer-saldo', requireLogin, async (req, res) => {
       tanggal: transactionDate
     });
 
-    // Tambahkan history sukses untuk penerima
     recipient.history.push({
       aktivitas: `Receive  - From ${sender.username}`,
       nominal: amount,
@@ -824,7 +821,6 @@ app.post('/transfer-saldo', requireLogin, async (req, res) => {
       tanggal: transactionDate
     });
 
-    // Simpan perubahan ke database
     await sender.save();
     await recipient.save();
 
@@ -951,7 +947,7 @@ app.get('/h2h/categori', validateApiKey, async (req, res) => {
   }
 });
 
-app.get('/api/providers', validateApiKey, async (req, res) => {
+app.get('/h2h/providers', validateApiKey, async (req, res) => {
   try {
     const url = `${BASE_URL}/layanan/price_list`;
 
@@ -998,6 +994,84 @@ app.get('/api/providers', validateApiKey, async (req, res) => {
   }
 });
 
+app.get('/h2h/price-list', validateApiKey, async (req, res) => {
+  try {
+    const { category, provider } = req.query;
+
+    const url = `${BASE_URL}/layanan/price_list`;
+
+    const params = new URLSearchParams();
+    params.append("api_key", ATLAN_API_KEY);
+    params.append("type", "prabayar");
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': url,
+      },
+      body: params
+    });
+
+    const result = await response.json();
+
+    if (!result.status) {
+      throw new Error('Server maintenance');
+    }
+
+    let data = result.data || [];
+
+    // Sort by price ascending
+    data.sort(regeXcomp);
+
+    // Filter by category if provided
+    if (category) {
+      data = data.filter(i => 
+        i.category && i.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    // Filter by provider if provided
+    if (provider) {
+      data = data.filter(i =>
+        i.provider && i.provider.toLowerCase() === provider.toLowerCase()
+      );
+    }
+
+    const formattedData = data.map(i => {
+      const finalPrice = calculateFinalPrice(i.price);
+      return {
+        code: i.code,
+        name: i.name,
+        category: i.category,
+        type: i.type,
+        provider: i.provider,
+        brand_status: i.brand_status,
+        status: i.status,
+        img_url: customImageUrl,
+        final_price: finalPrice,
+        price_formatted: `Rp ${toRupiah(finalPrice)}`,
+        status_emoji: i.status === "available" ? "✅" : "❎"
+      };
+    });
+
+    res.json({
+      success: true,
+      data: formattedData,
+      message: 'Data produk berhasil didapatkan'
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Terjadi kesalahan pada server'
+    });
+  }
+});
+
+
 const customImageUrl = "https://i.pinimg.com/236x/f2/7d/e0/f27de0e4a01ba9dfe8607ac03a4f7aae.jpg";
 
 const regeXcomp = (a, b) => {
@@ -1008,8 +1082,10 @@ const regeXcomp = (a, b) => {
 
 const calculateFinalPrice = (price) => {
   const cleanPrice = Number(price.toString().replace(/[^0-9.-]+/g, ""));
-  return cleanPrice + 100;
+  const markup = cleanPrice * 0.02; // 2% dari harga
+  return Math.round(cleanPrice + markup); // dibulatkan biar rapi
 };
+
 
 const toRupiah = (value) => {
   return value.toLocaleString('id-ID');
@@ -1179,7 +1255,7 @@ app.get('/h2h/order/create', validateApiKey, async (req, res) => {
     }
 
     const productPrice = parseInt(product.price);
-    const hargaTotal = productPrice + UNTUNG_PERSEN;
+    const hargaTotal = Math.round(productPrice * 1.02); // naik 2%
 
     if (user.saldo < hargaTotal) {
       user.history.push({
@@ -1560,8 +1636,8 @@ app.get('/h2h/deposit/status', validateApiKey, async (req, res) => {
   }
 });
 
-app.post('/h2h/deposit/cancel', validateApiKey, async (req, res) => {
-  const { trxid } = req.body;
+app.get('/h2h/deposit/cancel', validateApiKey, async (req, res) => {
+  const { trxid } = req.query;
   const user = req.user;
 
   if (!trxid) {
