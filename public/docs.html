@@ -1,651 +1,947 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Documentation - Rerozz Hosting</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Documentation | TopUpMU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* --- Light Theme (Default) --- */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+             
+      --bg-light: #f8fafc;
+      --text-light: #1e293b;
+      --card-light: #ffffff;
+      --border-light: #e2e8f0;
+             
+      --bg-dark: #0f172a;
+      --text-dark: #f8fafc;
+      --card-dark: #1e293b;
+      --border-dark: #334155;
+             
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+             
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+             
+      --space-xs: 0.5rem;
+      --space-sm: 0.75rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+             
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 1.875rem;
+             
+      --max-width: 1000px;
+      --header-height: 70px;
+             
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme='light'] {
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --card: var(--card-light);
+      --border: var(--border-light);
+      --code-bg: #1e293b;
+      --code-text: #f8fafc;
+      --copy-bg: var(--primary);
+      --copy-hover: var(--primary-hover);
+    }
+
+    [data-theme='dark'] {
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --card: var(--card-dark);
+      --border: var(--border-dark);
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+      --copy-bg: var(--primary);
+      --copy-hover: var(--primary-hover);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: "Inter", sans-serif;
-      background-color: #f8f9fa;
-      color: #343a40;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       line-height: 1.6;
-      min-height: 100vh;
-      padding: 20px;
+      font-size: var(--text-base);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      transition: var(--transition);
     }
-    .container {
-      max-width: 1000px;
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: var(--space-md);
+    }
+
+    h1 {
+      font-size: var(--text-2xl);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+    }
+
+    p {
+      margin-bottom: var(--space-md);
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--header-height);
+      background-color: var(--card);
+      box-shadow: var(--shadow-sm);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Search bar */
+    .search-container {
+      background-color: var(--card);
+      padding: var(--space-md) 0;
+      position: sticky;
+      top: var(--header-height);
+      z-index: 90;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 0 10px;
+      position: relative;
     }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #dee2e6;
+
+    .search-input input {
+      width: 100%;
+      padding: 12px 20px;
+      padding-left: 45px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      color: var(--text);
+      font-size: var(--text-md);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
-    .header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: #212529;
-      margin: 0;
+
+    .search-input input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
     }
-    .header i {
-      font-size: 28px;
-      color: #007bff; /* Primary blue */
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      font-size: var(--text-lg);
     }
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #007bff;
-        font-weight: 500;
-        margin-right: auto;
-        transition: color 0.2s ease;
-        text-decoration: none;
-        border: none;
-        background: none;
-        cursor: pointer;
-        padding: 5px 0;
-        font-size: 16px;
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: calc(var(--header-height) + 70px);
+      left: 0;
+      width: 250px;
+      height: calc(100vh - calc(var(--header-height) + 70px));
+      overflow-y: auto;
+      padding: var(--space-lg);
+      border-right: 1px solid var(--border);
+      background-color: var(--card);
+      transition: var(--transition);
     }
-    .back-button:hover {
-        color: #0056b3;
+
+    .sidebar-group {
+      margin-bottom: var(--space-xl);
     }
-    .back-button:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-        border-radius: 4px;
-    }
-     .theme-toggle {
-         display: flex;
-         align-items: center;
-         gap: 8px;
-         cursor: pointer;
-         color: #495057;
-         transition: color 0.2s ease;
-     }
-     .theme-toggle:hover {
-         color: #212529;
-     }
-     .theme-toggle i {
-         font-size: 20px;
-     }
-    .api-section {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-      padding: 30px;
-      margin-bottom: 40px;
-    }
-    .api-section h2 {
-      font-size: 22px;
+
+    .sidebar-title {
       font-weight: 600;
-      margin-bottom: 25px;
-      color: #212529;
-      border-bottom: 1px solid #e9ecef;
-      padding-bottom: 15px;
-    }
-    .api-endpoint {
-      margin-bottom: 30px;
-      padding: 20px;
-      border: 1px solid #e9ecef;
-      border-radius: 6px;
-      background-color: #f8f9fa;
-    }
-    .api-endpoint h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #212529;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .api-method {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-right: 8px;
+      font-size: var(--text-sm);
       text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: var(--space-sm);
+      padding-left: var(--space-sm);
     }
-    .method-get {
-      background-color: #d4edda;
-      color: #155724;
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-xs);
+      color: var(--text);
+      transition: var(--transition);
     }
-    .method-post {
-      background-color: #cce5ff;
-      color: #004085;
+
+    .sidebar-link:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: var(--primary);
     }
-    .method-put {
-      background-color: #fff3cd;
-      color: #856404;
+
+    [data-theme='dark'] .sidebar-link:hover {
+      background-color: rgba(255, 255, 255, 0.05);
     }
-    .method-delete {
-      background-color: #f8d7da;
-      color: #721c24;
+
+    .sidebar-link.active {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      font-weight: 500;
     }
-     .api-path {
-      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-      font-size: 14px;
-      color: #495057;
-      background-color: #e9ecef;
-      padding: 3px 8px;
-      border-radius: 4px;
-      word-break: break-all;
+
+    .sidebar-link i {
+      margin-right: var(--space-sm);
+      width: 20px;
+      text-align: center;
     }
-    .api-description {
-      font-size: 15px;
-      color: #495057;
-      margin-top: 15px;
-      margin-bottom: 20px;
+
+    /* Main content */
+    .main-content {
+      margin-left: 250px;
+      padding: var(--space-xl);
+      transition: var(--transition);
     }
-    .api-parameters, .api-response, .api-request-body, .api-code-examples {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px dashed #dee2e6;
+
+    /* Endpoint cards */
+    .endpoint-card {
+      background-color: var(--card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-2xl);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
     }
-     .api-code-examples {
-        margin-top: 30px;
-        padding-top: 25px;
-     }
-    .api-parameters h4, .api-response h4, .api-request-body h4, .api-code-examples h4 {
-      font-size: 17px;
+
+    .endpoint-card:target {
+      animation: highlight 2s ease;
+    }
+
+    @keyframes highlight {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+
+    .endpoint-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .endpoint-badge {
+      margin-right: var(--space-md);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
       font-weight: 600;
-      margin-bottom: 15px;
-      color: #343a40;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
     }
-    .api-table {
+
+    .endpoint-title {
+      color: var(--text);
+      font-size: var(--text-xl);
+    }
+
+    .endpoint-description {
+      margin-bottom: var(--space-xl);
+      color: var(--text);
+      opacity: 0.9;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-md);
+      color: var(--text);
+    }
+
+    .section-title i {
+      margin-right: var(--space-sm);
+      color: var(--primary);
+    }
+
+    /* Parameters table */
+    .parameters-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
-      margin-bottom: 15px;
+      margin-bottom: var(--space-xl);
     }
-    .api-table th, .api-table td {
-      padding: 12px;
-      border: 1px solid #dee2e6;
+
+    .parameters-table th {
       text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      background-color: rgba(0, 0, 0, 0.02);
+      font-size: var(--text-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .api-table th {
-      background-color: #e9ecef;
-      font-weight: 600;
-      color: #495057;
+
+    [data-theme='dark'] .parameters-table th {
+      background-color: rgba(255, 255, 255, 0.02);
     }
-    .api-table td:first-child {
-      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+
+    .parameters-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--border);
+      font-size: var(--text-sm);
+      vertical-align: top;
+    }
+
+    .parameters-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .param-name {
+      font-family: 'Fira Code', monospace;
+      color: var(--primary);
+    }
+
+    .param-type {
+      color: var(--success);
       font-weight: 500;
-      color: #212529;
-    }
-    .required {
-      color: #dc3545; /* Bootstrap danger red */
-      font-weight: 700;
     }
 
-    /* Textarea Styles for Code/Response */
-    .code-block-container {
-        position: relative;
-        margin-bottom: 15px;
+    .param-required {
+      color: var(--error);
+      font-weight: 500;
     }
-    .code-block-container textarea {
+
+    .param-optional {
+      color: var(--warning);
+      font-weight: 500;
+    }
+
+    /* Code blocks */
+    .code-block {
+      position: relative;
+      margin-bottom: var(--space-lg);
+    }
+
+    pre, textarea {
+      font-family: 'Fira Code', monospace;
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+      tab-size: 2;
+      margin: 0;
+      border: 1px solid var(--border);
+    }
+
+    textarea {
       width: 100%;
-      padding: 18px;
-      border-radius: 6px;
-      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      resize: none; /* Prevent manual resizing */
-      overflow-x: auto; /* Allow scrolling */
-      box-sizing: border-box; /* Include padding in width */
-      border: 1px solid #ced4da;
-      background-color: #e9ecef; /* Light background for light theme */
-      color: #343a40; /* Dark text for light theme */
+      resize: none;
+      min-height: 150px;
     }
-    .copy-button {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 5px 10px;
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
-        opacity: 0; /* Hidden by default */
-        transition: opacity 0.2s ease, background-color 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-     .code-block-container:hover .copy-button {
-         opacity: 1; /* Show on hover */
-     }
-    .copy-button:hover {
-        background-color: rgba(0, 0, 0, 0.7);
-    }
-     .copy-button i {
-         font-size: 12px;
-     }
-     .copy-button.copied {
-         background-color: #28a745; /* Green when copied */
-         color: white;
-     }
 
+    pre {
+      max-height: 400px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+    }
 
-    .code-tabs {
-        display: flex;
-        margin-bottom: 15px;
-        border-bottom: 1px solid #ced4da; /* Light border for light theme */
-        overflow-x: auto; /* Allow scrolling if tabs overflow */
+    pre::-webkit-scrollbar {
+      height: 8px;
     }
-    .code-tab-button {
-        padding: 10px 18px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #495057; /* Gray text for light theme */
-        background-color: #f8f9fa; /* Light background for light theme */
-        border: none;
-        cursor: pointer;
-        transition: color 0.2s ease, background-color 0.2s ease, border-bottom-color 0.2s ease;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-        white-space: nowrap; /* Prevent text wrapping */
+
+    pre::-webkit-scrollbar-track {
+      background: transparent;
     }
-    .code-tab-button:hover {
-        color: #212529; /* Darker gray on hover */
-        background-color: #e9ecef;
+
+    pre::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 10px;
     }
-    .code-tab-button.active {
-        color: #212529; /* Dark text for active */
-        background-color: #e9ecef; /* Slightly lighter background for active */
-        border-bottom: 2px solid #007bff; /* Primary blue indicator */
+
+    /* Copy button */
+    .copy-btn {
+      position: absolute;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      background-color: var(--copy-bg);
+      color: white;
+      border: none;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      transition: var(--transition);
+      opacity: 0.9;
     }
-    .code-content {
-        display: none;
+
+    .copy-btn:hover {
+      background-color: var(--copy-hover);
+      opacity: 1;
     }
-    .code-content.active {
+
+    .copy-icon {
+      font-size: var(--text-sm);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-get {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .badge-post {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--primary);
+    }
+
+    /* Error cards */
+    .error-card {
+      background-color: rgba(239, 68, 68, 0.05);
+      border-left: 4px solid var(--error);
+      padding: var(--space-md);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .error-title {
+      color: var(--error);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .error-description {
+      font-size: var(--text-sm);
+      color: var(--text);
+      opacity: 0.9;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: var(--space-xl);
+      right: var(--space-xl);
+      background-color: var(--success);
+      color: white;
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      font-size: var(--text-lg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 90;
+        background-color: var(--card);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
         display: block;
+      }
     }
 
-     .note {
-         font-size: 14px;
-         color: #6c757d;
-         margin-top: 10px;
-     }
-     .note b {
-         color: #495057;
-     }
+    @media (max-width: 768px) {
+      :root {
+        --header-height: 60px;
+        --space-lg: 1.25rem;
+        --space-xl: 1.75rem;
+        --space-2xl: 2.25rem;
+      }
 
-    /* --- Dark Theme --- */
-    body.dark-theme {
-      background-color: #212529; /* Dark background */
-      color: #adb5bd; /* Light gray text */
-    }
-    body.dark-theme .header h1 {
-      color: #f8f9fa; /* White text */
-    }
-     body.dark-theme .header {
-         border-bottom-color: #495057; /* Darker border */
-     }
-     body.dark-theme .back-button {
-         color: #00aaff; /* Lighter blue for contrast */
-     }
-     body.dark-theme .back-button:hover {
-         color: #33bfff;
-     }
-    body.dark-theme .theme-toggle {
-        color: #adb5bd;
-    }
-     body.dark-theme .theme-toggle:hover {
-         color: #f8f9fa;
-     }
-    body.dark-theme .api-section {
-      background-color: #2c3034; /* Slightly lighter dark background */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-    body.dark-theme .api-section h2 {
-      color: #f8f9fa; /* White text */
-      border-bottom-color: #495057; /* Darker border */
-    }
-    body.dark-theme .api-endpoint {
-      border-color: #495057; /* Darker border */
-      background-color: #343a40; /* Darker background */
-    }
-    body.dark-theme .api-endpoint h3 {
-      color: #f8f9fa; /* White text */
-    }
-    body.dark-theme .api-path {
-      color: #e9ecef; /* Lighter text */
-      background-color: #495057; /* Darker background */
-    }
-    body.dark-theme .api-description {
-      color: #ced4da; /* Lighter gray text */
-    }
-     body.dark-theme .api-parameters, body.dark-theme .api-response, body.dark-theme .api-request-body, body.dark-theme .api-code-examples {
-         border-top-color: #495057; /* Darker border */
-     }
-    body.dark-theme .api-parameters h4, body.dark-theme .api-response h4, body.dark-theme .api-request-body h4, body.dark-theme .api-code-examples h4 {
-      color: #e9ecef; /* Lighter gray text */
-    }
-    body.dark-theme .api-table th, body.dark-theme .api-table td {
-      border-color: #495057; /* Darker border */
-    }
-    body.dark-theme .api-table th {
-      background-color: #495057; /* Darker background */
-      color: #e9ecef; /* Lighter text */
-    }
-    body.dark-theme .api-table td:first-child {
-      color: #f8f9fa; /* White text */
-    }
-    body.dark-theme .required {
-        color: #f1aeb5; /* Lighter red for contrast */
+      .endpoint-card {
+        padding: var(--space-lg);
+      }
+
+      .toast {
+        bottom: var(--space-lg);
+        right: var(--space-lg);
+        left: var(--space-lg);
+      }
     }
 
-    /* Dark Theme Textarea Styles */
-    body.dark-theme .code-block-container textarea {
-      background-color: #212529; /* Very dark background for code */
-      color: #e9ecef; /* Light text */
-      border-color: #495057;
-    }
-     body.dark-theme .copy-button {
-         background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent light background */
-         color: #adb5bd;
-     }
-     body.dark-theme .code-block-container:hover .copy-button {
-         opacity: 1;
-     }
-    body.dark-theme .copy-button:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
-     body.dark-theme .copy-button.copied {
-         background-color: #28a745; /* Green when copied */
-         color: white;
-     }
+    @media (max-width: 480px) {
+      :root {
+        --text-base: 0.9375rem;
+        --text-lg: 1.0625rem;
+        --text-xl: 1.1875rem;
+        --text-2xl: 1.3125rem;
+      }
 
+      .search-input input {
+        font-size: var(--text-sm);
+        padding-left: 40px;
+      }
 
-    /* Dark Theme Code Tabs */
-    body.dark-theme .code-tabs {
-        border-bottom-color: #adb5bd; /* Lighter border */
-    }
-    body.dark-theme .code-tab-button {
-        color: #adb5bd; /* Light gray text */
-        background-color: #212529; /* Dark background */
-    }
-    body.dark-theme .code-tab-button:hover {
-        color: #f8f9fa; /* White text on hover */
-        background-color: #343a40;
-    }
-    body.dark-theme .code-tab-button.active {
-        color: #f8f9fa; /* White text for active */
-        background-color: #343a40; /* Slightly lighter dark background for active */
-        border-bottom-color: #00aaff; /* Lighter blue indicator */
+      .search-icon {
+        font-size: var(--text-md);
+      }
+
+      .endpoint-card {
+        padding: var(--space-md);
+      }
+
+      .parameters-table th,
+      .parameters-table td {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: var(--text-xs);
+      }
     }
 
-     body.dark-theme .note {
-         color: #adb5bd;
-     }
-     body.dark-theme .note b {
-         color: #e9ecef;
-     }
+    /* Animation for endpoint filtering */
+    .endpoint-hidden {
+      display: none;
+    }
 
+    .endpoint-visible {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-        <button aria-label="Back to Profile" class="back-button" id="backToProfile" type="button">
-            <i class="fas fa-arrow-left"></i>
-            Back to Profile
-        </button>
-         <div class="theme-toggle" id="themeToggle">
-            <i class="fas fa-moon"></i>
-            <span>Dark Mode</span>
+<body class="bg-gray-50 dark:bg-slate-800">
+  <!-- Header -->
+  <header class="bg-white dark:bg-slate-700 shadow-sm">
+    <div class="container mx-auto px-6">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-3">
+          <button class="menu-toggle md:hidden text-gray-600 dark:text-gray-300" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <a href="#" class="flex items-center text-gray-800 dark:text-white">
+            <i class="fas fa-terminal text-blue-600 mr-2"></i>
+            <span class="font-semibold">TopUpMU API Docs</span>
+          </a>
         </div>
-        <h1>
-            <i class="fas fa-book"></i>
-            API Documentation
-        </h1>
+        <div class="flex items-center space-x-4">
+          <button class="theme-toggle flex items-center text-gray-600 dark:text-gray-300 px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-slate-600" 
+                  onclick="toggleTheme()">
+            <i class="fas fa-adjust mr-2"></i>
+            <span class="theme-text">Theme</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search bar -->
+  <div class="search-container bg-white dark:bg-slate-700">
+    <div class="container mx-auto px-6">
+      <div class="search-input relative">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Cari endpoint..." class="w-full py-3 pl-12 pr-4 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+               oninput="filterEndpoints(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-group">
+      <h3 class="sidebar-title">Authentication</h3>
+      <a href="#profile" class="sidebar-link" onclick="scrollToSection('profile')">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
     </div>
 
-    <div class="api-section">
-      <h2>Authentication</h2>
-      <div class="api-endpoint">
-        <h3>Authenticate with API Key</h3>
-        <span class="api-method method-get">GET</span>
-        <span class="api-path">/api/v1/user</span>
-        <p class="api-description">Retrieve user information to validate API key and get basic details.</p>
+    <div class="sidebar-group">
+      <h3 class="sidebar-title">Categories</h3>
+      <a href="#categories" class="sidebar-link" onclick="scrollToSection('categories')">
+        <i class="fas fa-list"></i>
+        <span>Categories</span>
+      </a>
+      <a href="#providers" class="sidebar-link" onclick="scrollToSection('providers')">
+        <i class="fas fa-server"></i>
+        <span>Providers</span>
+      </a>
+      <a href="#price-list" class="sidebar-link" onclick="scrollToSection('price-list')">
+        <i class="fas fa-tags"></i>
+        <span>Price List</span>
+      </a>
+    </div>
 
-        <h4>Headers</h4>
-        <table class="api-table">
+    <div class="sidebar-group">
+      <h3 class="sidebar-title">Transactions</h3>
+      <a href="#create-order" class="sidebar-link" onclick="scrollToSection('create-order')">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Create Order</span>
+      </a>
+      <a href="#check-order" class="sidebar-link" onclick="scrollToSection('check-order')">
+        <i class="fas fa-search"></i>
+        <span>Check Order</span>
+      </a>
+    </div>
+
+    <div class="sidebar-group">
+      <h3 class="sidebar-title">Deposit</h3>
+      <a href="#create-deposit" class="sidebar-link" onclick="scrollToSection('create-deposit')">
+        <i class="fas fa-plus-circle"></i>
+        <span>Create Deposit</span>
+      </a>
+      <a href="#check-deposit" class="sidebar-link" onclick="scrollToSection('check-deposit')">
+        <i class="fas fa-search-dollar"></i>
+        <span>Check Deposit</span>
+      </a>
+      <a href="#cancel-deposit" class="sidebar-link" onclick="scrollToSection('cancel-deposit')">
+        <i class="fas fa-times-circle"></i>
+        <span>Cancel Deposit</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Profile Endpoint -->
+    <div id="profile" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-get">GET</span>
+        <h2 class="endpoint-title">/h2h/profile</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk mengambil informasi profil pengguna berdasarkan API Key.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>GET https://www.v-pedia.web.id/h2h/profile?apikey=V-Pedia-xxxxx</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Parameter</th>
+              <th>Type</th>
               <th>Required</th>
               <th>Description</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Authorization</td>
-              <td><span class="required">Yes</span></td>
-              <td>Bearer token. Use your API Key as the token value. Format: <code>Bearer YOUR_API_KEY</code></td>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
             </tr>
           </tbody>
         </table>
-
-        <h4>Response (200 OK)</h4>
-        <div class="api-response code-block-container">
-            <textarea readonly rows="15">{
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
   "success": true,
-  "message": "User data retrieved successfully",
-  "user": {
-    "id": "user_id",
-    "username": "your_username",
-    "email": "your_email@example.com",
-    "fullname": "Your Full Name",
-    "nomor": "08123456789",
-    "balance": 150000,
-    "coin": 50,
+  "message": "Profile data retrieved successfully",
+  "data": {
+    "fullname": "Rerezz",
+    "username": "rerezz21",
+    "nomor": "081234567890",
+    "email": "rerezz@mail.com",
+    "profileUrl": "https://www.v-pedia.web.id/img/rerezz.jpg",
+    "saldo": 50000,
+    "coin": 100,
+    "apiKey": "V-Pedia-xxxxxxx",
+    "tanggalDaftar": "2024-10-01T12:00:00Z",
+    "role": "user",
     "isVerified": true,
-    "tanggalDaftar": "2023-10-27T10:00:00.000Z",
-    "lastLogin": "2024-07-20T14:30:00.000Z",
-    "profileUrl": "http://your-hosting.com/profile/image.jpg"
-    // Other user properties might be included
+    "lastLogin": "2025-05-08T10:45:00Z",
+    "referralCode": "XXXXX",
+    "history": []
   }
 }</textarea>
-             <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
         </div>
-         <h4>Response (401 Unauthorized)</h4>
-        <div class="api-response code-block-container">
-           <textarea readonly rows="5">{
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
   "success": false,
-  "message": "Invalid API Key"
-}</textarea>
-            <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/profile", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
+
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxxxx"
+}
+
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/profile",
+    headers=headers
+)
+
+print(response.json())</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">cURL</h4>
+        <div class="code-block">
+          <pre>curl -X GET "https://www.v-pedia.web.id/h2h/profile" \
+  -H "Authorization: Bearer V-Pedia-xxxxxxx"</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="api-section">
-      <h2>Products & Pricing</h2>
-
-      <div class="api-endpoint">
-        <h3>Get Product Categories</h3>
-        <span class="api-method method-get">GET</span>
-        <span class="api-path">/h2h/categori</span>
-        <p class="api-description">Retrieve a list of available product categories.</p>
-
-        <h4>Query Parameters</h4>
-        <table class="api-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Required</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>apikey</td>
-              <td>string</td>
-              <td><span class="required">Yes</span></td>
-              <td>Your API Key.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h4>Response (200 OK)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="10">{
-    "success": true,
-    "data": [
-      "Data Internet",
-      "Pulsa Reguler",
-      "Pulsa Transfer",
-      "Paket SMS & Telpon",
-      "Masa Aktif",
-      "Streaming",
-      "Voucher",
-      // ... more categories
-    ],
-    "message": "Data kategori berhasil didapatkan"
-  }</textarea>
-            <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-         <h4>Response (401 Unauthorized)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="5">{
-  "success": false,
-  "message": "Invalid API Key"
-}</textarea>
-            <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-
-         <div class="api-code-examples">
-            <h4>Code Examples</h4>
-            <div class="code-tabs">
-                <button class="code-tab-button active" onclick="openCode(event, 'categories-js')">JavaScript (Fetch)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'categories-py')">Python (Requests)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'categories-php')">PHP (cURL)</button>
-            </div>
-
-            <div id="categories-js" class="code-content active code-block-container">
-                <textarea readonly rows="20">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-
-fetch(`${baseUrl}/h2h/categori?apikey=${apiKey}`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      console.log('Product Categories:', data.data);
-      // Loop melalui data dan tampilkan kategori
-      data.data.forEach(category => {
-        console.log(category);
-      });
-    } else {
-      console.error('API Error:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="categories-py" class="code-content code-block-container">
-                <textarea readonly rows="20">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-
-params = {
-    'apikey': api_key
-}
-
-try:
-    response = requests.get(f"{base_url}/h2h/categori", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Product Categories:")
-        for category in data.get('data', []):
-            print(category)
-    else:
-        print("API Error:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="categories-php" class="code-content code-block-container">
-                <textarea readonly rows="25"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-
-$url = $baseUrl . '/h2h/categori?apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Product Categories:\n";
-        if (isset($data['data']) && is_array($data['data'])) {
-            foreach ($data['data'] as $category) {
-                echo $category . "\n";
-            }
-        } else {
-             echo $data['message'] ?? "No data found.";
-        }
-    } else {
-        echo "API Error: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode);
-    }
-}
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
+    <!-- Categories Endpoint -->
+    <div id="categories" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-get">GET</span>
+        <h2 class="endpoint-title">/h2h/categori</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk mengambil informasi kategori produk yang tersedia.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>GET https://www.v-pedia.web.id/h2h/categori?apikey=V-Pedia-xxxxx</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
         </div>
       </div>
-
-      <div class="api-endpoint">
-        <h3>Get Product Providers</h3>
-        <span class="api-method method-get">GET</span>
-        <span class="api-path">/h2h/provider</span>
-        <p class="api-description">Retrieve a list of available product providers across all categories.</p>
-
-        <h4>Query Parameters</h4>
-        <table class="api-table">
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Parameter</th>
               <th>Type</th>
               <th>Required</th>
               <th>Description</th>
@@ -653,156 +949,220 @@ if ($curlError) {
           </thead>
           <tbody>
             <tr>
-              <td>apikey</td>
-              <td>string</td>
-              <td><span class="required">Yes</span></td>
-              <td>Your API Key.</td>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
             </tr>
           </tbody>
         </table>
-
-        <h4>Response (200 OK)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="10">{
-    "success": true,
-    "data": [
-      "TELKOMSEL",
-      "INDOSAT",
-      "AXIS",
-      "SMARTFREN",
-      "TRI",
-      "XL",
-      "PLN",
-      // ... more providers
-    ],
-    "message": "Data provider berhasil didapatkan"
-  }</textarea>
-             <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-         <h4>Response (401 Unauthorized)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="5">{
-  "success": false,
-  "message": "Invalid API Key"
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
+  "success": true,
+  "data": [
+    "Data Internet",
+    "Pulsa Reguler",
+    "Pulsa Transfer",
+    "Paket SMS & Telpon",
+    "Masa Aktif",
+    "Streaming",
+    "Voucher",
+    "Aktivasi Voucher",
+    "Aktivasi Perdana",
+    "PLN",
+    "E-Money",
+    "Games",
+    "China TOPUP",
+    "Malaysia TOPUP",
+    "Philippines TOPUP",
+    "Singapore TOPUP",
+    "Akun Premium",
+    "TV",
+    "Thailand TOPUP",
+    "Vietnam Topup"
+  ],
+  "message": "Data kategori berhasil didapatkan"
 }</textarea>
-             <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-
-         <div class="api-code-examples">
-            <h4>Code Examples</h4>
-            <div class="code-tabs">
-                <button class="code-tab-button active" onclick="openCode(event, 'providers-js')">JavaScript (Fetch)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'providers-py')">Python (Requests)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'providers-php')">PHP (cURL)</button>
-            </div>
-
-            <div id="providers-js" class="code-content active code-block-container">
-                <textarea readonly rows="20">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-
-fetch(`${baseUrl}/h2h/provider?apikey=${apiKey}`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      console.log('Product Providers:', data.data);
-      // Loop melalui data dan tampilkan provider
-      data.data.forEach(provider => {
-        console.log(provider);
-      });
-    } else {
-      console.error('API Error:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="providers-py" class="code-content code-block-container">
-                <textarea readonly rows="20">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-
-params = {
-    'apikey': api_key
-}
-
-try:
-    response = requests.get(f"{base_url}/h2h/provider", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Product Providers:")
-        for provider in data.get('data', []):
-            print(provider)
-    else:
-        print("API Error:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="providers-php" class="code-content code-block-container">
-                <textarea readonly rows="25"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-
-$url = $baseUrl . '/h2h/provider?apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Product Providers:\n";
-        if (isset($data['data']) && is_array($data['data'])) {
-            foreach ($data['data'] as $provider) {
-                echo $provider . "\n";
-            }
-        } else {
-             echo $data['message'] ?? "No data found.";
-        }
-    } else {
-        echo "API Error: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode);
-    }
-}
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
         </div>
       </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/categori", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => {
+  if (!response.ok) {
+    throw new Error("Gagal ambil data kategori");
+  }
+  return response.json();
+})
+.then(data => {
+  console.log("Data kategori:", data);
+})
+.catch(error => {
+  console.error("Error:", error);
+});</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
 
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+}
 
-       <div class="api-endpoint">
-        <h3>Get Price List</h3>
-        <span class="api-method method-get">GET</span>
-        <span class="api-path">/h2h/price-list</span>
-        <p class="api-description">Retrieve the list of available products and their prices. Can be filtered by provider.</p>
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/categori",
+    headers=headers
+)
 
-         <h4>Query Parameters</h4>
-        <table class="api-table">
+# Cek apakah response sukses
+if response.status_code == 200:
+    data = response.json()
+    print("Data kategori:", data)
+else:
+    print("Gagal mengambil data. Status:", response.status_code)
+    print("Respon:", response.text)</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">cURL</h4>
+        <div class="code-block">
+          <pre>curl -X GET "https://www.v-pedia.web.id/h2h/categori" \
+  -H "Authorization: Bearer V-Pedia-xxxxxxx"</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Providers Endpoint -->
+    <div id="providers" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-get">GET</span>
+        <h2 class="endpoint-title">/h2h/providers</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk mengambil daftar provider layanan yang tersedia.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>GET https://www.v-pedia.web.id/h2h/providers?apikey=V-Pedia-xxxxx</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Parameter</th>
               <th>Type</th>
               <th>Required</th>
               <th>Description</th>
@@ -810,23 +1170,234 @@ if ($curlError) {
           </thead>
           <tbody>
             <tr>
-              <td>apikey</td>
-              <td>string</td>
-              <td><span class="required">Yes</span></td>
-              <td>Your API Key.</td>
-            </tr>
-             <tr>
-              <td>provider</td>
-              <td>string</td>
-              <td>No</td>
-              <td>Filter results by specific provider (e.g., <code>DANA</code>, <code>TELKOMSEL</code>). If omitted, returns all products.</td>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
+  "success": true,
+  "data": [
+    "TELKOMSEL",
+    "INDOSAT",
+    "AXIS",
+    "SMARTFREN",
+    "3",
+    "XL",
+    "DANA",
+    "OVO",
+    "GOPAY",
+    "SHOPEEPAY",
+    "LINKAJAX",
+    "PLN",
+    "PLN NON TAG",
+    "BPJS",
+    "PGN",
+    "PDAM",
+    "GAMES",
+    "VOUCHER",
+    "AKUN PREMIUM"
+  ],
+  "message": "Data provider berhasil didapatkan"
+}</textarea>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/providers", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
 
-        <h4>Response (200 OK)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="15">{
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+}
+
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/providers",
+    headers=headers
+)
+
+print(response.json())</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">cURL</h4>
+        <div class="code-block">
+          <pre>curl -X GET "https://www.v-pedia.web.id/h2h/providers" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price List Endpoint -->
+    <div id="price-list" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-get">GET</span>
+        <h2 class="endpoint-title">/h2h/price-list</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk mengambil daftar harga produk dari provider tertentu.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>GET https://www.v-pedia.web.id/h2h/price-list?provider=DANA&apikey=YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="param-name">provider</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>Nama provider (contoh: DANA, OVO, TELKOMSEL, dll)</td>
+            </tr>
+            <tr>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
   "success": true,
   "data": [
     {
@@ -855,1085 +1426,1515 @@ if ($curlError) {
       "price_formatted": "Rp 2.203",
       "status_emoji": "✅"
     }
-    // ... more products
   ],
-  "message": "Data harga berhasil didapatkan"
+  "message": "Price list retrieved successfully"
 }</textarea>
-            <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
         </div>
-        <h4>Response (401 Unauthorized)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="5">{
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
   "success": false,
-  "message": "Invalid API Key"
-}</textarea>
-             <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
-         <h4>Response (200 OK - No products found for provider)</h4>
-        <div class="api-response code-block-container">
-          <textarea readonly rows="5">{
-  "success": true,
-  "data": [],
-  "message": "No products found for the specified provider"
-}</textarea>
-             <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
-
-        <div class="api-code-examples">
-            <h4>Code Examples</h4>
-            <div class="code-tabs">
-                <button class="code-tab-button active" onclick="openCode(event, 'price-list-js')">JavaScript (Fetch)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'price-list-py')">Python (Requests)</button>
-                <button class="code-tab-button" onclick="openCode(event, 'price-list-php')">PHP (cURL)</button>
-            </div>
-
-            <div id="price-list-js" class="code-content active code-block-container">
-                <textarea readonly rows="25">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const providerFilter = 'DANA'; // Opsional: Ganti atau hapus untuk semua provider
-
-let url = `${baseUrl}/h2h/price-list?apikey=${apiKey}`;
-if (providerFilter) {
-  url += `&provider=${providerFilter}`;
-}
-
-fetch(url)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      console.log('Price List:', data.data);
-      // Loop melalui data dan tampilkan produk
-      data.data.forEach(product => {
-        console.log(`Code: ${product.code}, Name: ${product.name}, Price: ${product.price_formatted}, Status: ${product.status}`);
-      });
-    } else {
-      console.error('API Error:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="price-list-py" class="code-content code-block-container">
-                <textarea readonly rows="25">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-provider_filter = 'DANA'  # Opsional: Ganti atau hapus untuk semua provider
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-building"></i>
+            <span>Missing Provider</span>
+          </div>
+          <p class="error-description">Parameter provider tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"provider\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/price-list?provider=DANA", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
 
 params = {
-    'apikey': api_key
-}
-if provider_filter:
-    params['provider'] = provider_filter
-
-try:
-    response = requests.get(f"{base_url}/h2h/price-list", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Price List:")
-        for product in data.get('data', []):
-            print(f"  Code: {product.get('code')}, Name: {product.get('name')}, Price: {product.get('price_formatted')}, Status: {product.get('status')}")
-    else:
-        print("API Error:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div id="price-list-php" class="code-content code-block-container">
-                <textarea readonly rows="30"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$providerFilter = 'DANA'; // Opsional: Ganti atau hapus untuk semua provider
-
-$url = $baseUrl . '/h2h/price-list?apikey=' . $apiKey;
-
-if (!empty($providerFilter)) {
-    $url .= '&provider=' . $providerFilter;
+    "provider": "DANA"
 }
 
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Price List:\n";
-        if (isset($data['data']) && is_array($data['data'])) {
-            foreach ($data['data'] as $product) {
-                echo "  Code: " . ($product['code'] ?? 'N/A') . ", Name: " . ($product['name'] ?? 'N/A') . ", Price: " . ($product['price_formatted'] ?? 'N/A') . ", Status: " . ($product['status'] ?? 'N/A') . "\n";
-            }
-        } else {
-             echo $data['message'] ?? "No data found.";
-        }
-    } else {
-        echo "API Error: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
 }
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
+
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/price-list",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">cURL</h4>
+        <div class="code-block">
+          <pre>curl -X GET "https://www.v-pedia.web.id/h2h/price-list?provider=DANA" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Order Endpoint -->
+    <div id="create-order" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-post">POST</span>
+        <h2 class="endpoint-title">/h2h/order/create</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk membuat pesanan baru.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>POST https://www.v-pedia.web.id/h2h/order/create?code=ML3&target=IDML|ZONEID&apikey=YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="param-name">code</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>Kode produk (contoh: ML3 untuk 3 Diamond Mobile Legends)</td>
+            </tr>
+            <tr>
+              <td><code class="param-name">target</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>ID target (contoh: ID pengguna &amp; zone ID untuk game, format: "USERID|ZONEID")</td>
+            </tr>
+            <tr>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
+  "status": true,
+  "message": "Transaksi diproses",
+  "data": {
+    "id": "xxxxxxxxxxxxxxxxx",
+    "reff_id": "reffidexample123",
+    "layanan": "MOBILELEGEND - 3 Diamond",
+    "code": "ML3",
+    "target": "123456789|1234",
+    "price": "1024",
+    "sn": null,
+    "status": "pending",
+    "created_at": "2023-12-26 11:08:19"
+  },
+  "code": 202
+}</textarea>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-barcode"></i>
+            <span>Missing Product Code</span>
+          </div>
+          <p class="error-description">Parameter code tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"code\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-bullseye"></i>
+            <span>Missing Target</span>
+          </div>
+          <p class="error-description">Parameter target tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"target\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-coins"></i>
+            <span>Insufficient Balance</span>
+          </div>
+          <p class="error-description">Saldo tidak mencukupi untuk melakukan transaksi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Saldo tidak cukup",
+  "data": {
+    "saldo": 5000,
+    "required": 1024
+  }
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/order/create?code=ML3&target=123456789|1234", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
+
+params = {
+    "code": "ML3",
+    "target": "123456789|1234"
+}
+
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+}
+
+response = requests.post(
+    "https://www.v-pedia.web.id/h2h/order/create",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">cURL</h4>
+        <div class="code-block">
+          <pre>curl -X POST "https://www.v-pedia.web.id/h2h/order/create?code=ML3&target=123456789|1234" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check Order Endpoint -->
+    <div id="check-order" class="endpoint-card">
+      <div class="endpoint-card-header">
+        <span class="endpoint-badge badge-get">GET</span>
+        <h2 class="endpoint-title">/h2h/order/check</h2>
+      </div>
+      
+      <p class="endpoint-description">Endpoint untuk memeriksa status pesanan.</p>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-link"></i>
+          <span>Endpoint</span>
+        </h3>
+        <div class="code-block">
+          <pre>GET https://www.v-pedia.web.id/h2h/order/check?trxid=xxxxxxxxxxxxxxxxx&apikey=YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-key"></i>
+          <span>Authentication</span>
+        </h3>
+        <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+        <div class="code-block">
+          <pre>Authorization: Bearer YOUR-APIKEY</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+        <table class="parameters-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="param-name">trxid</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>ID transaksi yang ingin diperiksa</td>
+            </tr>
+            <tr>
+              <td><code class="param-name">apikey</code></td>
+              <td><span class="param-type">String</span></td>
+              <td><span class="param-required">Yes</span></td>
+              <td>API Key milik Anda</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-check-circle"></i>
+          <span>Success Response</span>
+        </h3>
+        <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+        <div class="code-block">
+          <textarea readonly>{
+  "success": true,
+  "message": "Transaksi berhasil",
+  "data": {
+    "trxid": "xxxxxxxxxxxxxxxxx",
+    "status": "success"
+  }
+}</textarea>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Error Responses</span>
+        </h3>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-server"></i>
+            <span>Internal Server Error</span>
+          </div>
+          <p class="error-description">Terjadi kesalahan pada server</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Internal server error"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-key"></i>
+            <span>Missing API Key</span>
+          </div>
+          <p class="error-description">Parameter apikey tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-receipt"></i>
+            <span>Missing Transaction ID</span>
+          </div>
+          <p class="error-description">Parameter trxid tidak diisi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Parameter \"trxid\" harus di isi"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-search"></i>
+            <span>Transaction Not Found</span>
+          </div>
+          <p class="error-description">Transaksi tidak ditemukan</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Transaksi tidak ditemukan"
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="error-card">
+          <div class="error-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Account Not Verified</span>
+          </div>
+          <p class="error-description">Akun H2H belum diverifikasi</p>
+          <div class="code-block">
+            <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          <span>Code Examples</span>
+        </h3>
+        <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+        
+        <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+        <div class="code-block">
+          <pre>fetch("https://www.v-pedia.web.id/h2h/order/check?trxid=xxxxxxxxxxxxxxxxx", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        
+        <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+        <div class="code-block">
+          <pre>import requests
+
+params = {
+    "trxid": "xxxxxxxxxxxxxxxxx"
+}
+
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+}
+
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/order/check",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+          <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+            <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">cURL</h4>
+          <div class="code-block">
+            <pre>curl -X GET "https://www.v-pedia.web.id/h2h/order/check?trxid=xxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
       </div>
 
-    </div>
-
-    <div class="api-section">
-        <h2>Orders</h2>
-
-        <div class="api-endpoint">
-            <h3>Create New Order</h3>
-            <span class="api-method method-get">GET</span> <span class="note"><b>Note:</b> POST is generally preferred for creating resources, but your API uses GET.</span>
-            <span class="api-path">/h2h/order/create</span>
-            <p class="api-description">Place a new order for a specific product using its code and target.</p>
-
-            <h4>Query Parameters</h4>
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>code</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The product code (e.g., <code>ML3</code>, <code>DANA1</code>) from the Price List.</td>
-                    </tr>
-                    <tr>
-                        <td>target</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The target identifier for the product (e.g., phone number for pulsa, User ID|Zone ID for games).</td>
-                    </tr>
-                    <tr>
-                        <td>apikey</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>Your API Key.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Response (202 Accepted)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="15">{
-  "status": true, // Indicates if the request was successfully accepted
-  "message": "Transaksi diproses", // Message about the transaction status
-  "data": {
-    "id": "xxxxxxxxxxxxxxxxx", // Unique transaction ID from your system
-    "reff_id": "reffidexample123", // Optional: Reference ID from your system
-    "layanan": "MOBILELEGEND - 3 Diamond", // Product name
-    "code": "ML3", // Product code
-    "target": "123456789|1234", // Target identifier used
-    "price": "1024", // Price deducted from balance (can be string or number)
-    "sn": null, // Serial Number/Voucher Code (null if not applicable or pending)
-    "status": "pending", // Current status of the order (pending, success, failed, processing)
-    "created_at": "2023-12-26 11:08:19" // Timestamp of order creation
-  },
-  "code": 202 // HTTP status code (202 indicates request accepted)
-}</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-             <h4>Response (400 Bad Request / 401 Unauthorized / 500 Internal Server Error)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="7">{
-  "success": false,
-  "message": "Error description (e.g., Invalid API Key, Product code not found, Invalid target format, Insufficient balance)",
-  "code": 400 // Or 401, 500, etc.
-}</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div class="api-code-examples">
-                <h4>Code Examples</h4>
-                <div class="code-tabs">
-                    <button class="code-tab-button active" onclick="openCode(event, 'create-order-js')">JavaScript (Fetch)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'create-order-py')">Python (Requests)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'create-order-php')">PHP (cURL)</button>
-                </div>
-
-                <div id="create-order-js" class="code-content active code-block-container">
-                    <textarea readonly rows="25">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const productCode = 'ML3'; // Ganti dengan kode produk yang diinginkan
-const targetIdentifier = '123456789|1234'; // Ganti dengan target (ID Game|Zone ID, nomor HP, dll.)
-
-const url = `${baseUrl}/h2h/order/create?code=${productCode}&target=${targetIdentifier}&apikey=${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    if (data.status) { // Using 'status' key from your example response
-      console.log('Order Created Successfully:', data.data);
-      console.log(`Transaction ID: ${data.data.id}, Status: ${data.data.status}`);
-    } else {
-       console.error('Order Creation Failed:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="create-order-py" class="code-content code-block-container">
-                    <textarea readonly rows="25">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-product_code = 'ML3'  # Ganti dengan kode produk yang diinginkan
-target_identifier = '123456789|1234'  # Ganti dengan target (ID Game|Zone ID, nomor HP, dll.)
-
-params = {
-    'code': product_code,
-    'target': target_identifier,
-    'apikey': api_key
-}
-
-try:
-    response = requests.get(f"{base_url}/h2h/order/create", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('status'): # Using 'status' key from your example response
-        print("Order Created Successfully:")
-        order_data = data.get('data', {})
-        print(f"  Transaction ID: {order_data.get('id')}, Status: {order_data.get('status')}")
-    else:
-        print("Order Creation Failed:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="create-order-php" class="code-content code-block-container">
-                    <textarea readonly rows="30"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$productCode = 'ML3'; // Ganti dengan kode produk yang diinginkan
-$targetIdentifier = '123456789|1234'; // Ganti dengan target (ID Game|Zone ID, nomor HP, dll.)
-
-$url = $baseUrl . '/h2h/order/create?code=' . $productCode . '&target=' . urlencode($targetIdentifier) . '&apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 202 && isset($data['status']) && $data['status']) { // Check for 202 status and 'status' key
-        echo "Order Created Successfully:\n";
-        $orderData = $data['data'] ?? [];
-        echo "  Transaction ID: " . ($orderData['id'] ?? 'N/A') . ", Status: " . ($orderData['status'] ?? 'N/A') . "\n";
-    } else {
-        echo "Order Creation Failed: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
-}
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
+      <!-- Create Deposit Endpoint -->
+      <div id="create-deposit" class="endpoint-card">
+        <div class="endpoint-card-header">
+          <span class="endpoint-badge badge-post">POST</span>
+          <h2 class="endpoint-title">/h2h/deposit/create</h2>
         </div>
-
-        <div class="api-endpoint">
-            <h3>Check Order Status</h3>
-            <span class="api-method method-get">GET</span>
-            <span class="api-path">/h2h/order/check</span>
-            <p class="api-description">Check the current status of a previously created order using its transaction ID.</p>
-
-            <h4>Query Parameters</h4>
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>trxid</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The transaction ID (<code>id</code> field from the create order response) to check.</td>
-                    </tr>
-                    <tr>
-                        <td>apikey</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>Your API Key.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Response (200 OK)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="10">{
-    "success": true,
-    "message": "Status ditemukan", // Or other status message
-    "data": {
-      "trxid": "xxxxxxxxxxxxxxxxx", // The transaction ID that was checked
-      "status": "success" // Current status (pending, success, failed, processing)
-      // Other data like SN might be included for success status
-    }
-  }</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-             <h4>Response (400 Bad Request / 401 Unauthorized / 404 Not Found)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="7">{
-  "success": false,
-  "message": "Error description (e.g., Invalid API Key, Transaction ID not found, Invalid parameter)",
-  "code": 400 // Or 401, 404, etc.
-}</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-
-            <div class="api-code-examples">
-                <h4>Code Examples</h4>
-                <div class="code-tabs">
-                    <button class="code-tab-button active" onclick="openCode(event, 'check-order-js')">JavaScript (Fetch)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'check-order-py')">Python (Requests)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'check-order-php')">PHP (cURL)</button>
-                </div>
-
-                <div id="check-order-js" class="code-content active code-block-container">
-                    <textarea readonly rows="20">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const transactionId = 'xxxxxxxxxxxxxxxxx'; // Ganti dengan ID transaksi yang ingin dicek
-
-const url = `${baseUrl}/h2h/order/check?trxid=${transactionId}&apikey=${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      console.log('Order Status:', data.data);
-      console.log(`Transaction ID: ${data.data.trxid}, Status: ${data.data.status}`);
-    } else {
-      console.error('Status Check Failed:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="check-order-py" class="code-content code-block-container">
-                    <textarea readonly rows="20">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-transaction_id = 'xxxxxxxxxxxxxxxxx'  # Ganti dengan ID transaksi yang ingin dicek
-
-params = {
-    'trxid': transaction_id,
-    'apikey': api_key
-}
-
-try:
-    response = requests.get(f"{base_url}/h2h/order/check", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Order Status:")
-        status_data = data.get('data', {})
-        print(f"  Transaction ID: {status_data.get('trxid')}, Status: {status_data.get('status')}")
-    else:
-        print("Status Check Failed:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="check-order-php" class="code-content code-block-container">
-                    <textarea readonly rows="25"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$transactionId = 'xxxxxxxxxxxxxxxxx'; // Ganti dengan ID transaksi yang ingin dicek
-
-$url = $baseUrl . '/h2h/order/check?trxid=' . $transactionId . '&apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Order Status:\n";
-        $statusData = $data['data'] ?? [];
-        echo "  Transaction ID: " . ($statusData['trxid'] ?? 'N/A') . ", Status: " . ($statusData['status'] ?? 'N/A') . "\n";
-    } else {
-        echo "Status Check Failed: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
-}
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
+        
+        <p class="endpoint-description">Endpoint untuk membuat permintaan deposit saldo.</p>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-link"></i>
+            <span>Endpoint</span>
+          </h3>
+          <div class="code-block">
+            <pre>POST https://www.v-pedia.web.id/h2h/deposit/create?nominal=500&apikey=YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
-    </div>
-
-    <div class="api-section">
-        <h2>Deposits</h2>
-
-        <div class="api-endpoint">
-            <h3>Create Deposit Request</h3>
-            <span class="api-method method-get">GET</span> <span class="note"><b>Note:</b> POST is generally preferred for creating resources, but your API uses GET.</span>
-            <span class="api-path">/h2h/deposit/create</span>
-            <p class="api-description">Request a new deposit transaction to top up your balance.</p>
-
-            <h4>Query Parameters</h4>
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>nominal</td>
-                        <td>number</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The desired deposit amount (e.g., <code>50000</code> for Rp 50.000).</td>
-                    </tr>
-                    <tr>
-                        <td>apikey</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>Your API Key.</td>
-                    </tr>
-                     <!-- Jika ada parameter metode pembayaran, tambahkan di sini -->
-                    <!--
-                    <tr>
-                        <td>method</td>
-                        <td>string</td>
-                        <td>No</td>
-                        <td>Preferred payment method (e.g., "QRIS", "BANK_TRANSFER").</td>
-                    </tr>
-                    -->
-                </tbody>
-            </table>
-
-            <h4>Response (200 OK)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="18">{
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-key"></i>
+            <span>Authentication</span>
+          </h3>
+          <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+          <div class="code-block">
+            <pre>Authorization: Bearer YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+          <table class="parameters-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="param-name">nominal</code></td>
+                <td><span class="param-type">Integer</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>Nominal deposit (minimal 10.000)</td>
+              </tr>
+              <tr>
+                <td><code class="param-name">apikey</code></td>
+                <td><span class="param-type">String</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>API Key milik Anda</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-check-circle"></i>
+            <span>Success Response</span>
+          </h3>
+          <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+          <div class="code-block">
+            <textarea readonly>{
   "success": true,
   "message": "Permintaan deposit dibuat",
   "data": {
-    "id": "xxxxxxx", // Unique deposit transaction ID from your system
-    "reff_id": "TRX-xxxxx", // Optional: Reference ID
-    "nominal": 500, // Requested nominal
-    "tambahan": 0, // Additional amount (unique code, etc.)
-    "fee": 7, // Transaction fee
-    "get_balance": 493, // Amount that will be added to balance after fee (nominal - fee)
-    "qr_string": "00020101021226610016ID.CO.SHOPEE.xxxx", // QRIS string for payment
-    "qr_image": "https://files.cloudmini.net/download/v-pedia-xxxxx.png", // URL to QR code image
-    "status": "pending", // Current status (pending, success, expired, cancel)
-    "created_at": "2025-05-07 21:10:45", // Timestamp of creation
-    "expired_at": "2025-05-07 22:10:44" // Timestamp of expiration
+    "id": "xxxxxxx",
+    "reff_id": "TRX-xxxxx",
+    "nominal": 500,
+    "tambahan": 0,
+    "fee": 7,
+    "get_balance": 493,
+    "qr_string": "00020101021226610016ID.CO.SHOPEE.xxxx",
+    "qr_image": "https://files.cloudmini.net/download/v-pedia-xxxxx.png",
+    "status": "pending",
+    "created_at": "2025-05-07 21:10:45",
+    "expired_at": "2025-05-07 22:10:44"
   }
 }</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Error Responses</span>
+          </h3>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-server"></i>
+              <span>Internal Server Error</span>
             </div>
-             <h4>Response (400 Bad Request / 401 Unauthorized / 500 Internal Server Error)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="7">{
+            <p class="error-description">Terjadi kesalahan pada server</p>
+            <div class="code-block">
+              <pre>{
   "success": false,
-  "message": "Error description (e.g., Invalid API Key, Minimum deposit amount not met)",
-  "code": 400 // Or 401, 500, etc.
-}</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+  "message": "Internal server error"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
             </div>
-
-            <div class="api-code-examples">
-                <h4>Code Examples</h4>
-                <div class="code-tabs">
-                    <button class="code-tab-button active" onclick="openCode(event, 'create-deposit-js')">JavaScript (Fetch)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'create-deposit-py')">Python (Requests)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'create-deposit-php')">PHP (cURL)</button>
-                </div>
-
-                <div id="create-deposit-js" class="code-content active code-block-container">
-                    <textarea readonly rows="25">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const depositNominal = 50000; // Nominal deposit yang diinginkan (misal: Rp 50.000)
-
-const url = `${baseUrl}/h2h/deposit/create?nominal=${depositNominal}&apikey=${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      console.log('Deposit Request Created:', data.data);
-      console.log(`Deposit ID: ${data.data.id}, Amount: ${data.data.nominal}, Status: ${data.data.status}`);
-      if (data.data.qr_image) {
-          console.log(`QR Image URL: ${data.data.qr_image}`);
-      }
-    } else {
-      console.error('Deposit Request Failed:' , data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="create-deposit-py" class="code-content code-block-container">
-                    <textarea readonly rows="25">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-deposit_nominal = 50000  # Nominal deposit yang diinginkan (misal: Rp 50.000)
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-key"></i>
+              <span>Missing API Key</span>
+            </div>
+            <p class="error-description">Parameter apikey tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Missing Nominal</span>
+            </div>
+            <p class="error-description">Parameter nominal tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"nominal\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Minimum Deposit</span>
+            </div>
+            <p class="error-description">Nominal deposit kurang dari minimum</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Nominal deposit minimal 10.000"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-user-shield"></i>
+              <span>Account Not Verified</span>
+            </div>
+            <p class="error-description">Akun H2H belum diverifikasi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-code"></i>
+            <span>Code Examples</span>
+          </h3>
+          <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+          
+          <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+          <div class="code-block">
+            <pre>fetch("https://www.v-pedia.web.id/h2h/deposit/create?nominal=50000", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+          <div class="code-block">
+            <pre>import requests
 
 params = {
-    'nominal': deposit_nominal,
-    'apikey': api_key
+    "nominal": 50000
 }
 
-try:
-    response = requests.get(f"{base_url}/h2h/deposit/create", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Deposit Request Created:")
-        deposit_data = data.get('data', {})
-        print(f"  Deposit ID: {deposit_data.get('id')}, Amount: {deposit_data.get('nominal')}, Status: {deposit_data.get('status')}")
-        if deposit_data.get('qr_image'):
-             print(f"  QR Image URL: {deposit_data.get('qr_image')}")
-    else:
-        print("Deposit Request Failed:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="create-deposit-php" class="code-content code-block-container">
-                    <textarea readonly rows="30"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$depositNominal = 50000; // Nominal deposit yang diinginkan (misal: Rp 50.000)
-
-$url = $baseUrl . '/h2h/deposit/create?nominal=' . $depositNominal . '&apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Deposit Request Created:\n";
-        $depositData = $data['data'] ?? [];
-        echo "  Deposit ID: " . ($depositData['id'] ?? 'N/A') . ", Amount: " . ($depositData['nominal'] ?? 'N/A') . ", Status: " . ($depositData['status'] ?? 'N/A') . "\n";
-         if (isset($depositData['qr_image'])) {
-             echo "  QR Image URL: " . $depositData['qr_image'] . "\n";
-         }
-    } else {
-        echo "Deposit Request Failed: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
 }
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
+
+response = requests.post(
+    "https://www.v-pedia.web.id/h2h/deposit/create",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">cURL</h4>
+          <div class="code-block">
+            <pre>curl -X POST "https://www.v-pedia.web.id/h2h/deposit/create?nominal=50000" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
+      </div>
 
-         <div class="api-endpoint">
-            <h3>Check Deposit Status</h3>
-            <span class="api-method method-get">GET</span>
-            <span class="api-path">/h2h/deposit/status</span>
-            <p class="api-description">Check the current status of a deposit request using its transaction ID.</p>
-
-            <h4>Query Parameters</h4>
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>trxid</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The deposit transaction ID (<code>id</code> field from the create deposit response) to check.</td>
-                    </tr>
-                    <tr>
-                        <td>apikey</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>Your API Key.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Response (200 OK)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="10">{
-    "success": true,
-    "message": "Status deposit ditemukan",
-    "data": {
-      "trxid": "TRX-xxxxxxx", // The transaction ID that was checked
-      "status": "success", // Current status (pending, success, expired, cancel)
-      "saldo_masuk": "493" // The amount credited to the balance (string format in example)
-    }
-  }</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-            </div>
-             <h4>Response (400 Bad Request / 401 Unauthorized / 404 Not Found)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="7">{
-  "success": false,
-  "message": "Error description (e.g., Invalid API Key, Deposit transaction not found)",
-  "code": 400 // Or 401, 404, etc.
+      <!-- Check Deposit Endpoint -->
+      <div id="check-deposit" class="endpoint-card">
+        <div class="endpoint-card-header">
+          <span class="endpoint-badge badge-get">GET</span>
+          <h2 class="endpoint-title">/h2h/deposit/status</h2>
+        </div>
+        
+        <p class="endpoint-description">Endpoint untuk memeriksa status deposit.</p>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-link"></i>
+            <span>Endpoint</span>
+          </h3>
+          <div class="code-block">
+            <pre>GET https://www.v-pedia.web.id/h2h/deposit/status?trxid=xxxxxxx&apikey=YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-key"></i>
+            <span>Authentication</span>
+          </h3>
+          <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+          <div class="code-block">
+            <pre>Authorization: Bearer YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+          <table class="parameters-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="param-name">trxid</code></td>
+                <td><span class="param-type">String</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>ID transaksi deposit</td>
+              </tr>
+              <tr>
+                <td><code class="param-name">apikey</code></td>
+                <td><span class="param-type">String</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>API Key milik Anda</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-check-circle"></i>
+            <span>Success Response</span>
+          </h3>
+          <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+          <div class="code-block">
+            <textarea readonly>{
+  "success": true,
+  "message": "Status deposit ditemukan",
+  "data": {
+    "trxid": "TRX-xxxxxxx",
+    "status": "success",
+    "saldo_masuk": "493"
+  }
 }</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Error Responses</span>
+          </h3>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-server"></i>
+              <span>Internal Server Error</span>
             </div>
-
-            <div class="api-code-examples">
-                <h4>Code Examples</h4>
-                <div class="code-tabs">
-                    <button class="code-tab-button active" onclick="openCode(event, 'check-deposit-js')">JavaScript (Fetch)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'check-deposit-py')">Python (Requests)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'check-deposit-php')">PHP (cURL)</button>
-                </div>
-
-                <div id="check-deposit-js" class="code-content active code-block-container">
-                    <textarea readonly rows="20">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const depositTrxid = 'xxxxxxx'; // Ganti dengan ID deposit yang ingin dicek
-
-const url = `${baseUrl}/h2h/deposit/status?trxid=${depositTrxid}&apikey=${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      console.log('Deposit Status:', data.data);
-      console.log(`Deposit ID: ${data.data.trxid}, Status: ${data.data.status}, Amount Credited: ${data.data.saldo_masuk}`);
-    } else {
-      console.error('Deposit Status Check Failed:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="check-deposit-py" class="code-content code-block-container">
-                    <textarea readonly rows="20">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-deposit_trxid = 'xxxxxxx'  # Ganti dengan ID deposit yang ingin dicek
+            <p class="error-description">Terjadi kesalahan pada server</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Internal server error"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-key"></i>
+              <span>Missing API Key</span>
+            </div>
+            <p class="error-description">Parameter apikey tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-receipt"></i>
+              <span>Missing Transaction ID</span>
+            </div>
+            <p class="error-description">Parameter trxid tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"trxid\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-search"></i>
+              <span>Transaction Not Found</span>
+            </div>
+            <p class="error-description">Transaksi deposit tidak ditemukan</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Transaksi deposit tidak ditemukan"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-user-shield"></i>
+              <span>Account Not Verified</span>
+            </div>
+            <p class="error-description">Akun H2H belum diverifikasi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-code"></i>
+            <span>Code Examples</span>
+          </h3>
+          <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+          
+          <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+          <div class="code-block">
+            <pre>fetch("https://www.v-pedia.web.id/h2h/deposit/status?trxid=xxxxxxx", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+          <div class="code-block">
+            <pre>import requests
 
 params = {
-    'trxid': deposit_trxid,
-    'apikey': api_key
+    "trxid": "xxxxxxx"
 }
 
-try:
-    response = requests.get(f"{base_url}/h2h/deposit/status", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Deposit Status:")
-        status_data = data.get('data', {})
-        print(f"  Deposit ID: {status_data.get('trxid')}, Status: {status_data.get('status')}, Amount Credited: {status_data.get('saldo_masuk')}")
-    else:
-        print("Deposit Status Check Failed:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="check-deposit-php" class="code-content code-block-container">
-                    <textarea readonly rows="25"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$depositTrxid = 'xxxxxxx'; // Ganti dengan ID deposit yang ingin dicek
-
-$url = $baseUrl . '/h2h/deposit/status?trxid=' . $depositTrxid . '&apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Deposit Status:\n";
-        $statusData = $data['data'] ?? [];
-        echo "  Deposit ID: " . ($statusData['trxid'] ?? 'N/A') . ", Status: " . ($statusData['status'] ?? 'N/A') . ", Amount Credited: " . ($statusData['saldo_masuk'] ?? 'N/A') . "\n";
-    } else {
-        echo "Deposit Status Check Failed: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
 }
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
+
+response = requests.get(
+    "https://www.v-pedia.web.id/h2h/deposit/status",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">cURL</h4>
+          <div class="code-block">
+            <pre>curl -X GET "https://www.v-pedia.web.id/h2h/deposit/status?trxid=xxxxxxx" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div class="api-endpoint">
-            <h3>Cancel Deposit Request</h3>
-            <span class="api-method method-get">GET</span> <span class="note"><b>Note:</b> DELETE or POST is generally preferred for modifying resources, but your API uses GET.</span>
-            <span class="api-path">/h2h/deposit/cancel</span>
-            <p class="api-description">Cancel a pending deposit request using its transaction ID.</p>
-            <p class="note"><b>Note:</b> Cancellation is usually only possible for deposits that are still in 'pending' status and have not been paid.</p>
-
-            <h4>Query Parameters</h4>
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>trxid</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>The deposit transaction ID (<code>id</code> field from the create deposit response) to cancel.</td>
-                    </tr>
-                    <tr>
-                        <td>apikey</td>
-                        <td>string</td>
-                        <td><span class="required">Yes</span></td>
-                        <td>Your API Key.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Response (200 OK)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="10">{
+      <!-- Cancel Deposit Endpoint -->
+      <div id="cancel-deposit" class="endpoint-card">
+        <div class="endpoint-card-header">
+          <span class="endpoint-badge badge-post">POST</span>
+          <h2 class="endpoint-title">/h2h/deposit/cancel</h2>
+        </div>
+        
+        <p class="endpoint-description">Endpoint untuk membatalkan permintaan deposit.</p>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-link"></i>
+            <span>Endpoint</span>
+          </h3>
+          <div class="code-block">
+            <pre>POST https://www.v-pedia.web.id/h2h/deposit/cancel?trxid=xxxxxxx&apikey=YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-key"></i>
+            <span>Authentication</span>
+          </h3>
+          <p>Endpoint ini membutuhkan API Key yang valid dalam header request.</p>
+          <div class="code-block">
+            <pre>Authorization: Bearer YOUR-APIKEY</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Parameters</h4>
+          <table class="parameters-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="param-name">trxid</code></td>
+                <td><span class="param-type">String</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>ID transaksi deposit yang ingin dibatalkan</td>
+              </tr>
+              <tr>
+                <td><code class="param-name">apikey</code></td>
+                <td><span class="param-type">String</span></td>
+                <td><span class="param-required">Yes</span></td>
+                <td>API Key milik Anda</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-check-circle"></i>
+            <span>Success Response</span>
+          </h3>
+          <p>Berikut adalah contoh response yang akan diterima ketika request berhasil:</p>
+          <div class="code-block">
+            <textarea readonly>{
   "success": true,
   "message": "Deposit berhasil dibatalkan",
   "data": {
-    "trxid": "xxxxxxx", // The transaction ID that was cancelled
-    "status": "cancel", // The updated status
-    "created_at": "2025-05-07 21:10:45" // Creation timestamp
-     // Other relevant data might be included
+    "trxid": "xxxxxxx",
+    "status": "cancel",
+    "created_at": "2025-05-07 21:10:45"
   }
 }</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Error Responses</span>
+          </h3>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-server"></i>
+              <span>Internal Server Error</span>
             </div>
-             <h4>Response (400 Bad Request / 401 Unauthorized / 404 Not Found / 409 Conflict)</h4>
-            <div class="api-response code-block-container">
-                <textarea readonly rows="7">{
+            <p class="error-description">Terjadi kesalahan pada server</p>
+            <div class="code-block">
+              <pre>{
   "success": false,
-  "message": "Error description (e.g., Invalid API Key, Deposit transaction not found, Deposit cannot be cancelled because it's not pending)",
-  "code": 400 // Or 401, 404, 409, etc.
-}</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
+  "message": "Internal server error"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
             </div>
-
-            <div class="api-code-examples">
-                <h4>Code Examples</h4>
-                <div class="code-tabs">
-                    <button class="code-tab-button active" onclick="openCode(event, 'cancel-deposit-js')">JavaScript (Fetch)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'cancel-deposit-py')">Python (Requests)</button>
-                    <button class="code-tab-button" onclick="openCode(event, 'cancel-deposit-php')">PHP (cURL)</button>
-                </div>
-
-                <div id="cancel-deposit-js" class="code-content active code-block-container">
-                    <textarea readonly rows="20">const apiKey = 'YOUR_API_KEY';
-const baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-const depositTrxidToCancel = 'xxxxxxx'; // Ganti dengan ID deposit yang ingin dibatalkan
-
-const url = `${baseUrl}/h2h/deposit/cancel?trxid=${depositTrxidToCancel}&apikey=${apiKey}`;
-
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      console.log('Deposit Cancelled:', data.message, data.data);
-      console.log(`Deposit ID: ${data.data.trxid}, Final Status: ${data.data.status}`);
-    } else {
-      console.error('Deposit Cancellation Failed:', data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Fetch Error:', error);
-  });</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="cancel-deposit-py" class="code-content code-block-container">
-                    <textarea readonly rows="20">import requests
-
-api_key = 'YOUR_API_KEY'
-base_url = 'https://your-api-domain.com'  # Ganti dengan domain API Anda
-deposit_trxid_to_cancel = 'xxxxxxx'  # Ganti dengan ID deposit yang ingin dibatalkan
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-key"></i>
+              <span>Missing API Key</span>
+            </div>
+            <p class="error-description">Parameter apikey tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"apikey\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-receipt"></i>
+              <span>Missing Transaction ID</span>
+            </div>
+            <p class="error-description">Parameter trxid tidak diisi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Parameter \"trxid\" harus di isi"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-search"></i>
+              <span>Transaction Not Found</span>
+            </div>
+            <p class="error-description">Transaksi deposit tidak ditemukan</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Transaksi deposit tidak ditemukan"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-ban"></i>
+              <span>Cannot Cancel</span>
+            </div>
+            <p class="error-description">Transaksi deposit tidak dapat dibatalkan (sudah sukses/gagal/expired)</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Transaksi deposit tidak dapat dibatalkan"
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="error-card">
+            <div class="error-title">
+              <i class="fas fa-user-shield"></i>
+              <span>Account Not Verified</span>
+            </div>
+            <p class="error-description">Akun H2H belum diverifikasi</p>
+            <div class="code-block">
+              <pre>{
+  "success": false,
+  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
+}</pre>
+              <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">
+            <i class="fas fa-code"></i>
+            <span>Code Examples</span>
+          </h3>
+          <p>Berikut adalah contoh implementasi endpoint ini dalam berbagai bahasa pemrograman:</p>
+          
+          <h4 class="font-medium mt-4 mb-2">JavaScript (Fetch API)</h4>
+          <div class="code-block">
+            <pre>fetch("https://www.v-pedia.web.id/h2h/deposit/cancel?trxid=xxxxxxx", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer V-Pedia-xxxxx"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">Python (Requests)</h4>
+          <div class="code-block">
+            <pre>import requests
 
 params = {
-    'trxid': deposit_trxid_to_cancel,
-    'apikey': api_key
+    "trxid": "xxxxxxx"
 }
 
-try:
-    response = requests.get(f"{base_url}/h2h/deposit/cancel", params=params)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    data = response.json()
-
-    if data.get('success'):
-        print("Deposit Cancelled:", data.get('message'))
-        cancel_data = data.get('data', {})
-        print(f"  Deposit ID: {cancel_data.get('trxid')}, Final Status: {cancel_data.get('status')}")
-    else:
-        print("Deposit Cancellation Failed:", data.get('message', 'Unknown error'))
-
-except requests.exceptions.RequestException as e:
-    print(f"Request Error: {e}")
-</textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-
-                <div id="cancel-deposit-php" class="code-content code-block-container">
-                    <textarea readonly rows="25"><?php
-$apiKey = 'YOUR_API_KEY';
-$baseUrl = 'https://your-api-domain.com'; // Ganti dengan domain API Anda
-$depositTrxidToCancel = 'xxxxxxx'; // Ganti dengan ID deposit yang ingin dibatalkan
-
-$url = $baseUrl . '/h2h/deposit/cancel?trxid=' . $depositTrxidToCancel . '&apikey=' . $apiKey;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
-
-if ($curlError) {
-    echo "cURL Error:" . $curlError;
-} else {
-    $data = json_decode($response, true);
-
-    if ($httpcode == 200 && isset($data['success']) && $data['success']) {
-        echo "Deposit Cancelled:\n";
-        $cancelData = $data['data'] ?? [];
-        echo "  Deposit ID: " . ($cancelData['trxid'] ?? 'N/A') . ", Final Status: " . ($cancelData['status'] ?? 'N/A') . "\n";
-    } else {
-        echo "Deposit Cancellation Failed: " . (isset($data['message']) ? $data['message'] : "HTTP Status Code: " . $httpcode) . "\n";
-    }
+headers = {
+    "Authorization": "Bearer V-Pedia-xxxxx"
 }
-?></textarea>
-                 <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
+
+response = requests.post(
+    "https://www.v-pedia.web.id/h2h/deposit/cancel",
+    params=params,
+    headers=headers
+)
+
+print(response.json())</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          
+          <h4 class="font-medium mt-4 mb-2">cURL</h4>
+          <div class="code-block">
+            <pre>curl -X POST "https://www.v-pedia.web.id/h2h/deposit/cancel?trxid=xxxxxxx" \
+  -H "Authorization: Bearer V-Pedia-xxxxx"</pre>
+            <button class="copy-btn" onclick="copyText(this.previousElementSibling)">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
+      </div>
     </div>
+  </main>
 
-
+  <!-- Toast notification -->
+  <div id="toast" class="toast" aria-live="polite">
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span class="toast-message">Copied to clipboard!</span>
   </div>
 
   <script>
-    document.getElementById('backToProfile').addEventListener('click', () => {
-      // Ganti dengan URL halaman profil Anda
-      window.location.href = '/profile'; // Sesuaikan ini
-    });
-
-    // Theme Toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    const themeIcon = themeToggle.querySelector('i');
-    const themeText = themeToggle.querySelector('span');
-
-    // Check local storage for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme + '-theme');
-        if (savedTheme === 'dark') {
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-            themeText.textContent = 'Light Mode';
-        } else {
-             themeIcon.classList.replace('fa-sun', 'fa-moon');
-             themeText.textContent = 'Dark Mode';
-        }
-    }
-
-    themeToggle.addEventListener('click', () => {
-        if (body.classList.contains('dark-theme')) {
-            body.classList.remove('dark-theme');
-            localStorage.setItem('theme', 'light');
-            themeIcon.classList.replace('fa-sun', 'fa-moon');
-            themeText.textContent = 'Dark Mode';
-        } else {
-            body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-            themeText.textContent = 'Light Mode';
-        }
-         // Adjust textarea height after theme change if needed (optional, but good practice)
-         adjustTextareaHeights();
-    });
-
-
-    // Tab functionality for code examples
-    function openCode(evt, codeName) {
-      var i, tabcontent, tablinks;
-      // Find the parent .api-code-examples section
-      const parentSection = evt.currentTarget.closest('.api-code-examples');
-
-      tabcontent = parentSection.getElementsByClassName("code-content");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+    // Theme management
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === "dark" || savedTheme === "light") {
+        setTheme(savedTheme);
+      } else {
+        setTheme(prefersDark ? "dark" : "light");
       }
-      tablinks = parentSection.getElementsByClassName("code-tab-button");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      
+      // Update theme toggle text
+      updateThemeText();
+    })();
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      updateThemeText();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "light" ? "dark" : "light";
+      setTheme(next);
+    }
+
+    function updateThemeText() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const themeText = document.querySelector(".theme-text");
+      if (themeText) {
+        themeText.textContent = current === "light" ? "Dark Mode" : "Light Mode";
       }
-      const activeContent = document.getElementById(codeName);
-      activeContent.style.display = "block";
-      evt.currentTarget.className += " active";
-
-       // Adjust height of the newly active textarea
-       const textarea = activeContent.querySelector('textarea');
-       if (textarea) {
-           adjustTextareaHeight(textarea);
-       }
     }
 
-    // Function to adjust textarea height based on content
-    function adjustTextareaHeight(textarea) {
-        if (textarea) {
-            textarea.style.height = 'auto'; // Reset height to recalculate
-            textarea.style.height = (textarea.scrollHeight) + 'px'; // Set height to scrollHeight
+    // Sidebar toggle for mobile
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      sidebar.classList.toggle("active");
+    }
+
+    // Scroll to section
+    function scrollToSection(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        
+        // Highlight the section
+        element.classList.add('highlight');
+        setTimeout(() => {
+          element.classList.remove('highlight');
+        }, 2000);
+        
+        // Close sidebar on mobile after clicking
+        if (window.innerWidth <= 1024) {
+          toggleSidebar();
         }
+      }
     }
 
-     // Function to adjust height of all textareas
-     function adjustTextareaHeights() {
-         document.querySelectorAll('.code-block-container textarea').forEach(adjustTextareaHeight);
-     }
-
-
-    // Copy to Clipboard functionality
-    function copyToClipboard(button) {
-        const textarea = button.closest('.code-block-container').querySelector('textarea');
-        if (textarea) {
-            textarea.select();
-            textarea.setSelectionRange(0, 99999); // For mobile devices
-
-            try {
-                document.execCommand('copy');
-                button.classList.add('copied');
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    button.classList.remove('copied');
-                     button.innerHTML = '<i class="fas fa-copy"></i> Copy';
-                }, 2000); // Reset button text after 2 seconds
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                 button.innerHTML = '<i class="fas fa-times"></i> Failed';
-                 setTimeout(() => {
-                    button.innerHTML = '<i class="fas fa-copy"></i> Copy';
-                }, 2000);
-            }
-             window.getSelection().removeAllRanges(); // Deselect the text
+    // Filter endpoints based on search query
+    function filterEndpoints(query) {
+      const endpointCards = document.querySelectorAll('.endpoint-card');
+      const lowercaseQuery = query.toLowerCase();
+      
+      endpointCards.forEach(card => {
+        const title = card.querySelector('.endpoint-title').textContent.toLowerCase();
+        const description = card.querySelector('.endpoint-description').textContent.toLowerCase();
+        
+        if (title.includes(lowercaseQuery) || description.includes(lowercaseQuery)) {
+          card.classList.remove('endpoint-hidden');
+          card.classList.add('endpoint-visible');
+        } else {
+          card.classList.add('endpoint-hidden');
+          card.classList.remove('endpoint-visible');
         }
+      });
     }
 
+    // Copy functionality
+    function copyText(element) {
+      let text;
+      
+      if (element.tagName === 'TEXTAREA') {
+        text = element.value;
+      } else if (element.tagName === 'PRE') {
+        text = element.textContent;
+      } else {
+        text = element.innerText;
+      }
+      
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        showToast();
+      }).catch(err => {
+        console.error("Failed to copy text: ", err);
+        showToast("Failed to copy");
+      });
+    }
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-         // Set the default active tab for each code example section
-         document.querySelectorAll('.api-code-examples').forEach(section => {
-              const firstButton = section.querySelector('.code-tab-button');
-              if (firstButton) {
-                  firstButton.click(); // Simulate click on the first button to activate the first tab
-              }
-         });
+    function showToast(message = "Copied to clipboard!") {
+      const toast = document.getElementById("toast");
+      const toastMessage = toast.querySelector(".toast-message");
+      
+      toastMessage.textContent = message;
+      toast.classList.add("show");
+      
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
 
-         // Adjust height of all textareas after tabs are set
-         adjustTextareaHeights();
-     });
-
-     // Adjust textarea heights on window resize
-     window.addEventListener('resize', adjustTextareaHeights);
-
+    // Make all copy buttons work
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".copy-btn").forEach(button => {
+        button.addEventListener("click", function() {
+          copyText(this.previousElementSibling);
+        });
+      });
+      
+      // Highlight the anchor target when page loads with hash
+      if (window.location.hash) {
+        const target = document.getElementById(window.location.hash.substring(1));
+        if (target) {
+          setTimeout(() => {
+            target.scrollIntoView();
+          }, 100);
+        }
+      }
+    });
   </script>
 </body>
 </html>
