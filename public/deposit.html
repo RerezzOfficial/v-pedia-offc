@@ -158,8 +158,18 @@
         <p class="qr-note">Klik QR code untuk memperbesar</p>
       </div>
       
+      <!-- Payment Completed Section (hidden initially) -->
+      <div class="payment-completed" id="paymentCompleted">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+        <h3>Pembayaran Berhasil!</h3>
+        <p>Saldo akan segera ditambahkan ke akun Anda</p>
+      </div>
+      
       <div class="status-footer">
-        <p>Pemeriksaan otomatis setiap 5 detik</p>
+        <p id="statusFooterText">Pemeriksaan otomatis setiap 5 detik</p>
         <button class="btn btn-danger" id="cancelButton">
           <i class="fas fa-times"></i> Batalkan Deposit
         </button>
