@@ -1373,6 +1373,71 @@ function validateApiKey(req, res, next) {
     });
 }
 
+app.get("/h2h/profile", validateApiKey, async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const userData = {
+      fullname: user.fullname,
+      username: user.username,
+      nomor: user.nomor,
+      email: user.email,
+      profileUrl: user.profileUrl,
+      saldo: user.saldo,
+      coin: user.coin,
+      apiKey: user.apiKey,
+      tanggalDaftar: user.tanggalDaftar,
+      role: user.role,
+      isVerified: user.isVerified,
+      lastLogin: user.lastLogin,
+      referralCode: user.referralCode,
+      history: user.history.slice(-5).reverse(),
+    };
+
+    res.json({
+      success: true,
+      message: "Profile data retrieved successfully",
+      data: userData,
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+app.get("/h2h/mutasi", validateApiKey, async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      history: user.history,
+    });
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 app.get('/h2h/categori', validateApiKey, async (req, res) => {
   try {
     const url = `${BASE_URL}/layanan/price_list`;
