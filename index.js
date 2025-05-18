@@ -208,6 +208,10 @@ app.get('/mutation', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'mutation.html'));
 });
 
+app.get('/topup', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'topup.html'));
+});
+
 app.get('/api-key-page', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'api-key-page.html'));
 });
