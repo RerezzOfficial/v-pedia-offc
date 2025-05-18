@@ -1307,6 +1307,240 @@ app.post('/api/price-list', requireLogin, async (req, res) => {
   }
 });
 
+app.post("/order/create", requireLogin, async (req, res) => {
+  try {
+    const { code, target } = req.body; // Ubah dari query ke body
+    const user = await User.findById(req.session.userId); // Dapatkan user dari session
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: "Code produk harus diisi",
+      });
+    }
+
+    if (!target) {
+      return res.status(400).json({
+        success: false,
+        message: "Target harus diisi",
+      });
+    }
+
+    const priceListUrl = `${BASE_URL}/layanan/price_list`;
+    const priceParams = new URLSearchParams();
+    priceParams.append("api_key", ATLAN_API_KEY);
+    priceParams.append("type", "prabayar");
+
+    const priceResponse = await axios.post(priceListUrl, priceParams, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+
+    if (!priceResponse.data.status) {
+      return res.status(500).json({
+        success: false,
+        message: "Server maintenance",
+        maintenance: true,
+        ip_message: priceResponse.data.message.replace(/[^0-9.]+/g, ""),
+      });
+    }
+
+    const product = priceResponse.data.data.find((item) => item.code === code);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Produk tidak ditemukan",
+      });
+    }
+
+    const productPrice = parseInt(product.price);
+    const hargaTotal = Math.round(productPrice * 1.02);
+
+    if (user.saldo < hargaTotal) {
+      user.history.push({
+        aktivitas: "Order",
+        nominal: hargaTotal,
+        status: "Gagal - Saldo tidak mencukupi",
+        code: generateReffId(),
+        tanggal: new Date(),
+      });
+      await user.save();
+      return res.status(400).json({
+        success: false,
+        message: "Saldo tidak mencukupi",
+      });
+    }
+
+    const reff_id = generateReffId();
+    const createTransactionUrl = `${BASE_URL}/transaksi/create`;
+    const transactionParams = new URLSearchParams();
+    transactionParams.append("api_key", ATLAN_API_KEY);
+    transactionParams.append("code", code);
+    transactionParams.append("reff_id", reff_id);
+    transactionParams.append("target", target);
+
+    const transactionResponse = await axios.post(
+      createTransactionUrl,
+      transactionParams,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+      }
+    );
+
+    const trx = transactionResponse.data?.data;
+    if (!trx?.id || !trx?.price) {
+      user.history.push({
+        aktivitas: "Order",
+        nominal: hargaTotal,
+        status: "Gagal - Data transaksi tidak lengkap",
+        code: reff_id,
+        tanggal: new Date(),
+      });
+      await user.save();
+      return res.status(500).json({
+        success: false,
+        message: "Gagal membuat transaksi: ID atau harga kosong",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Transaksi berhasil dibuat",
+      data: {
+        ...trx,
+        price: hargaTotal,
+      },
+    });
+
+    const checkStatus = async () => {
+      const statusUrl = `${BASE_URL}/transaksi/status`;
+      const statusParams = new URLSearchParams();
+      statusParams.append("api_key", ATLAN_API_KEY);
+      statusParams.append("id", trx.id);
+      statusParams.append("type", "prabayar");
+
+      const statusResponse = await axios.post(statusUrl, statusParams, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+      });
+
+      const status = statusResponse.data.data?.status;
+
+      if (status === "success") {
+        user.saldo -= hargaTotal;
+        if (user.role === "agen") {
+          user.coin += Math.floor(hargaTotal * 0.01);
+        }
+        user.history.push({
+          aktivitas: `Order - ${code} - ${target}`,
+          nominal: hargaTotal,
+          status: "Sukses",
+          code: trx.id,
+          tanggal: new Date(),
+        });
+        await user.save();
+        console.log(`✅ Transaksi ${trx.id} sukses dan saldo dipotong`);
+        return;
+      }
+
+      if (status === "failed") {
+        user.history.push({
+          aktivitas: `Order - ${code} - ${target}`,
+          nominal: hargaTotal,
+          status: "Gagal",
+          code: trx.id,
+          tanggal: new Date(),
+        });
+        await user.save();
+        console.log(`❌ Transaksi ${trx.id} gagal`);
+        return;
+      }
+
+      setTimeout(checkStatus, 5000);
+    };
+
+    checkStatus();
+  } catch (error) {
+    console.error("❌ Error:", error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server",
+    });
+  }
+});
+
+app.get("/order/check", requireLogin, async (req, res) => {
+  try {
+    const { trxid } = req.query;
+    const user = await User.findById(req.session.userId);
+
+    if (!trxid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Parameter "trxid" harus diisi',
+      });
+    }
+
+    const statusUrl = `${BASE_URL}/transaksi/status`;
+    const statusParams = new URLSearchParams();
+    statusParams.append("api_key", ATLAN_API_KEY);
+    statusParams.append("id", trxid);
+    statusParams.append("type", "prabayar");
+
+    const response = await axios.post(statusUrl, statusParams, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+
+    const status = response.data?.data?.status;
+
+    if (!status) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaksi tidak ditemukan atau gagal mendapatkan status",
+      });
+    }
+
+    let statusMessage;
+    if (status === "success") {
+      statusMessage = "Transaksi berhasil";
+    } else if (status === "pending") {
+      statusMessage = "Transaksi sedang diproses";
+    } else if (status === "failed") {
+      statusMessage = "Transaksi gagal";
+    } else {
+      statusMessage = "Status transaksi tidak diketahui";
+    }
+
+    res.json({
+      success: true,
+      message: statusMessage,
+      data: {
+        trxid: trxid,
+        status: status,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error:", error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server",
+    });
+  }
+});
 
 //=====[ PRODUCT ENDPOINT ]=====//
 
