@@ -758,7 +758,7 @@ app.post('/profile/verify-email', requireLogin, async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-
+/*
 app.post('/check-user', requireLogin, async (req, res) => {
   const { username } = req.body;
   if (!username) {
@@ -853,8 +853,7 @@ app.post('/transfer-saldo', requireLogin, async (req, res) => {
     console.error('Error transferring saldo:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-});
-
+});*/
 app.get('/history/all', requireLogin, async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
