@@ -837,14 +837,14 @@
           </button>
         </form>
         <div class="divider"></div>
-        <h2 class="security-section-title">Verifikasi Email</h2>
+        <h2 class="security-section-title">Verifikasi Akun</h2>
         <p aria-live="polite" class="email-verification-status" id="emailVerificationStatus">Memuat status verifikasi...</p>
         <button class="button button-primary" id="verifyEmailBtn" style="display: none;" type="button">
           <i class="fas fa-envelope"></i>
-          Verifikasi Email
+          Verifikasi Akun
         </button>
         <form autocomplete="off" class="otp-form hidden" id="otpInlineForm" novalidate="">
-          <p class="otp-form-description">Kami telah mengirim kode verifikasi 6 digit ke email Anda. Harap masukkan di bawah.</p>
+          <p class="otp-form-description">Kami telah mengirim kode verifikasi 6 digit ke email/whatsapp Anda. Harap masukkan di bawah.</p>
           <div class="otp-input-group">
             <input type="text" maxlength="1" class="otp-input pulse" data-index="0" autocomplete="one-time-code">
             <input type="text" maxlength="1" class="otp-input" data-index="1">
@@ -1353,11 +1353,11 @@
         }
 
         if (user.isVerified) {
-          emailVerificationStatus.textContent = "Email Anda telah diverifikasi.";
+          emailVerificationStatus.textContent = "Akun Anda telah diverifikasi.";
           verifyEmailBtn.style.display = "none";
           otpInlineForm.classList.add("hidden");
         } else {
-          emailVerificationStatus.textContent = "Email Anda belum diverifikasi.";
+          emailVerificationStatus.textContent = "Akun Anda belum diverifikasi.";
           verifyEmailBtn.style.display = "inline-flex";
         }
 
