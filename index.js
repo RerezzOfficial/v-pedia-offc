@@ -255,7 +255,7 @@ function generateApiKey() {
   const randomPart =
     Math.random().toString(36).substring(2, 10) +
     Math.random().toString(36).substring(2, 10);
-  return `Fupei-pedia-${randomPart}`;
+  return `VPedia-${randomPart}`;
 }
 
 function generateReferralCode(username) {
