@@ -1,1208 +1,2402 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dokumentasi API</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --color-primary-50: #eff6ff;
-      --color-primary-100: #dbeafe;
-      --color-primary-200: #bfdbfe;
-      --color-primary-500: #3b82f6;
-      --color-primary-600: #2563eb;
-      --color-primary-700: #1d4ed8;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Pedia API Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      --color-gray-50: #f9fafb;
-      --color-gray-200: #e5e7eb;
-      --color-gray-500: #6b7280;
-      --color-gray-600: #4b5563;
-      --color-gray-700: #374151;
-      --color-gray-800: #1f2937;
-      --color-gray-900: #111827;
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
 
-      --color-green-300: #86efac;
-      --color-green-700: #047857;
-      --color-green-800: #065f46;
-      --color-success-button: #28a745;
+        [data-theme="dark"] {
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --border-color: #374151;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
 
-      --color-red-400: #f87171;
-      --color-red-700: #b91c1c;
-      --color-red-800: #991b1b;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-      --rounded-md: 0.375rem;
-    }
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--color-gray-50);
-      color: var(--color-gray-900);
-      line-height: 1.6;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      position: relative;
-    }
-    a {
-      text-decoration: none;
-      color: var(--color-primary-500);
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    code {
-      background-color: var(--color-primary-100);
-      padding: 0.2rem 0.4rem;
-      border-radius: var(--rounded-md);
-      font-family: 'Courier New', Courier, monospace;
-    }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: float 20s ease-in-out infinite;
+        }
 
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background-color: white;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-    }
-    @media (min-width: 768px) {
-      .navbar {
-        padding: 1.25rem 3rem;
-      }
-    }
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--color-primary-500);
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-    .navbar-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      color: var(--color-gray-800);
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-    @media (min-width: 768px) {
-      .navbar-links {
-        font-size: 1rem;
-      }
-    }
-    .navbar-links a {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      color: inherit;
-      transition: color 0.2s ease-in-out;
-    }
-    .navbar-links a:hover {
-      color: var(--color-primary-500);
-      text-decoration: none;
-    }
-    .navbar-links a i {
-      width: 1.25rem;
-      text-align: center;
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
 
-    .main-content-wrapper {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-    }
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
 
-    .sidebar {
-      display: none;
-      width: 18rem;
-      background-color: white;
-      box-shadow: var(--shadow-inner);
-      overflow-y: auto;
-      position: sticky;
-      top: 72px;
-      height: calc(100vh - 72px);
-    }
-    @media (min-width: 768px) {
-      .sidebar {
-        display: block;
-      }
-    }
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 1.5rem;
-      font-weight: 600;
-      color: var(--color-primary-600);
-      border-bottom: 1px solid var(--color-gray-200);
-      position: sticky;
-      top: 0;
-      background-color: white;
-      z-index: 10;
-    }
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      color: var(--color-gray-700);
-      font-size: 0.875rem;
-    }
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-left: 4px solid transparent;
-      color: inherit;
-      transition: all 0.2s ease-in-out;
-    }
-    .sidebar-nav a:hover {
-      border-color: var(--color-primary-500);
-      background-color: var(--color-primary-50);
-      text-decoration: none;
-    }
-    .sidebar-nav a.active {
-      border-color: var(--color-primary-500);
-      background-color: var(--color-primary-50);
-      font-weight: 600;
-    }
-    .sidebar-nav a i {
-      width: 1.25rem;
-      text-align: center;
-    }
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(45deg, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
 
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.5rem;
-      max-width: 100%;
-      background-color: white;
-      box-shadow: var(--shadow-inner);
-      border-radius: var(--rounded-md);
-      margin: 1rem 1rem;
-    }
-    @media (min-width: 768px) {
-      .main-content {
-        padding: 2.5rem;
-        margin: 0;
-      }
-    }
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    section {
-      margin-bottom: 3rem;
-    }
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--color-primary-600);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--color-primary-200);
-      padding-bottom: 0.5rem;
-    }
-    .section-description {
-      margin-bottom: 1rem;
-    }
-    .info-message {
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--color-primary-600);
-    }
-    .subsection-title {
-      font-size: 1.125rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
 
-    .sub-subsection-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      color: var(--color-gray-800);
-    }
-    .example-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      color: var(--color-gray-700);
-    }
-    .language-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-top: 0.75rem;
-      margin-bottom: 0.25rem;
-      color: var(--color-gray-600);
-      text-transform: uppercase;
-    }
-
-    .code-block-container {
-      position: relative;
-      background-color: var(--color-primary-50);
-      border-radius: var(--rounded-md);
-      padding: 1rem;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.875rem;
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-    }
-    .code-block-container.response-success {
-      background-color: var(--color-gray-900);
-      color: var(--color-green-300);
-    }
-    .code-block-container.response-error {
-      background-color: var(--color-gray-900);
-      color: var(--color-red-400);
-    }
-
-    .copy-button {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background-color: var(--color-primary-600);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--rounded-md);
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      border: none;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .copy-button:hover {
-      background-color: var(--color-primary-700);
-    }
-    .code-block-container.response-success .copy-button {
-      background-color: var(--color-green-700);
-    }
-    .code-block-container.response-success .copy-button:hover {
-      background-color: var(--color-green-800);
-    }
-    .code-block-container.response-error .copy-button {
-      background-color: var(--color-red-700);
-    }
-    .code-block-container.response-error .copy-button:hover {
-      background-color: var(--color-red-800);
-    }
-    .copy-button.copied {
-        pointer-events: none;
-        background-color: var(--color-success-button) !important;
-    }
-
-    .error-examples > div {
-      margin-bottom: 2rem;
-    }
-    .error-examples > div:last-child {
-      margin-bottom: 0;
-    }
-
-    .footer {
-      background-color: white;
-      box-shadow: var(--shadow-inner);
-      text-align: center;
-      padding: 1.5rem 0;
-      margin-top: 3rem;
-      color: var(--color-gray-500);
-      font-size: 0.875rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-    }
-  </style>
-</head>
-<body class="relative">
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <i class="fas fa-book"></i>
-      <span>Dokumentasi API</span>
-    </div>
-    <div class="navbar-links">
-      <a href="#pengantar"><i class="fas fa-home"></i><span>Pengantar</span></a>
-    </div>
-  </nav>
-
-  <div class="main-content-wrapper">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <i class="fas fa-list-ul"></i>
-        <span>Daftar Isi</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="#pengantar" class="active"><i class="fas fa-home"></i> Pengantar</a>
-        <a href="#profile"><i class="fas fa-user"></i> Profile</a>
-        <a href="#categori"><i class="fas fa-tags"></i> Kategori</a>
-        <a href="#provider"><i class="fas fa-building"></i> Provider</a>
-        <a href="#products"><i class="fas fa-shopping-basket"></i> Products</a>
-        <a href="#order"><i class="fas fa-cart-plus"></i> Order</a>
-        <a href="#order-status"><i class="fas fa-info-circle"></i> Status Order</a>
-        <a href="#deposit-methode"><i class="fas fa-money-check-alt"></i> Metode Deposit</a>
-        <a href="#deposit"><i class="fas fa-wallet"></i> Buat Deposit</a>
-        <a href="#deposit-status"><i class="fas fa-info-circle"></i> Status Deposit</a>
-        <a href="#deposit-cancel"><i class="fas fa-ban"></i> Batalkan Deposit</a>
-        <a href="#buy-panel"><i class="fas fa-server"></i> Beli Panel</a>
-        <a href="#mutasi"><i class="fas fa-exchange-alt"></i> Mutasi</a>
-        <a href="#error"><i class="fas fa-exclamation-triangle"></i> Error</a>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Pengantar -->
-      <section id="pengantar">
-        <h2 class="section-title">
-          <i class="fas fa-home"></i> Pengantar
-        </h2>
-        <p class="section-description">
-          Selamat datang di dokumentasi API resmi layanan kami. API ini
-          menyediakan antarmuka terprogram untuk mengakses berbagai fitur dan
-          layanan yang kami sediakan.
-        </p>
-        <p class="info-message">
-          <i class="fas fa-info-circle"></i>
-          Dokumentasi ini menjelaskan cara menggunakan API kami dengan contoh
-          permintaan dan respons dalam format JSON. Anda tidak bisa langsung
-          mengakses endpoint API yang memerlukan API Key melalui browser karena
-          membutuhkan otorisasi khusus.
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-link"></i> Base URL
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>https://www.v-pedia.web.id</pre>
-        </div>
-
-        <h3 class="subsection-title">
-            <i class="fas fa-key"></i> Autentikasi
-        </h3>
-        <p class="section-description">
-            Semua permintaan API yang disebutkan dalam dokumentasi ini memerlukan autentikasi menggunakan API Key Anda. API Key harus disertakan melalui header <code>X-APIKEY</code>.
-        </p>
-        <div class="code-block-container">
-            <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-            </button>
-            <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-
-        <h5 class="example-title">Contoh Penggunaan dengan Header <code>X-APIKEY</code> (untuk endpoint GET /api/profile)</h5>
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
         
-        <h6 class="language-title">cURL</h6>
-        <div class="code-block-container">
-            <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-            </button>
-            <pre>curl -X GET \
-  'https://www.v-pedia.web.id/api/profile' \
-  -H 'X-APIKEY: YOUR_APIKEY'</pre>
-        </div>
+        .theme-toggle #theme-icon i {
+            font-size: 1.1em;
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:hover #theme-icon i {
+            transform: rotate(15deg);
+        }
 
-        <h6 class="language-title">JavaScript (Fetch API)</h6>
-        <div class="code-block-container">
-            <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-            </button>
-            <pre>fetch('https://www.v-pedia.web.id/api/profile', {
+
+        .main-content {
+            padding: 80px 0;
+        }
+
+        .nav-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 48px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .nav-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .nav-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .section {
+            margin-bottom: 64px;
+            scroll-margin-top: 100px; /* Adjust based on fixed header height if any */
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .endpoint-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .endpoint-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .method-badge {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .method-get {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .method-post {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .endpoint-url {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: var(--bg-primary);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 300px;
+            word-break: break-all;
+        }
+
+        .endpoint-title, .params-title, .auth-title, .footer h3 {
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .endpoint-title { font-size: 1.5rem; }
+        .params-title { font-size: 1.125rem; }
+        .auth-title { font-size: 1.75rem; }
+        .footer h3 { font-size: 1.5rem; }
+
+
+        .endpoint-description {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .params-section {
+            margin-bottom: 32px;
+        }
+
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .params-table th {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .params-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        .params-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .params-table .param-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .param-name {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .param-type {
+            background: var(--bg-tertiary);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .required-badge, .optional-badge {
+            padding: 3px 9px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: white;
+        }
+
+        .required-badge {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+        }
+
+        .optional-badge {
+            background: linear-gradient(135deg, var(--text-muted), #6b7280);
+        }
+
+        .code-section {
+            margin-bottom: 32px;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: var(--radius-lg);
+        }
+
+        .code-tab {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .code-tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .copy-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .copy-button .fas {
+            transition: transform 0.2s ease;
+        }
+        .copy-button:active .fas {
+            transform: scale(0.9);
+        }
+
+        .code-content {
+            padding: 20px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        .response-section {
+            margin-top: 32px;
+        }
+
+        .response-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: var(--radius-lg);
+        }
+
+        .response-tab {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .response-tab.active {
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+        .response-tab.active:not(.error) { background: var(--success-color); }
+        .response-tab.error.active { background: var(--error-color); }
+
+
+        .auth-section {
+            background: linear-gradient(135deg, var(--accent-color), #0891b2);
+            color: white;
+            padding: 32px;
+            border-radius: var(--radius-xl);
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+
+        .auth-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-description {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .auth-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .auth-method {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .auth-method:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+
+        .auth-method h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-method p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .status-200 {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .status-400 {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .status-401 {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+            color: white;
+        }
+
+        .status-403 {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+        }
+
+        .status-500 {
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: white;
+        }
+
+        .footer {
+            background: var(--bg-secondary);
+            padding: 48px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header {
+                padding: 60px 0;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+                gap: 0.5rem;
+            }
+
+            .header p {
+                font-size: 1.125rem;
+            }
+
+            .main-content {
+                padding: 60px 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                gap: 0.5rem;
+            }
+
+            .endpoint-card {
+                padding: 24px;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .endpoint-url {
+                min-width: auto;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-tabs, .response-tabs {
+                flex-direction: column;
+            }
+            .code-tab, .response-tab {
+                 justify-content: flex-start;
+                 padding-left: 16px;
+            }
+
+            .auth-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .theme-toggle {
+                top: 16px;
+                right: 16px;
+                padding: 10px 14px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+
+        .me-1 { margin-right: 0.25rem !important; }
+        .me-2 { margin-right: 0.5rem !important; }
+        .fas, .fab {
+            vertical-align: middle; /* Better alignment with text */
+        }
+    </style>
+</head>
+<body class="scroll-smooth">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon"><i class="fas fa-moon"></i></span>
+        <span id="theme-text">Dark</span>
+    </button>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1><i class="fas fa-book-open"></i>V-Pedia API</h1>
+                <p>Comprehensive documentation for the V-Pedia topup and digital services API. Build powerful applications with our robust and secure endpoints.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="nav-section">
+                <div class="nav-grid">
+                    <div class="nav-card" onclick="scrollToSection('authentication')">
+                        <h3><i class="fas fa-shield-alt"></i> Authentication</h3>
+                        <p>Learn how to authenticate your requests using API keys and IP whitelisting</p>
+                    </div>
+                    <div class="nav-card" onclick="scrollToSection('profile')">
+                        <h3><i class="fas fa-user-circle"></i> User Profile</h3>
+                        <p>Retrieve user profile information and account details</p>
+                    </div>
+                    <div class="nav-card" onclick="scrollToSection('transactions')">
+                        <h3><i class="fas fa-history"></i> Transaction History</h3>
+                        <p>Access deposit and order transaction history</p>
+                    </div>
+                    <div class="nav-card" onclick="scrollToSection('deposits')">
+                        <h3><i class="fas fa-credit-card"></i> Deposit Management</h3>
+                        <p>Handle deposit creation, status checking, and cancellation</p>
+                    </div>
+                    <div class="nav-card" onclick="scrollToSection('services')">
+                        <h3><i class="fas fa-shopping-cart"></i> Service Orders</h3>
+                        <p>Create and manage service orders for digital products</p>
+                    </div>
+                    <div class="nav-card" onclick="scrollToSection('panel')">
+                        <h3><i class="fas fa-server"></i> Panel Services</h3>
+                        <p>Create and manage hosting panel services</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="authentication" class="section">
+                <div class="auth-section">
+                    <div class="auth-content">
+                        <h2 class="auth-title"><i class="fas fa-key"></i>Authentication</h2>
+                        <p class="auth-description">
+                            All API requests require authentication using an API key. The API key can be provided in two ways:
+                        </p>
+                        <div class="auth-methods">
+                            <div class="auth-method">
+                                <h4><i class="fas fa-id-badge"></i>Header Authentication</h4>
+                                <p>Include your API key in the request header as <code>X-APIKEY</code></p>
+                            </div>
+                            <div class="auth-method">
+                                <h4><i class="fas fa-link"></i>Query Parameter</h4>
+                                <p>Add your API key as a query parameter <code>apikey</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <h3 class="endpoint-title"><i class="fas fa-user-shield"></i>Security Features</h3>
+                    <p class="endpoint-description">
+                        Our API includes advanced security features to protect your account and ensure secure access.
+                    </p>
+                    
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-lock"></i>Security Measures</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name"><i class="fas fa-network-wired me-1"></i>IP Whitelisting</span></td>
+                                    <td>Restrict API access to specific IP addresses</td>
+                                    <td><span class="status-badge status-200"><i class="fas fa-check-circle me-1"></i>Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name"><i class="fas fa-stopwatch me-1"></i>Rate Limiting</span></td>
+                                    <td>5-second cooldown between requests</td>
+                                    <td><span class="status-badge status-200"><i class="fas fa-check-circle me-1"></i>Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name"><i class="fas fa-user-check me-1"></i>Account Verification</span></td>
+                                    <td>Verified accounts only</td>
+                                    <td><span class="status-badge status-200"><i class="fas fa-check-circle me-1"></i>Required</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="profile" class="section">
+                <h2 class="section-title"><i class="fas fa-id-card-alt"></i>User Profile</h2>
+                <p class="section-description">
+                    Retrieve comprehensive user profile information including account details, balance, and verification status.
+                </p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/profile</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-user"></i>Get User Profile</h3>
+                    <p class="endpoint-description">
+                        Retrieves the authenticated user's profile information including personal details, account balance, and verification status.
+                    </p>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'profile-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'profile-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'profile-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="profile-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('profile-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="profile-curl-code">curl -X GET "https://v-pedia.web.id/h2h/profile" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="profile-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('profile-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="profile-js-code">const response = await fetch('https://v-pedia.web.id/h2h/profile', {
   method: 'GET',
   headers: {
-    'X-APIKEY': 'YOUR_APIKEY'
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
   }
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));</pre>
-        </div>
+});
 
-        <h6 class="language-title">Python (requests)</h6>
-        <div class="code-block-container">
-            <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-            </button>
-            <pre>import requests
+const data = await response.json();
+console.log(data);</div>
+                        </div>
 
+                        <div id="profile-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('profile-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="profile-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/profile"
 headers = {
-    'X-APIKEY': 'YOUR_APIKEY'
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
 }
-response = requests.get('https://www.v-pedia.web.id/api/profile', headers=headers)
-print(response.json())</pre>
-        </div>
 
-        <p class="section-description">
-            <strong>Penting:</strong> Untuk keamanan, beberapa endpoint API Anda mungkin memerlukan IP whitelist yang diatur di panel akun Anda. Pastikan IP yang Anda gunakan untuk mengakses API sudah terdaftar. Jika IP tidak terdaftar, permintaan akan ditolak.
-        </p>
-      </section>
+response = requests.get(url, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
 
-      <!-- Profile -->
-      <section id="profile">
-        <h2 class="section-title">
-          <i class="fas fa-user"></i> Endpoint Profile
-        </h2>
-        <p class="section-description">
-          Mendapatkan data profil pengguna berdasarkan API key, termasuk informasi saldo, koin, dan riwayat aktivitas terbaru.
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/api/profile</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="response-tabs">
+                            <button class="response-tab active" onclick="showResponseTab(this, 'profile-success')"><i class="fas fa-check-circle"></i>Success Response</button>
+                            <button class="response-tab error" onclick="showResponseTab(this, 'profile-error')"><i class="fas fa-exclamation-triangle"></i>Error Response</button>
+                        </div>
+
+                        <div id="profile-success" class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
-  "message": "Profile data retrieved successfully",
-  "data": {
-    "fullname": "Nama Lengkap Pengguna",
-    "username": "usernameanda",
-    "nomor": "+628123456789",
-    "email": "emailanda@gmail.com",
-    "profileUrl": "https://files.catbox.moe/example.png",
+  "user": {
+    "fullname": "John Doe",
+    "username": "johndoe",
+    "nomor": "081234567890",
+    "email": "john.doe@example.com",
+    "profileUrl": "https://example.com/avatar.jpg",
     "saldo": 15000,
     "coin": 50,
-    "apiKey": "V-Pedia-ABCDEFGHIJKLMNOP",
-    "tanggalDaftar": "2025-04-28T12:08:11.754Z",
-    "role": "user",
+    "tanggalDaftar": "2024-01-15T10:30:00.000Z",
+    "role": "reseller",
     "isVerified": true,
-    "lastLogin": "2025-05-17T11:54:35.013Z",
-    "referralCode": "USER1234",
-    "history": [
-      {
-        "aktivitas": "Transfer Saldo",
-        "nominal": 1234,
-        "status": "Sukses",
-        "code": "TRX-3Q12QQKC",
-        "notes": "Transfer ke pengguna lain",
-        "tanggal": "2025-04-30T09:38:02.591Z",
-        "_id": "6811ef7a83c861ecf809d002"
-      }
-    ]
+    "lastLogin": "2024-12-26T08:15:30.000Z",
+    "referralCode": "JOHNDOE123"
   }
-}</pre>
-        </div>
-      </section>
+}</div>
+                        </div>
 
-      <!-- Kategori -->
-      <section id="categori">
-        <h2 class="section-title">
-          <i class="fas fa-tags"></i> Endpoint Kategori
-        </h2>
-        <p class="section-description">Mendapatkan daftar kategori produk yang tersedia dari sistem H2H.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/categori</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "status": true,
-  "data": [
-    "Data Internet",
-    "Pulsa Reguler",
-    "E-Money",
-    "Token Listrik"
-  ],
-  "message": "V-Pedia"
-}</pre>
-        </div>
-      </section>
+                        <div id="profile-error" class="code-block hidden">
+                            <div class="code-header">
+                                <span>500 Internal Server Error</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-500"><i class="fas fa-bomb"></i>500 Error</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": false,
+  "message": "Internal server error"
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-      <!-- Provider -->
-      <section id="provider">
-        <h2 class="section-title">
-          <i class="fas fa-building"></i> Endpoint Provider
-        </h2>
-        <p class="section-description">Mendapatkan daftar provider produk yang tersedia dari sistem H2H.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/provider</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "status": true,
-  "data": [
-    "TELKOMSEL",
-    "INDOSAT",
-    "DANA",
-    "GoPay",
-    "PLN"
-  ],
-  "message": "V-Pedia"
-}</pre>
-        </div>
-      </section>
+            <section id="transactions" class="section">
+                <h2 class="section-title"><i class="fas fa-receipt"></i>Transaction History</h2>
+                <p class="section-description">
+                    Access comprehensive transaction history including both deposit and order transactions with detailed information.
+                </p>
 
-      <!-- Products -->
-      <section id="products">
-        <h2 class="section-title">
-          <i class="fas fa-shopping-basket"></i> Endpoint Products
-        </h2>
-        <p class="section-description">
-          Mendapatkan daftar produk yang tersedia dengan filter opsional berdasarkan
-          kategori atau provider. Harga yang ditampilkan sudah termasuk markup berdasarkan role Anda (User +10%, Reseller +5%, Admin +0%).
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/products?category=Data%20Internet</pre>
-          <pre>GET https://www.v-pedia.web.id/h2h/products?provider=DANA</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "status": true,
-  "data": [
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/mutasi</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-list-alt"></i>Get Transaction History</h3>
+                    <p class="endpoint-description">
+                        Retrieves the complete transaction history for the authenticated user, including both deposit and order transactions.
+                    </p>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'mutasi-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'mutasi-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'mutasi-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="mutasi-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('mutasi-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="mutasi-curl-code">curl -X GET "https://v-pedia.web.id/h2h/mutasi" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="mutasi-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('mutasi-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="mutasi-js-code">const response = await fetch('https://v-pedia.web.id/h2h/mutasi', {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="mutasi-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('mutasi-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="mutasi-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/mutasi"
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="response-tabs">
+                            <button class="response-tab active" onclick="showResponseTab(this, 'mutasi-success')"><i class="fas fa-check-circle"></i>Success Response</button>
+                            <button class="response-tab error" onclick="showResponseTab(this, 'mutasi-error')"><i class="fas fa-exclamation-triangle"></i>Error Response</button>
+                        </div>
+
+                        <div id="mutasi-success" class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": true,
+  "mutasiDeposit": [
     {
-      "code": "DANA1",
-      "name": "DANA 1.000",
-      "category": "E-Money",
-      "type": "Umum",
-      "provider": "DANA",
-      "brand_status": "1",
-      "status": "available",
-      "img_url": "https://i.pinimg.com/236x/f2/7d/e0/f27de0e4a01ba9dfe8607ac03a4f7aae.jpg",
-      "final_price": 1100,
-      "price_formatted": "Rp 1.100",
-      "status_emoji": "✅"
+      "id": "ABC123DEF456",
+      "reff_id": "TRX-SAMPLE123",
+      "nominal": 25000,
+      "tambahan": 0,
+      "fee": 500,
+      "get_balance": 24500,
+      "metode": "QRISFAST",
+      "bank": null,
+      "tujuan": null,
+      "atas_nama": null,
+      "status": "success",
+      "qr_image": "https://v-pedia.web.id/qr/ABC123DEF456",
+      "created_at": "2024-12-26T10:30:00.000Z"
     }
   ],
-  "message": "V-Pedia"
-}</pre>
-        </div>
-      </section>
+  "mutasiOrder": [
+    {
+      "id": "XYZ789GHI012",
+      "reff_id": "TRX-ORDER456",
+      "layanan": "Telkomsel 5GB",
+      "code": "TSEL5GB",
+      "target": "081234567890",
+      "price": 45000,
+      "sn": "SN123456789012345",
+      "status": "success",
+      "created_at": "2024-12-26T09:15:00.000Z"
+    }
+  ]
+}</div>
+                        </div>
 
-      <!-- Order -->
-      <section id="order">
-        <h2 class="section-title">
-          <i class="fas fa-cart-plus"></i> Endpoint Order
-        </h2>
-        <p class="section-description">
-          Membuat pesanan baru untuk produk tertentu. Saldo Anda akan dipotong sesuai harga produk setelah markup.
-          Untuk Mobile Legend, pisahkan ID dan Zone dengan <code>|</code> contoh:
-          <code>12345678|1234</code>
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/order/create?code=CODE-PRODUK&target=NO-TUJUAN</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "success": true,
-  "message": "Transaksi berhasil dibuat",
-  "data": {
-    "id": "ORD-1234567890",
-    "reff_id": "TRX-ABCDEFGHIJ",
-    "layanan": "DANA 1.000",
-    "code": "DANA1",
-    "target": "081234567890",
-    "price": 1100,
-    "sn": null,
-    "status": "pending",
-    "created_at": "2025-05-17 21:58:59"
+                        <div id="mutasi-error" class="code-block hidden">
+                            <div class="code-header">
+                                <span>500 Internal Server Error</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-500"><i class="fas fa-bomb"></i>500 Error</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": false,
+  "message": "Internal server error"
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="deposits" class="section">
+                <h2 class="section-title"><i class="fas fa-money-bill-wave"></i>Deposit Management</h2>
+                <p class="section-description">
+                    Comprehensive deposit management including method retrieval, deposit creation, status checking, and cancellation.
+                </p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/deposit/metode</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-list-ul"></i>Get Deposit Methods</h3>
+                    <p class="endpoint-description">
+                        Retrieves all available deposit methods with their respective fees, limits, and status information.
+                    </p>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'metode-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'metode-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'metode-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="metode-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('metode-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="metode-curl-code">curl -X GET "https://v-pedia.web.id/deposit/metode" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="metode-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('metode-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="metode-js-code">const response = await fetch('https://v-pedia.web.id/deposit/metode', {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
   }
-}</pre>
-        </div>
-      </section>
+});
 
-      <!-- Status Order -->
-      <section id="order-status">
-        <h2 class="section-title">
-          <i class="fas fa-info-circle"></i> Endpoint Status Order
-        </h2>
-        <p class="section-description">Cek status transaksi pesanan berdasarkan ID transaksi.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/order/check?trxid=ID-TRANSAKSI</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="metode-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('metode-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="metode-python-code">import requests
+
+url = "https://v-pedia.web.id/deposit/metode"
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
-  "message": "Transaksi berhasil",
-  "data": {
-    "id": "ORD-1234567890",
-    "reff_id": "TRX-ABCDEFGHIJ",
-    "layanan": "DANA 1.000",
-    "code": "DANA1",
-    "target": "081234567890",
-    "price": 1100,
-    "sn": "DANA1234567890",
-    "status": "success",
-    "created_at": "2025-05-17 21:58:59"
-  }
-}</pre>
-        </div>
-      </section>
-
-      <!-- Deposit Methode -->
-      <section id="deposit-methode">
-        <h2 class="section-title">
-          <i class="fas fa-money-check-alt"></i> Endpoint Metode Deposit
-        </h2>
-        <p class="section-description">Mendapatkan daftar metode deposit yang tersedia, dengan opsi filter berdasarkan tipe atau nama metode.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/methode</pre>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/methode?type=ewallet</pre>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/methode?metode=QRISFAST</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "status": true,
-  "message": "V-Pedia",
-  "data": [
+  "message": "Daftar metode deposit V-Pedia",
+  "metode": [
+    {
+      "metode": "BCA",
+      "type": "bank",
+      "name": "Bank BCA",
+      "min": "10000",
+      "max": "50000000",
+      "fee": "0",
+      "fee_persen": "0.10",
+      "status": "aktif",
+      "img_url": "https://v-pedia.web.id/media/metode/bca.png"
+    },
     {
       "metode": "QRISFAST",
       "type": "ewallet",
-      "name": "QRIS (Semua E-wallet / Bank)",
-      "min": "500",
-      "max": "10000000",
-      "fee": "17",
-      "fee_persen": "1.00",
-      "status": "active",
-      "img_url": "https://file.atlantich2h.com/img/metode/QRISFAST.png"
+      "name": "QRIS Fast",
+      "min": "5000",
+      "max": "2000000",
+      "fee": "0",
+      "fee_persen": "0.15",
+      "status": "aktif",
+      "img_url": "https://v-pedia.web.id/media/metode/qrisfast.png"
     }
   ]
-}</pre>
-        </div>
-      </section>
+}</div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Deposit Create -->
-      <section id="deposit">
-        <h2 class="section-title">
-          <i class="fas fa-wallet"></i> Endpoint Buat Deposit
-        </h2>
-        <p class="section-description">
-          Membuat permintaan deposit baru. Nominal minimal adalah 500.
-          Parameter <code>metode</code> (contoh: <code>qrisfast</code>) dan <code>type</code> (contoh: <code>ewallet</code>) bersifat opsional.
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/create?nominal=NOMINAL-DEPOSIT&metode=METODE-DEPOSIT&type=TIPE-DEPOSIT</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/deposit/create</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-plus-circle"></i>Create Deposit</h3>
+                    <p class="endpoint-description">
+                        Creates a new deposit transaction with the specified amount and payment method.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">nominal</span></td>
+                                    <td><span class="param-type"><i class="fas fa-hashtag me-1"></i>integer</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Deposit amount in IDR</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">metode</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="optional-badge"><i class="fas fa-info-circle me-1"></i>Optional</span></td>
+                                    <td>Payment method (defaults to QRISFAST)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'create-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'create-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'create-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="create-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('create-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="create-curl-code">curl -X GET "https://v-pedia.web.id/h2h/deposit/create?nominal=25000&metode=QRISFAST" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="create-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('create-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="create-js-code">const params = new URLSearchParams({
+  nominal: '25000',
+  metode: 'QRISFAST'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/deposit/create?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="create-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('create-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="create-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/deposit/create"
+params = {
+    "nominal": "25000",
+    "metode": "QRISFAST"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="response-tabs">
+                            <button class="response-tab active" onclick="showResponseTab(this, 'create-success')"><i class="fas fa-qrcode"></i>QRIS Response</button>
+                            <button class="response-tab" onclick="showResponseTab(this, 'create-bank')"><i class="fas fa-university"></i>Bank Response</button>
+                            <button class="response-tab error" onclick="showResponseTab(this, 'create-error')"><i class="fas fa-exclamation-triangle"></i>Error Response</button>
+                        </div>
+
+                        <div id="create-success" class="code-block">
+                            <div class="code-header">
+                                <span>200 OK - QRIS Payment</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
-  "message": "Permintaan deposit dibuat",
   "data": {
-    "id": "DEP-ABCDEFGHIJ",
-    "reff_id": "TRX-KLMNOPQRST",
-    "nominal": 500,
+    "id": "ABC123DEF456GHI",
+    "reff_id": "TRX-SAMPLE123",
+    "nominal": 25000,
     "tambahan": 0,
-    "fee": 7,
-    "get_balance": 493,
-    "qr_string": "base64encodedqrdata",
-    "qr_image": "https://files.cloudmini.net/download/qr_image.png",
+    "fee": 500,
+    "get_balance": 24500,
+    "qr_string": "00020101021226610016ID.CO.SHOPEE.WWW01189360091800209988050208209988050303UME51440014ID.CO.QRIS.WWW0215ID20232405136140303UME52044814530336054072000.005802ID5905MITRA6012KOTA BANDUNG61054061462220518pay_H3chOqLuGy00336304E606",
+    "qr_image": "https://v-pedia.web.id/qr/ABC123DEF456GHI",
     "status": "pending",
-    "created_at": "2025-05-17 22:02:55",
-    "expired_at": "2025-05-17 23:02:55"
+    "created_at": "2024-12-26 15:30:00",
+    "expired_at": "2024-12-26 16:30:00"
   }
-}</pre>
-        </div>
-      </section>
+}</div>
+                        </div>
 
-      <!-- Deposit Status -->
-      <section id="deposit-status">
-        <h2 class="section-title">
-          <i class="fas fa-info-circle"></i> Endpoint Status Deposit
-        </h2>
-        <p class="section-description">Cek status deposit berdasarkan ID transaksi deposit.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/status?trxid=ID-TRANSAKSI</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+                        <div id="create-bank" class="code-block hidden">
+                            <div class="code-header">
+                                <span>200 OK - Bank Transfer</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
-  "message": "Status deposit ditemukan",
   "data": {
-    "trxid": "TRX-KLMNOPQRST",
+    "id": "XYZ789ABC123DEF",
+    "reff_id": "TRX-BANK456",
+    "nominal": 50000,
+    "tambahan": 1000,
+    "fee": 100,
+    "get_balance": 50900,
+    "bank": "BCA",
+    "tujuan": "1234567890",
+    "atas_nama": "PT V-Pedia Digital",
+    "status": "pending",
+    "created_at": "2024-12-26 15:30:00",
+    "expired_at": "2024-12-26 23:59:59"
+  }
+}</div>
+                        </div>
+
+                        <div id="create-error" class="code-block hidden">
+                            <div class="code-header">
+                                <span>400 Bad Request</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-400"><i class="fas fa-exclamation-triangle"></i>400 Error</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": false,
+  "message": "Nominal harus diisi dan berupa angka."
+}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/deposit/status</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-tasks"></i>Check Deposit Status</h3>
+                    <p class="endpoint-description">
+                        Checks the current status of a deposit transaction using the deposit ID.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">id</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Deposit transaction ID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'status-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'status-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'status-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="status-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('status-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="status-curl-code">curl -X GET "https://v-pedia.web.id/h2h/deposit/status?id=ABC123DEF456GHI" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="status-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('status-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="status-js-code">const params = new URLSearchParams({
+  id: 'ABC123DEF456GHI'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/deposit/status?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="status-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('status-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="status-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/deposit/status"
+params = {
+    "id": "ABC123DEF456GHI"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": true,
+  "data": {
+    "id": "ABC123DEF456GHI",
+    "reff_id": "TRX-SAMPLE123",
+    "nominal": 25000,
+    "tambahan": 0,
+    "fee": 500,
+    "get_balance": 24500,
+    "metode": "QRIS Fast",
     "status": "success",
-    "nominal": 500,
-    "metode": "QRISFAST",
-    "fee_dari_api": 7,
-    "saldo_masuk": 493,
-    "created_at": "2025-05-17 22:02:55"
+    "created_at": "2024-12-26 15:30:00"
   }
-}</pre>
-        </div>
-      </section>
+}</div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Cancel Deposit -->
-      <section id="deposit-cancel">
-        <h2 class="section-title">
-          <i class="fas fa-ban"></i> Endpoint Batalkan Deposit
-        </h2>
-        <p class="section-description">Membatalkan permintaan deposit berdasarkan ID transaksi. Pembatalan hanya bisa dilakukan jika status masih pending.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/h2h/deposit/cancel?trxid=ID-TRANSAKSI</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/deposit/cancel</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-ban"></i>Cancel Deposit</h3>
+                    <p class="endpoint-description">
+                        Cancels a pending deposit transaction using the deposit ID.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">id</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Deposit transaction ID to cancel</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'cancel-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'cancel-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'cancel-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="cancel-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('cancel-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="cancel-curl-code">curl -X GET "https://v-pedia.web.id/h2h/deposit/cancel?id=ABC123DEF456GHI" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="cancel-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('cancel-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="cancel-js-code">const params = new URLSearchParams({
+  id: 'ABC123DEF456GHI'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/deposit/cancel?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="cancel-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('cancel-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="cancel-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/deposit/cancel"
+params = {
+    "id": "ABC123DEF456GHI"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
-  "message": "Deposit berhasil dibatalkan",
   "data": {
-    "trxid": "DEP-ABCDEFGHIJ",
+    "id": "ABC123DEF456GHI",
     "status": "cancel",
-    "created_at": "2025-05-17 22:07:14"
+    "created_at": "2024-12-26 15:30:00"
   }
-}</pre>
-        </div>
-      </section>
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-      <!-- Buy Panel -->
-      <section id="buy-panel">
-        <h2 class="section-title">
-          <i class="fas fa-server"></i> Endpoint Beli Panel
-        </h2>
-        <p class="section-description">
-          Membeli paket panel Pterodactyl dengan username dan paket RAM/Disk/CPU tertentu.
-          Pastikan saldo Anda mencukupi.
-          <br><strong>Paket yang tersedia:</strong> <code>1gb</code>, <code>2gb</code>, <code>3gb</code>, <code>4gb</code>, <code>5gb</code>, <code>6gb</code>, <code>7gb</code>, <code>8gb</code>, <code>9gb</code>, <code>10gb</code>, <code>unli</code>.
-        </p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/api/v1/buy-panel?username=USERNAME-PANEL&paket=PAKET-RAM</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response Success
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+            <section id="services" class="section">
+                <h2 class="section-title"><i class="fas fa-tags"></i>Service Orders</h2>
+                <p class="section-description">
+                    Manage digital service orders including price list retrieval, order creation, and status checking for various digital products.
+                </p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/layanan/price-list</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-dollar-sign"></i>Get Service Price List</h3>
+                    <p class="endpoint-description">
+                        Retrieves the complete price list for all available digital services including mobile credit, data packages, and other digital products.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">code</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="optional-badge"><i class="fas fa-info-circle me-1"></i>Optional</span></td>
+                                    <td>Filter by specific service code</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'pricelist-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'pricelist-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'pricelist-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="pricelist-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('pricelist-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="pricelist-curl-code">curl -X GET "https://v-pedia.web.id/h2h/layanan/price-list" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="pricelist-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('pricelist-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="pricelist-js-code">const response = await fetch('https://v-pedia.web.id/h2h/layanan/price-list', {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="pricelist-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('pricelist-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="pricelist-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/layanan/price-list"
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": true,
+  "data": [
+    {
+      "code": "TSEL5GB",
+      "name": "Telkomsel Data 5GB 30 Hari",
+      "category": "Data Internet",
+      "type": "Nasional",
+      "provider": "TELKOMSEL",
+      "price": "45000",
+      "note": "Telkomsel Data 5GB berlaku 30 hari",
+      "status": "available",
+      "img_url": "https://v-pedia.web.id/images/telkomsel.png"
+    },
+    {
+      "code": "XL10K",
+      "name": "XL Pulsa 10.000",
+      "category": "Pulsa Reguler",
+      "type": "Nasional",
+      "provider": "XL",
+      "price": "10500",
+      "note": "XL Pulsa 10.000",
+      "status": "available",
+      "img_url": "https://v-pedia.web.id/images/xl.png"
+    }
+  ]
+}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/order/create</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-cart-plus"></i>Create Service Order</h3>
+                    <p class="endpoint-description">
+                        Creates a new order for digital services such as mobile credit, data packages, or other digital products.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">code</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Service code from price list</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">tujuan</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Target phone number or account</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'order-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'order-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'order-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="order-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('order-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="order-curl-code">curl -X GET "https://v-pedia.web.id/h2h/order/create?code=TSEL5GB&tujuan=081234567890" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="order-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('order-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="order-js-code">const params = new URLSearchParams({
+  code: 'TSEL5GB',
+  tujuan: '081234567890'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/order/create?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="order-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('order-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="order-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/order/create"
+params = {
+    "code": "TSEL5GB",
+    "tujuan": "081234567890"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "success": true,
+  "data": {
+    "id": "ORDER123ABC456",
+    "reff_id": "TRX-ORDER789",
+    "layanan": "Telkomsel Data 5GB 30 Hari",
+    "code": "TSEL5GB",
+    "target": "081234567890",
+    "price": "45000",
+    "sn": null,
+    "status": "pending",
+    "created_at": "2024-12-26 16:45:00"
+  }
+}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/order/check</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-search"></i>Check Order Status</h3>
+                    <p class="endpoint-description">
+                        Checks the current status of a service order and retrieves the serial number if the order is completed.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">id</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Order transaction ID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'check-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'check-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'check-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="check-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('check-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="check-curl-code">curl -X GET "https://v-pedia.web.id/h2h/order/check?id=ORDER123ABC456" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="check-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('check-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="check-js-code">const params = new URLSearchParams({
+  id: 'ORDER123ABC456'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/order/check?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="check-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('check-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="check-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/order/check"
+params = {
+    "id": "ORDER123ABC456"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>200 OK</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-check-circle"></i>200 OK</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
+  "status": true,
+  "data": {
+    "id": "ORDER123ABC456",
+    "reff_id": "TRX-ORDER789",
+    "layanan": "Telkomsel Data 5GB 30 Hari",
+    "code": "TSEL5GB",
+    "target": "081234567890",
+    "price": "45000",
+    "sn": "SN123456789012345678901234567890",
+    "status": "success",
+    "created_at": "2024-12-26 16:45:00"
+  },
+  "code": 200
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel" class="section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i>Panel Services</h2>
+                <p class="section-description">
+                    Create and manage hosting panel services with various resource configurations for your hosting needs.
+                </p>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get"><i class="fas fa-download"></i>GET</span>
+                        <code class="endpoint-url">https://v-pedia.web.id/h2h/order-panel</code>
+                    </div>
+                    
+                    <h3 class="endpoint-title"><i class="fas fa-server"></i>Create Panel Service</h3>
+                    <p class="endpoint-description">
+                        Creates a new hosting panel service with specified resource configuration and automatically sets up user account and server.
+                    </p>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-sliders-h"></i>Query Parameters</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">username</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Username for the panel account</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">paket</span></td>
+                                    <td><span class="param-type"><i class="fas fa-font me-1"></i>string</span></td>
+                                    <td><span class="required-badge"><i class="fas fa-exclamation-circle me-1"></i>Required</span></td>
+                                    <td>Package type (1gb, 2gb, 3gb, 4gb, 5gb, 6gb, 7gb, 8gb, 9gb, 20gb, unli)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="params-section">
+                        <h4 class="params-title"><i class="fas fa-box-open"></i>Available Packages</h4>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Package</th>
+                                    <th>Memory</th>
+                                    <th>Disk</th>
+                                    <th>CPU</th>
+                                    <th>Price (User)</th>
+                                    <th>Price (Reseller)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">1gb</span></td>
+                                    <td>1024 MB</td>
+                                    <td>1024 MB</td>
+                                    <td>50%</td>
+                                    <td>Rp 1,100</td>
+                                    <td>Rp 1,050</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">2gb</span></td>
+                                    <td>2048 MB</td>
+                                    <td>2048 MB</td>
+                                    <td>100%</td>
+                                    <td>Rp 2,200</td>
+                                    <td>Rp 2,100</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">unli</span></td>
+                                    <td>Unlimited</td>
+                                    <td>Unlimited</td>
+                                    <td>Unlimited</td>
+                                    <td>Rp 16,500</td>
+                                    <td>Rp 15,750</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-section">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="showCodeTab(this, 'panel-curl')"><i class="fas fa-terminal"></i>cURL</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'panel-js')"><i class="fab fa-js-square"></i>JavaScript</button>
+                            <button class="code-tab" onclick="showCodeTab(this, 'panel-python')"><i class="fab fa-python"></i>Python</button>
+                        </div>
+
+                        <div id="panel-curl" class="code-block">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('panel-curl-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="panel-curl-code">curl -X GET "https://v-pedia.web.id/h2h/order-panel?username=johndoe&paket=2gb" \
+  -H "X-APIKEY: your_api_key_here"</div>
+                        </div>
+
+                        <div id="panel-js" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('panel-js-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="panel-js-code">const params = new URLSearchParams({
+  username: 'johndoe',
+  paket: '2gb'
+});
+
+const response = await fetch(`https://v-pedia.web.id/h2h/order-panel?${params}`, {
+  method: 'GET',
+  headers: {
+    'X-APIKEY': 'your_api_key_here',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);</div>
+                        </div>
+
+                        <div id="panel-python" class="code-block hidden">
+                            <div class="code-header">
+                                <span>Request Example</span>
+                                <button class="copy-button" onclick="copyCode('panel-python-code')"><i class="fas fa-copy"></i>Copy</button>
+                            </div>
+                            <div class="code-content" id="panel-python-code">import requests
+
+url = "https://v-pedia.web.id/h2h/order-panel"
+params = {
+    "username": "johndoe",
+    "paket": "2gb"
+}
+headers = {
+    "X-APIKEY": "your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, params=params, headers=headers)
+data = response.json()
+print(data)</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <h4 class="params-title"><i class="fas fa-reply"></i>Response</h4>
+                        <div class="response-tabs">
+                            <button class="response-tab active" onclick="showResponseTab(this, 'panel-success')"><i class="fas fa-check-circle"></i>Success Response</button>
+                            <button class="response-tab error" onclick="showResponseTab(this, 'panel-error')"><i class="fas fa-exclamation-triangle"></i>Error Response</button>
+                        </div>
+
+                        <div id="panel-success" class="code-block">
+                            <div class="code-header">
+                                <span>201 Created</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-200"><i class="fas fa-plus-circle"></i>201 Created</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": true,
   "message": "Server berhasil dibuat",
   "data": {
+    "id": "TRX-PANEL123",
+    "reff_id": "TRX-PANEL123",
+    "layanan": "Panel 2gb",
+    "code": "2GB",
+    "target": "johndoe",
+    "price": "2100",
+    "status": "Sukses",
+    "created_at": "2024-12-26T16:30:00.000Z",
     "user": {
-      "id": 20,
-      "username": "contohuser",
-      "email": "contohuser@gmail.com",
-      "password": "contohuser1024"
+      "id": 42,
+      "username": "johndoe",
+      "email": "johndoe@gmail.com",
+      "password": "johndoe2048"
     },
     "server": {
-      "id": 22,
-      "name": "contohuser",
-      "memory": 1024,
-      "disk": 1024,
-      "cpu": 50
+      "id": 58,
+      "name": "johndoe",
+      "memory": 2048,
+      "disk": 2048,
+      "cpu": 100
     }
   }
-}</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response Error
-        </h3>
-        <div class="code-block-container response-error">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
+}</div>
+                        </div>
+
+                        <div id="panel-error" class="code-block hidden">
+                            <div class="code-header">
+                                <span>500 Internal Server Error</span>
+                                <div class="status-badges">
+                                    <span class="status-badge status-500"><i class="fas fa-bomb"></i>500 Error</span>
+                                </div>
+                            </div>
+                            <div class="code-content">{
   "success": false,
-  "message": "Saldo tidak mencukupi"
-}</pre>
-        </div>
-      </section>
-
-      <!-- Mutasi -->
-      <section id="mutasi">
-        <h2 class="section-title">
-          <i class="fas fa-exchange-alt"></i> Endpoint Mutasi
-        </h2>
-        <p class="section-description">Melihat riwayat mutasi transaksi saldo dan koin pengguna.</p>
-        <h3 class="subsection-title">
-          <i class="fas fa-code"></i> Request
-        </h3>
-        <div class="code-block-container">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>GET https://www.v-pedia.web.id/api/mutasi</pre>
-          <pre>Header: X-APIKEY: YOUR_APIKEY</pre>
-        </div>
-        <h3 class="subsection-title">
-          <i class="fas fa-reply"></i> Response
-        </h3>
-        <div class="code-block-container response-success">
-          <button class="copy-button" onclick="copyCode(this)">
-            <i class="far fa-copy"></i><span>Salin</span>
-          </button>
-          <pre>{
-  "success": true,
-  "history": [
-    {
-      "aktivitas": "Deposit",
-      "nominal": 493,
-      "status": "Sukses",
-      "code": "9HSLQJRiMUR6ayK863sm",
-      "notes": "Deposit Saldo Via Api success dengan metode QRISFAST | Reward: 1 koin",
-      "tanggal": "2025-05-17T15:05:08.783Z",
-      "_id": "6828a5a496667bc09b37ceae"
-    },
-    {
-      "aktivitas": "Order",
-      "nominal": 1100,
-      "status": "Sukses",
-      "code": "ORD-1234567890",
-      "notes": "Order DANA1 target 081234567890",
-      "tanggal": "2025-05-17T14:30:00.000Z",
-      "_id": "6828a5a496667bc09b37c000"
-    }
-  ]
-}</pre>
-        </div>
-      </section>
-
-      <!-- Error -->
-      <section id="error">
-        <h2 class="section-title">
-          <i class="fas fa-exclamation-triangle"></i> Contoh Response Error
-        </h2>
-        <p class="section-description">
-          Berikut adalah beberapa contoh respons error yang mungkin Anda temui saat
-          menggunakan API kami, beserta kemungkinan penyebabnya.
-        </p>
-
-        <div class="error-examples">
-          <div>
-            <h3 class="subsection-title">API Key Tidak Valid (Status 401 Unauthorized)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Invalid API Key"
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">API Key Tidak Disertakan (Status 400 Bad Request)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "API Key harus disertakan di header \"X-APIKEY\""
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">Akun Belum Terverifikasi (Status 403 Forbidden)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu."
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">IP Tidak Diizinkan (Whitelist) (Status 403 Forbidden)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "IP Anda saat ini tidak diizinkan untuk menggunakan API Key ini.",
-  "your_ip": "XXX.XXX.XXX.XXX"
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">Request Terlalu Cepat (Rate Limit) (Status 429 Too Many Requests)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Anda harus menunggu 5 detik sebelum melakukan request lagi."
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">Parameter Wajib Tidak Terisi (Status 400 Bad Request)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Parameter [nama_parameter] wajib diisi"
-}</pre>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="subsection-title">Saldo Tidak Cukup (Status 400 Bad Request)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Saldo tidak mencukupi"
-}</pre>
-            </div>
-          </div>
-          
-          <div>
-            <h3 class="subsection-title">Produk Tidak Ditemukan (Status 404 Not Found)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Produk tidak ditemukan atau harga tidak valid"
-}</pre>
-            </div>
-          </div>
-          
-          <div>
-            <h3 class="subsection-title">Transaksi Tidak Ditemukan (Status 404 Not Found)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Transaksi tidak ditemukan atau gagal mendapatkan status"
-}</pre>
-            </div>
-          </div>
-          
-          <div>
-            <h3 class="subsection-title">Internal Server Error (Status 500 Internal Server Error)</h3>
-            <div class="code-block-container response-error">
-              <button class="copy-button" onclick="copyCode(this)">
-                <i class="far fa-copy"></i><span>Salin</span>
-              </button>
-              <pre>{
-  "success": false,
-  "message": "Internal server error"
-}</pre>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <footer class="footer">
-    <i class="far fa-copyright"></i>
-    <span>2023 Dokumentasi API. Hak Cipta Dilindungi.</span>
-  </footer>
-
-  <script>
-    function copyCode(button) {
-      const codeBlock = button.parentElement;
-      const code = codeBlock.querySelector('pre').textContent;
-
-      navigator.clipboard.writeText(code).then(() => {
-        const icon = button.querySelector('i');
-        const span = button.querySelector('span');
-
-        const originalIconClass = icon.className;
-        const originalText = span.textContent;
-        const originalBgColor = getComputedStyle(button).backgroundColor;
-
-        icon.className = 'fas fa-check';
-        span.textContent = 'Tersalin!';
-        button.style.backgroundColor = 'var(--color-success-button)';
-        button.classList.add('copied');
-
-        setTimeout(() => {
-          icon.className = originalIconClass;
-          span.textContent = originalText;
-          button.style.backgroundColor = originalBgColor;
-          button.classList.remove('copied');
-        }, 3000);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const sections = document.querySelectorAll('main section[id]');
-      const menuItems = document.querySelectorAll('aside nav a');
-
-      function onScroll() {
-        let current = '';
-        const scrollY = window.pageYOffset;
-
-        sections.forEach((section) => {
-          const sectionTop = section.offsetTop - 100;
-          const sectionHeight = section.offsetHeight;
-          if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-            current = section.getAttribute('id');
-          }
-        });
-
-        menuItems.forEach((item) => {
-          item.classList.remove('active');
-          if (item.getAttribute('href') === `#${current}`) {
-            item.classList.add('active');
-          }
-        });
+  "message": "Terjadi kesalahan saat membuat server",
+  "error": {
+    "errors": [
+      {
+        "code": "ValidationException",
+        "status": "422",
+        "detail": "The email has already been taken.",
+        "meta": {
+          "source_field": "email",
+          "rule": "unique"
+        }
+      },
+      {
+        "code": "ValidationException",
+        "status": "422",
+        "detail": "The username has already been taken.",
+        "meta": {
+          "source_field": "username",
+          "rule": "unique"
+        }
       }
+    ]
+  }
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
-      window.addEventListener('scroll', onScroll);
-      onScroll();
-    });
-  </script>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h3><i class="fas fa-rocket"></i>Ready to Get Started?</h3>
+                <p>
+                    Start integrating with the V-Pedia API today. Our comprehensive documentation and examples will help you build powerful applications quickly and efficiently.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.innerHTML = '<i class="fas fa-moon"></i>';
+                themeText.textContent = 'Dark';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.innerHTML = '<i class="fas fa-sun"></i>';
+                themeText.textContent = 'Light';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.innerHTML = '<i class="fas fa-sun"></i>';
+                themeText.textContent = 'Light';
+            } else {
+                themeIcon.innerHTML = '<i class="fas fa-moon"></i>';
+                themeText.textContent = 'Dark';
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function showCodeTab(button, targetId) {
+            const parent = button.parentElement;
+            const container = parent.parentElement;
+            
+            parent.querySelectorAll('.code-tab').forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            
+            container.querySelectorAll('.code-block:not(.hidden)').forEach(block => block.classList.add('hidden'));
+            const targetBlock = document.getElementById(targetId);
+            if (targetBlock) {
+                 targetBlock.classList.remove('hidden');
+                 targetBlock.classList.add('fade-in');
+            }
+        }
+
+        function showResponseTab(button, targetId) {
+            const parent = button.parentElement;
+            const container = parent.parentElement;
+            
+            parent.querySelectorAll('.response-tab').forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            
+            container.querySelectorAll('.code-block:not(.hidden)').forEach(block => block.classList.add('hidden'));
+            const targetBlock = document.getElementById(targetId);
+            if (targetBlock) {
+                 targetBlock.classList.remove('hidden');
+                 targetBlock.classList.add('fade-in');
+            }
+        }
+
+        function copyCode(codeContentId) {
+            const codeContentElement = document.getElementById(codeContentId);
+            if (!codeContentElement) return;
+
+            const textToCopy = codeContentElement.textContent;
+            
+            const codeBlockElement = codeContentElement.closest('.code-block');
+            if (!codeBlockElement) return;
+
+            const button = codeBlockElement.querySelector('.copy-button');
+            if (!button) return;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                button.style.background = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.background = 'var(--primary-color)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-times me-1"></i>Failed';
+                button.style.background = 'var(--error-color)';
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.background = 'var(--primary-color)';
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            
+            const observerOptions = {
+                threshold: 0.05,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        obs.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.endpoint-card, .nav-card, .section > *:not(.section-title):not(.section-description)').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                const themeIcon = document.getElementById('theme-icon');
+                const themeText = document.getElementById('theme-text');
+                
+                if (e.matches) {
+                    document.body.setAttribute('data-theme', 'dark');
+                    themeIcon.innerHTML = '<i class="fas fa-sun"></i>';
+                    themeText.textContent = 'Light';
+                } else {
+                    document.body.removeAttribute('data-theme');
+                    themeIcon.innerHTML = '<i class="fas fa-moon"></i>';
+                    themeText.textContent = 'Dark';
+                }
+            }
+        });
+    </script>
 </body>
 </html>

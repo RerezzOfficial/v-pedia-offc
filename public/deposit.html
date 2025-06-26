@@ -1,233 +1,2230 @@
-<html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-   Deposit Saldo - Dashboard
-  </title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="/style/deposit/deposit.css">
- </head>
- <body>
-  <header aria-label="Header navigasi utama" role="banner">
-   <div class="header-left">
-    <a aria-label="Kembali ke dashboard" href="/dashboard" title="Kembali ke dashboard">
-     <i aria-hidden="true" class="fas fa-arrow-left">
-     </i>
-     Dashboard
-    </a>
-   </div>
-   <div class="header-right">
-    <button aria-controls="pendingPopup" aria-expanded="false" aria-haspopup="true" aria-label="Daftar deposit pending, klik untuk melihat" class="pending-button" id="pendingBtn" title="Deposit Pending">
-     <i aria-hidden="true" class="fas fa-shopping-cart">
-     </i>
-     <span id="pendingCount" style="min-width: 18px; text-align: center; font-weight: 700; user-select:none;">
-      0
-     </span>
-     <i aria-hidden="true" class="fas fa-chevron-down">
-     </i>
-    </button>
-    <button aria-controls="profilePopup" aria-expanded="false" aria-haspopup="true" aria-label="Profil pengguna, klik untuk melihat detail" class="profile-button" id="profileBtn" title="Profil Pengguna">
-     <img alt="Foto profil pengguna" height="40" src="https://storage.googleapis.com/a1aa/image/93fc8d3c-570c-4916-354c-d509a45128d3.jpg" width="40"/>
-     <span id="profileUsername">
-      User
-     </span>
-     <i aria-hidden="true" class="fas fa-chevron-down">
-     </i>
-    </button>
-    <div aria-labelledby="profileTitle" aria-modal="true" class="profile-popup" id="profilePopup" role="dialog" tabindex="-1">
-     <h3 id="profileTitle">
-      <i aria-hidden="true" class="fas fa-user-circle">
-      </i>
-      Profil Pengguna
-     </h3>
-     <div class="profile-row">
-      <div class="profile-label">
-       Nama Lengkap
-      </div>
-      <div class="profile-value" id="profileFullname">
-       -
-      </div>
-     </div>
-     <div class="profile-row">
-      <div class="profile-label">
-       Username
-      </div>
-      <div class="profile-value" id="profileUsernamePopup">
-       -
-      </div>
-     </div>
-     <div class="profile-row">
-      <div class="profile-label">
-       Saldo
-      </div>
-      <div class="profile-value" id="profileSaldo">
-       -
-      </div>
-     </div>
-     <div class="profile-row">
-      <div class="profile-label">
-       Coin
-      </div>
-      <div class="profile-value" id="profileCoin">
-       -
-      </div>
-     </div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="V-Pedia Dashboard - Halaman Deposit Saldo">
+    <meta name="keywords" content="deposit, topup, saldo, vpedia">
+    <meta name="author" content="V-Pedia">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/oj984n.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/oj984n.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://files.catbox.moe/oj984n.png">
+    <link rel="manifest" href="/manifest.json">
+    <title>Deposit Saldo - V-Pedia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --vp-primary: #0d6efd;
+            --vp-primary-rgb: 13, 110, 253;
+            --vp-primary-light: #cfe2ff;
+            --vp-primary-dark: #0b5ed7;
+            --vp-secondary: #6c757d;
+            --vp-secondary-rgb: 108, 117, 125;
+            --vp-success: #198754;
+            --vp-success-rgb: 25, 135, 84;
+            --vp-info: #0dcaf0;
+            --vp-warning: #ffc107;
+            --vp-warning-rgb: 255, 193, 7;
+            --vp-danger: #dc3545;
+            --vp-danger-rgb: 220, 53, 69;
+            --vp-light: #f8f9fa;
+            --vp-dark: #212529;
+            --vp-body-bg: #f0f2f5;
+            --vp-card-bg: #ffffff;
+            --vp-text-muted: #6c757d;
+            --vp-border-color: #dee2e6;
+            --vp-font-main: 'Manrope', sans-serif;
+            --vp-font-heading: 'Poppins', sans-serif;
+            --vp-transition: 0.2s ease-in-out;
+            --vp-radius-sm: 0.375rem;
+            --vp-radius-md: 0.5rem;
+            --vp-radius-lg: 0.75rem;
+            --vp-radius-xl: 1rem;
+            --vp-shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+            --vp-shadow-md: 0 .5rem 1rem rgba(0,0,0,.1);
+            --vp-shadow-lg: 0 1rem 3rem rgba(0,0,0,.125);
+            --vp-shadow-xl: 0 1.5rem 4rem rgba(0,0,0,.15);
+            --vp-header-bg-light-transparent: rgba(220, 223, 228, 0.5);
+            --vp-header-bg-dark-transparent: rgba(33, 37, 41, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --vp-primary: #7000F0;
+            --vp-primary-rgb: 112, 0, 240;
+            --vp-primary-light: rgba(112, 0, 240, 0.15);
+            --vp-primary-dark: #5a00c4;
+            --vp-body-bg: #0f1419;
+            --vp-card-bg: #1a1f2e;
+            --vp-text-muted: #8b949e;
+            --vp-border-color: #30363d;
+            --vp-dark: #f0f6fc;
+            --vp-light: #21262d;
+            --vp-shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --vp-shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --vp-shadow-lg: 0 8px 25px rgba(0,0,0,0.5);
+            --vp-notification-header-dark: var(--vp-light);
+            --vp-notification-title-dark: var(--vp-light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 15px;
+        }
+
+        body {
+            font-family: var(--vp-font-main);
+            background-color: var(--vp-body-bg);
+            color: var(--vp-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--vp-transition), color var(--vp-transition);
+        }
+
+        .vp-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .vp-sidebar {
+            width: 260px;
+            background-color: var(--vp-card-bg);
+            box-shadow: var(--vp-shadow-md);
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            left: -260px;
+            bottom: 0;
+            z-index: 1030;
+            transition: transform var(--vp-transition), background-color var(--vp-transition);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--vp-border-color);
+        }
+
+        .vp-sidebar.active {
+            transform: translateX(260px);
+        }
+
+        .vp-sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--vp-border-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .vp-sidebar-header-logo {
+            height: 30px;
+            width: auto;
+        }
+
+        .vp-sidebar-brand-text {
+            font-family: var(--vp-font-heading);
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--vp-primary);
+            text-decoration: none;
+            transition: color var(--vp-transition);
+        }
+        .vp-sidebar-brand-text:hover {
+             color: var(--vp-primary-dark);
+        }
+
+        .vp-sidebar-menu {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding: 0 1rem;
+        }
+
+        .vp-sidebar-menu .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.80rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--vp-radius-md);
+            color: var(--vp-text-muted);
+            font-weight: 500;
+            font-family: var(--vp-font-heading);
+            transition: all var(--vp-transition);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+        
+        .vp-sidebar-menu .nav-link .bi {
+            margin-right: 0.80rem;
+            font-size: 1.05rem;
+            min-width: 18px;
+            opacity: 0.7;
+            transition: opacity var(--vp-transition);
+        }
+
+        .vp-sidebar-menu .nav-link.active,
+        .vp-sidebar-menu .nav-link:hover {
+            background-color: var(--vp-primary-light);
+            color: var(--vp-primary);
+        }
+        
+        .vp-sidebar-menu .nav-link.active .bi,
+        .vp-sidebar-menu .nav-link:hover .bi {
+            opacity: 1;
+        }
+        
+        [data-theme="light"] .vp-sidebar-menu .nav-link.active,
+        [data-theme="light"] .vp-sidebar-menu .nav-link:hover {
+            color: var(--vp-primary);
+            background-color: var(--vp-primary-light);
+        }
+
+        [data-theme="dark"] .vp-sidebar-menu .nav-link.active,
+        [data-theme="dark"] .vp-sidebar-menu .nav-link:hover {
+            color: var(--vp-primary);
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-sidebar-heading {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--vp-text-muted);
+            padding: 1.1rem 1rem 0.5rem;
+            letter-spacing: 0.5px;
+            font-family: var(--vp-font-heading);
+        }
+        .vp-sidebar-menu hr {
+            border-top: 1px solid var(--vp-border-color);
+            margin: 0.75rem 0.5rem;
+        }
+
+        .vp-main-container {
+            flex-grow: 1;
+            padding-left: 0;
+            transition: padding-left var(--vp-transition), width var(--vp-transition);
+            background-color: var(--vp-body-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .vp-topbar {
+            background-color: var(--vp-header-bg-light-transparent);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: var(--vp-shadow-sm);
+            padding: 0.65rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 8px;
+            z-index: 1020;
+            border: 1px solid var(--vp-border-color);
+            transition: background-color var(--vp-transition), width var(--vp-transition), margin-left var(--vp-transition);
+            border-radius: 8px;
+            margin: 8px; 
+            width: calc(100% - 16px);
+        }
+        [data-theme="dark"] .vp-topbar {
+            background-color: var(--vp-header-bg-dark-transparent);
+        }
+
+        .vp-sidebar-toggler {
+            font-size: 1.4rem;
+            color: var(--vp-dark);
+            background: none;
+            border: none;
+            padding: 0.4rem;
+            border-radius: var(--vp-radius-md);
+            transition: all var(--vp-transition);
+            order: 1; 
+        }
+
+        .vp-sidebar-toggler:hover {
+            background-color: var(--vp-primary-light);
+            color: var(--vp-primary);
+        }
+
+        .vp-topbar-brand-toggler {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .vp-topbar-brand-link { 
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            order: 2; 
+            margin-right: auto; 
+        }
+
+        .vp-topbar-logo {
+            height: 28px;
+            width: auto;
+        }
+        .vp-topbar-brand-text {
+            font-family: var(--vp-font-heading);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--vp-dark);
+            text-decoration: none;
+            margin-left: 0.5rem;
+        }
+        [data-theme="dark"] .vp-topbar-brand-text {
+            color: var(--vp-light);
+        }
+
+        .vp-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            order: 3; 
+        }
+
+        .vp-topbar-actions .nav-link {
+            color: var(--vp-text-muted);
+            padding: 0.65rem;
+            border-radius: var(--vp-radius-md);
+            transition: all var(--vp-transition);
+            text-decoration: none;
+        }
+
+        .vp-topbar-actions .nav-link:hover {
+            color: var(--vp-primary);
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-theme-toggle {
+            background: none;
+            border: none;
+            color: var(--vp-text-muted);
+            padding: 0.65rem;
+            border-radius: var(--vp-radius-md);
+            transition: all var(--vp-transition);
+            cursor: pointer;
+        }
+
+        .vp-theme-toggle:hover {
+            color: var(--vp-primary);
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-notification-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .vp-notification-toggle {
+            background: none;
+            border: none;
+            color: var(--vp-text-muted);
+            padding: 0.65rem;
+            border-radius: var(--vp-radius-md);
+            transition: all var(--vp-transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .vp-notification-toggle:hover {
+            color: var(--vp-primary);
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-notification-badge {
+            position: absolute;
+            top: 0.3rem;
+            right: 0.3rem;
+            width: 8px;
+            height: 8px;
+            background-color: var(--vp-danger);
+            border-radius: 50%;
+            border: 2px solid var(--vp-card-bg);
+            animation: pulse 2s infinite;
+        }
+        
+        .vp-notification-shake {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+
+        .vp-notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background-color: var(--vp-card-bg);
+            border: 1px solid var(--vp-border-color);
+            border-radius: var(--vp-radius-lg);
+            box-shadow: var(--vp-shadow-lg);
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--vp-transition);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .vp-notification-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .vp-notification-header {
+            padding: 1rem 1.25rem 0.75rem;
+            border-bottom: 1px solid var(--vp-border-color);
+            font-family: var(--vp-font-heading);
+            font-weight: 600;
+            color: var(--vp-dark);
+            font-size: 1rem;
+        }
+        [data-theme="dark"] .vp-notification-header {
+             color: var(--vp-notification-header-dark);
+        }
+
+
+        .vp-notification-list {
+            padding: 0.5rem 0;
+        }
+
+        .vp-notification-item {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid var(--vp-border-color);
+            cursor: pointer;
+            transition: background-color var(--vp-transition);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .vp-notification-item:hover {
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .vp-notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .vp-notification-icon.info {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: var(--vp-info);
+        }
+
+        .vp-notification-icon.promo {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--vp-warning);
+        }
+
+        .vp-notification-icon.maintenance {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--vp-danger);
+        }
+
+        .vp-notification-icon.success {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: var(--vp-success);
+        }
+
+        .vp-notification-content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .vp-notification-title {
+            font-weight: 600;
+            color: var(--vp-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+        [data-theme="dark"] .vp-notification-title {
+            color: var(--vp-notification-title-dark);
+        }
+
+        .vp-notification-message {
+            color: var(--vp-text-muted);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 0.25rem;
+        }
+
+        .vp-notification-time {
+            color: var(--vp-text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .vp-notification-empty {
+            padding: 2rem 1.25rem;
+            text-align: center;
+            color: var(--vp-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .vp-notification-modal .modal-content {
+            border-radius: var(--vp-radius-lg);
+            border: 1px solid var(--vp-border-color);
+            background-color: var(--vp-card-bg);
+        }
+
+        .vp-notification-modal .modal-header {
+            border-bottom: 1px solid var(--vp-border-color);
+            padding: 1.25rem;
+        }
+
+        .vp-notification-modal .modal-title {
+            font-family: var(--vp-font-heading);
+            font-weight: 600;
+            color: var(--vp-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .vp-notification-modal .modal-body {
+            padding: 1.25rem;
+        }
+
+        .vp-notification-modal .notification-detail-message {
+            color: var(--vp-dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .vp-notification-modal .notification-detail-time {
+            color: var(--vp-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .vp-notification-modal .modal-footer {
+            border-top: 1px solid var(--vp-border-color);
+            padding: 1rem 1.25rem;
+        }
+
+
+        .vp-profile-dropdown img {
+            width: 36px;
+            height: 36px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--vp-primary-light);
+            transition: border-color var(--vp-transition);
+        }
+
+        .vp-profile-dropdown img:hover {
+            border-color: var(--vp-primary);
+        }
+
+        .vp-content-wrapper {
+            padding-left: 8px; 
+            padding-right: 8px;
+            padding-bottom: 8px; 
+            display: flex;
+            gap: 1rem;
+            flex-grow: 1;
+        }
+
+        .vp-main-content {
+            flex-grow: 1;
+            max-width: 100%;
+        }
+        
+        .vp-section {
+            background-color: var(--vp-card-bg);
+            padding: 1.5rem;
+            border-radius: var(--vp-radius-lg);
+            box-shadow: var(--vp-shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--vp-border-color);
+        }
+        .vp-section-title {
+            font-family: var(--vp-font-heading);
+            color: var(--vp-dark);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--vp-border-color);
+        }
+
+
+        .vp-loading-shimmer {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(90deg, var(--vp-border-color) 25%, rgba(255,255,255,0.5) 50%, var(--vp-border-color) 75%);
+            background-size: 200% 100%;
+            border-radius: var(--vp-radius-sm);
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            border-radius: var(--vp-radius-md);
+            box-shadow: var(--vp-shadow-lg);
+            border: 1px solid var(--vp-border-color);
+            margin-top: 0.4rem !important;
+            background-color: var(--vp-card-bg);
+            padding: 0.4rem;
+        }
+
+        .dropdown-item {
+            padding: 0.65rem 0.9rem;
+            font-weight: 500;
+            font-family: var(--vp-font-heading);
+            border-radius: var(--vp-radius-sm);
+            margin-bottom: 0.2rem;
+            transition: all var(--vp-transition);
+            color: var(--vp-dark);
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item .bi {
+            margin-right: 0.6rem;
+            color: var(--vp-text-muted);
+            transition: color var(--vp-transition);
+            font-size: 1rem;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: var(--vp-primary-light);
+            color: var(--vp-primary) !important;
+        }
+
+        .dropdown-item:hover .bi,
+        .dropdown-item:focus .bi {
+            color: var(--vp-primary) !important;
+        }
+        [data-theme="dark"] .dropdown-item.text-danger {
+            color: #f85149 !important;
+        }
+
+        [data-theme="dark"] .dropdown-item.text-danger:hover {
+            color: #ff6b6b !important;
+        }
+
+        .dropdown-header {
+            color: var(--vp-dark) !important;
+            font-weight: 600;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-divider {
+            border-color: var(--vp-border-color);
+            margin: 0.4rem 0;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 1.5rem;
+            border-top: 1px solid var(--vp-border-color);
+            color: var(--vp-text-muted);
+            font-size: 0.85rem;
+            background-color: var(--vp-card-bg);
+            transition: all var(--vp-transition);
+            margin-left: 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            width: calc(100% - 16px);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-wrap: wrap; 
+        }
+        
+        .footer-logo-name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; 
+            text-decoration: none;
+            color: var(--vp-dark);
+            transition: color var(--vp-transition);
+        }
+        
+        .footer-logo-name:hover {
+            color: var(--vp-primary);
+        }
+
+        .footer-logo-name-img {
+            height: 36px; 
+            width: auto;
+            border-radius: var(--vp-radius-md); 
+        }
+
+        .footer-logo-name-text {
+            font-family: var(--vp-font-heading);
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+        [data-theme="dark"] .footer-logo-name-text {
+            color: var(--vp-light);
+        }
+        
+        .footer-description {
+            max-width: 300px; 
+            margin-top: 0.75rem; 
+            margin-bottom: 1rem; 
+            font-size: 0.8rem;
+            color: var(--vp-text-muted);
+            line-height: 1.5;
+            text-align: left; 
+        }
+        .footer-description .bi {
+            margin-right: 0.5rem;
+            color: var(--vp-primary); 
+            font-size: 1rem;
+        }
+
+        .footer-links-section {
+            display: flex;
+            gap: 2rem; 
+            flex-wrap: wrap; 
+        }
+
+        .footer-section-title {
+            font-family: var(--vp-font-heading);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--vp-dark);
+            margin-bottom: 0.75rem;
+            display: block; 
+        }
+        [data-theme="dark"] .footer-section-title {
+            color: var(--vp-light);
+        }
+
+        .footer-links-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links-section a {
+            color: var(--vp-text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color var(--vp-transition), transform 0.2s ease;
+            display: inline-block; 
+        }
+
+        .footer-links-section a:hover {
+            color: var(--vp-primary);
+            transform: translateX(3px); 
+        }
+        
+        .footer-social-links a {
+            font-size: 1.3rem; 
+            margin: 0 0.4rem;
+            color: var(--vp-text-muted);
+            transition: color var(--vp-transition);
+        }
+
+        .footer-social-links a:hover {
+            color: var(--vp-primary);
+        }
+        
+        .footer-copyright {
+            width: 100%; 
+            text-align: left; 
+            margin-top: 1rem; 
+            font-size: 0.75rem; 
+            color: var(--vp-text-muted);
+        }
+
+        .vp-history-table-container {
+            overflow-x: auto;
+        }
+        .vp-history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 700px;
+        }
+
+        .vp-history-table th,
+        .vp-history-table td {
+            padding: 0.875rem 1rem;
+            vertical-align: middle;
+            text-align: left;
+            border: none;
+        }
+
+        .vp-history-table thead {
+            background-color: var(--vp-primary-light);
+        }
+
+        .vp-history-table thead th {
+            font-family: var(--vp-font-heading);
+            font-weight: 600;
+            color: var(--vp-primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-top: 1px solid var(--vp-border-color);
+            border-bottom: 1px solid var(--vp-border-color);
+        }
+
+        .vp-history-table thead th:first-child {
+            border-left: 1px solid var(--vp-border-color);
+            border-top-left-radius: var(--vp-radius-md);
+        }
+
+        .vp-history-table thead th:last-child {
+            border-right: 1px solid var(--vp-border-color);
+            border-top-right-radius: var(--vp-radius-md);
+        }
+
+        .vp-history-table tbody tr {
+            background-color: var(--vp-card-bg);
+            transition: all var(--vp-transition);
+            border-left: 1px solid var(--vp-border-color);
+            border-right: 1px solid var(--vp-border-color);
+            border-bottom: 1px solid var(--vp-border-color);
+        }
+
+        .vp-history-table tbody tr:hover {
+            background-color: var(--vp-primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--vp-shadow-sm);
+        }
+
+        .vp-history-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: var(--vp-radius-md);
+        }
+
+        .vp-history-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: var(--vp-radius-md);
+        }
+
+        .vp-history-table td {
+            font-size: 0.875rem;
+            color: var(--vp-dark);
+            font-weight: 500;
+        }
+
+        .vp-history-table .status-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--vp-radius-sm);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: capitalize;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background-color: rgba(var(--vp-warning-rgb), 0.15);
+            color: var(--vp-warning);
+            border: 1px solid rgba(var(--vp-warning-rgb), 0.3);
+        }
+        .status-success {
+            background-color: rgba(var(--vp-success-rgb), 0.15);
+            color: var(--vp-success);
+            border: 1px solid rgba(var(--vp-success-rgb), 0.3);
+        }
+        .status-cancel, .status-failed, .status-expired {
+            background-color: rgba(var(--vp-danger-rgb), 0.15);
+            color: var(--vp-danger);
+            border: 1px solid rgba(var(--vp-danger-rgb), 0.3);
+        }
+        .status-refunded {
+            background-color: rgba(var(--vp-secondary-rgb), 0.15);
+            color: var(--vp-secondary);
+            border: 1px solid rgba(var(--vp-secondary-rgb), 0.3);
+        }
+
+        .vp-history-table .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .vp-history-table .action-buttons .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: var(--vp-radius-sm);
+            transition: all var(--vp-transition);
+            white-space: nowrap;
+        }
+
+        .vp-history-table .btn-primary {
+            background-color: var(--vp-primary);
+            border-color: var(--vp-primary);
+            color: white;
+        }
+        .vp-history-table .btn-primary:hover {
+            background-color: var(--vp-primary-dark);
+            border-color: var(--vp-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .vp-history-table .btn-outline-secondary {
+            color: var(--vp-secondary);
+            border-color: var(--vp-secondary);
+            background-color: transparent;
+        }
+        .vp-history-table .btn-outline-secondary:hover {
+            background-color: var(--vp-secondary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .modal-content {
+            border-radius: var(--vp-radius-lg);
+            border: 1px solid var(--vp-border-color);
+            background-color: var(--vp-card-bg);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--vp-border-color);
+            padding: 1rem 1.25rem;
+        }
+        .modal-title {
+            font-family: var(--vp-font-heading);
+            font-weight: 600;
+            color: var(--vp-dark);
+        }
+        [data-theme="dark"] .modal-title {
+            color: var(--vp-light);
+        }
+        .modal-header .btn-close {
+            background-color: transparent;
+            border: none;
+            font-size: 1.2rem;
+            filter: var(--vp-dark) == #212529 ? none : invert(1) grayscale(100%) brightness(200%);
+        }
+        [data-theme="dark"] .modal-header .btn-close {
+             filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+        .modal-body .detail-item {
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--vp-text-muted);
+        }
+        .modal-body .detail-item strong {
+            color: var(--vp-dark);
+            display: inline-block;
+            min-width: 120px;
+            font-weight: 500;
+        }
+        [data-theme="dark"] .modal-body .detail-item strong {
+            color: var(--vp-light);
+        }
+        .modal-body .detail-item .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .modal-footer {
+            border-top: 1px solid var(--vp-border-color);
+            padding: 0.75rem 1.25rem;
+            justify-content: flex-end;
+        }
+        
+        .payment-details-card {
+            background-color: var(--vp-light);
+            border: 1px solid var(--vp-border-color);
+            border-radius: var(--vp-radius-md);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        [data-theme="dark"] .payment-details-card {
+            background-color: var(--vp-dark); /* Slightly different from card-bg for contrast */
+        }
+        .payment-details-card h5 {
+            font-family: var(--vp-font-heading);
+            font-weight: 600;
+            color: var(--vp-dark);
+            margin-bottom: 1rem;
+        }
+        .payment-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--vp-border-color);
+            font-size: 0.9rem;
+        }
+        .payment-detail-item:last-child {
+            border-bottom: none;
+        }
+        .payment-detail-item .label {
+            color: var(--vp-text-muted);
+            font-weight: 500;
+        }
+        .payment-detail-item .value {
+            color: var(--vp-dark);
+            font-weight: 600;
+            text-align: right;
+        }
+        .payment-detail-item .value.status-pending { color: var(--vp-warning); }
+        .payment-detail-item .value.status-success { color: var(--vp-success); }
+        .payment-detail-item .value.status-failed,
+        .payment-detail-item .value.status-cancel,
+        .payment-detail-item .value.status-expired { color: var(--vp-danger); }
+
+        .qr-code-container {
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .qr-code-container img {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid var(--vp-border-color);
+            border-radius: var(--vp-radius-sm);
+            padding: 5px;
+            background-color: white;
+        }
+        .payment-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+
+        .vp-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 1029;
+            display: none;
+            transition: opacity var(--vp-transition);
+        }
+
+        @media (min-width: 992px) {
+            .vp-sidebar {
+                transform: translateX(0);
+            }
+            .vp-main-container {
+                padding-left: 260px;
+                width: calc(100% - 260px);
+            }
+            .vp-sidebar-toggler {
+                display: none;
+            }
+            .vp-topbar-brand-link.desktop-hidden {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .vp-content-wrapper {
+                flex-direction: column;
+                padding: 0.75rem;
+            }
+             .vp-main-container {
+                padding-left: 0;
+                width: 100%;
+            }
+            .vp-topbar-brand-link { 
+                display: flex !important;
+            }
+            footer {
+                flex-direction: column; 
+                align-items: flex-start; 
+                text-align: left; 
+            }
+            .footer-logo-name {
+                margin-bottom: 0.75rem; 
+            }
+            .footer-links-section {
+                width: 100%; 
+                justify-content: space-between; 
+            }
+            .vp-notification-dropdown {
+                width: 280px;
+                right: -20px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .vp-topbar, footer {
+                margin: 6px;
+                width: calc(100% - 12px);
+                padding: 0.6rem;
+            }
+            .vp-content-wrapper {
+                padding: 0.6rem;
+            }
+            .vp-section {
+                padding: 1rem;
+            }
+            .vp-topbar-brand-text {
+                font-size: 1.1rem;
+            }
+            .vp-topbar-logo {
+                height: 24px;
+            }
+            .footer-logo-name-img {
+                height: 30px;
+            }
+            .footer-logo-name-text {
+                font-size: 1.3rem;
+            }
+            .footer-links-section {
+                flex-direction: column; 
+                gap: 1rem;
+            }
+            .footer-section-title {
+                margin-bottom: 0.5rem;
+            }
+            .footer-description {
+                max-width: 100%; 
+            }
+            .vp-notification-dropdown {
+                width: 260px;
+                right: -40px;
+            }
+
+            .vp-history-table {
+                border: 1px solid var(--vp-border-color);
+                border-radius: var(--vp-radius-md);
+                overflow: hidden;
+                min-width: unset;
+            }
+
+            .vp-history-table thead {
+                display: none;
+            }
+
+            .vp-history-table tbody {
+                display: block;
+            }
+
+            .vp-history-table tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid var(--vp-border-color);
+                border-radius: var(--vp-radius-md);
+                padding: 1rem;
+                background-color: var(--vp-card-bg);
+                box-shadow: var(--vp-shadow-sm);
+                position: relative;
+            }
+
+            .vp-history-table tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--vp-shadow-md);
+            }
+
+            .vp-history-table tbody tr:last-child {
+                margin-bottom: 0;
+            }
+
+            .vp-history-table tbody td {
+                display: block;
+                text-align: left;
+                padding: 0.5rem 0;
+                border: none;
+                position: relative;
+                padding-left: 0;
+            }
+
+            .vp-history-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--vp-text-muted);
+                display: block;
+                margin-bottom: 0.25rem;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .vp-history-table tbody td:last-child {
+                padding-top: 1rem;
+                border-top: 1px solid var(--vp-border-color);
+                margin-top: 0.75rem;
+            }
+
+            .vp-history-table tbody td:last-child::before {
+                content: "Aksi";
+            }
+
+            .vp-history-table .action-buttons {
+                justify-content: flex-start;
+                gap: 0.5rem;
+            }
+
+            .vp-history-table .action-buttons .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                min-width: auto;
+            }
+
+            .vp-history-table .status-badge {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.75rem;
+                display: inline-block;
+            }
+            .payment-actions {
+                flex-direction: column;
+            }
+            .payment-actions .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 575.98px) {
+            .vp-notification-dropdown {
+                width: 240px;
+                right: -60px;
+            }
+            .vp-history-table tbody tr {
+                padding: 0.875rem;
+            }
+            .vp-history-table .action-buttons {
+                flex-direction: column;
+                gap: 0.375rem;
+            }
+            .vp-history-table .action-buttons .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+
+        [data-theme="dark"] .vp-loading-shimmer {
+            background: linear-gradient(90deg, #30363d 25%, rgba(139, 148, 158, 0.3) 50%, #30363d 75%);
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="vp-wrapper">
+        <nav class="vp-sidebar" id="vpSidebar">
+            <div class="vp-sidebar-header">
+                <img src="/media/logo.png" alt="V-Pedia Logo" class="vp-sidebar-header-logo">
+                <a class="vp-sidebar-brand-text" href="/dashboard">V-Pedia</a>
+            </div>
+            <div class="vp-sidebar-menu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi bi-house-door-fill"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/deposit">
+                            <i class="bi bi-wallet2"></i>
+                            <span>Deposit</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/order">
+                            <i class="bi bi-cart-check-fill"></i>
+                            <span>Order</span>
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="/price-list">
+                            <i class="bi bi-tags-fill"></i>
+                            <span>List Harga</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mutation-deposit">
+                            <i class="bi bi-cash-stack"></i>
+                            <span>Mutasi Deposit</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mutation-order">
+                            <i class="bi bi-receipt-cutoff"></i>
+                            <span>Mutasi Order</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="vp-sidebar-heading">User Settings</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="bi bi-person-fill"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="/api-key-page">
+                            <i class="bi bi-key-fill"></i>
+                            <span>API Key</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">
+                            <i class="bi bi-code-slash"></i>
+                            <span>Dokumentasi API</span>
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/auth/logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="vp-main-container" id="vpMainContainer">
+            <header class="vp-topbar">
+                <div class="vp-topbar-brand-toggler">
+                    <button class="vp-sidebar-toggler" id="vpSidebarToggler" type="button" aria-label="Toggle sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                     <a href="#" class="nav-link d-none d-md-inline-block" title="Mode Layar Penuh" onclick="toggleFullScreen(event)">
+                        <i class="bi bi-arrows-fullscreen fs-5"></i>
+                    </a>
+                    <a href="/dashboard" class="vp-topbar-brand-link" id="topbarBrand">
+                        <img src="/media/logo.png" alt="V-Pedia Logo" class="vp-topbar-logo">
+                        <span class="vp-topbar-brand-text">V-Pedia</span>
+                    </a>
+                </div>
+                
+                <div class="vp-topbar-actions">
+                    <button class="vp-theme-toggle" id="themeToggle" title="Toggle Theme">
+                        <i class="bi bi-moon-fill" id="themeIcon"></i>
+                    </button>
+                    <div class="vp-notification-wrapper">
+                        <button class="vp-notification-toggle" id="notificationToggle" title="Notifikasi">
+                            <i class="bi bi-bell-fill fs-5" id="notificationIcon"></i>
+                            <span class="vp-notification-badge" id="notificationBadge" style="display: none;"></span>
+                        </button>
+                        <div class="vp-notification-dropdown" id="notificationDropdown">
+                            <div class="vp-notification-header">Notifikasi</div>
+                            <div class="vp-notification-list" id="notificationList">
+                                <div class="vp-notification-empty">Memuat notifikasi...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown vp-profile-dropdown">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://via.placeholder.com/150/7000F0/FFFFFF?Text=V" alt="User" id="userProfileImageNav">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><h6 class="dropdown-header" id="userFullnameNavDropdown">Nama Pengguna</h6></li>
+                            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person-fill"></i>Profil</a></li>
+                            <li><a class="dropdown-item" href="/support"><i class="fas fa-headset"></i>  Support</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/auth/logout"><i class="bi bi-box-arrow-right"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="vp-content-wrapper">
+                <main class="vp-main-content">
+                    <section class="vp-section">
+                        <h2 class="vp-section-title">Form Deposit Saldo</h2>
+                        <form id="formDeposit">
+                            <div class="mb-3">
+                                <label for="nominal" class="form-label fw-semibold">Nominal Deposit</label>
+                                <input type="number" class="form-control form-control-lg" id="nominal" required placeholder="Masukkan nominal, contoh: 10000">
+                                <div class="form-text">Masukkan jumlah nominal yang ingin Anda depositkan.</div>
+                            </div>
+                    
+                            <div class="mb-4">
+                                <label for="metode" class="form-label fw-semibold">Metode Pembayaran</label>
+                                <select class="form-select form-select-lg" id="metode" required>
+                                    <option value="" disabled selected>Memuat metode...</option>
+                                </select>
+                                <div class="form-text">Pilih salah satu metode pembayaran yang tersedia.</div>
+                            </div>
+                    
+                            <button type="submit" class="btn btn-primary btn-lg w-100" id="submitDepositBtn">
+                                <i class="bi bi-send-fill me-2"></i>Kirim Deposit
+                            </button>
+                        </form>
+                    
+                        <div id="depositResult" class="mt-4"></div>
+                    </section>
+
+                    <section class="vp-section">
+                        <h2 class="vp-section-title">History Deposit Terbaru</h2>
+                        <div class="vp-history-table-container">
+                            <table class="vp-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID Transaksi</th>
+                                        <th>Nominal</th>
+                                        <th>Metode</th>
+                                        <th>Status</th>
+                                        <th>Tanggal</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="depositHistoryBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="vp-loading-shimmer mx-auto" style="width: 80%; height: 40px;"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </main>
+            </div>
+            
+            <footer>
+                <div class="footer-left">
+                    <a href="/dashboard" class="footer-logo-name">
+                        <img src="/media/logo.png" alt="V-Pedia Logo" class="footer-logo-name-img">
+                        <span class="footer-logo-name-text">V-Pedia</span>
+                    </a>
+                    <div class="footer-description">
+                        <i class="bi bi-info-circle-fill"></i>
+                        V-Pedia adalah salah satu website topup, aplikasi premium, dan integrasi H2H yang cepat, mudah digunakan, aman, dan terpercaya. Terbaru di Indonesia.
+                    </div>
+                     <div class="footer-copyright">
+                        V-Pedia © <span id="currentYear"></span>. All Rights Reserved.
+                    </div>
+                </div>
+                
+                <div class="footer-links-section">
+                    <div>
+                        <span class="footer-section-title">Navigasi</span>
+                        <ul>
+                            <li><a href="/dashboard">Beranda</a></li>
+                            <li><a href="/deposit">Deposit</a></li>
+                            <li><a href="/order">Pesanan</a></li>
+                            <li><a href="/price-list">Daftar Harga</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="footer-section-title">Informasi</span>
+                        <ul>
+                            <li><a href="/profile">Profil Pengguna</a></li>
+                            <li><a href="/api-key-page">API Key</a></li>
+                            <li><a href="/docs">Dokumentasi API</a></li>
+                            <li><a href="#">Syarat & Ketentuan</a></li>
+                            <li><a href="#">Kebijakan Privasi</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="footer-section-title">Kontak Kami</span>
+                        <ul>
+                            <li><i class="bi bi-whatsapp"></i> <a href="https://wa.me/6289612979339" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                            <li><i class="bi bi-envelope-fill"></i> <a href="mailto:cs.vpedia.official@gmail.com">Email Support</a></li>
+                            <li><i class="bi bi-telegram"></i> <a href="https://t.me/vpedia_support" target="_blank" rel="noopener noreferrer">Telegram</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <div class="footer-social-links">
+                        <a href="https://whatsapp.com/channel/0029VbAHhC442DcYGr8EHb1J" aria-label="Saluran"><i class="bi bi-whatsapp"></i></a>
+                        <a href="https://t.me/v_pedia" aria-label="Telegram"><i class="bi bi-telegram"></i></a>
+                        <a href="https://chat.whatsapp.com/LklpL5U8gPE8S4c2ewNXVi" aria-label="Group"><i class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
     </div>
-    <div aria-labelledby="pendingTitle" aria-modal="true" class="pending-popup" id="pendingPopup" role="dialog" tabindex="-1">
-     <h3 id="pendingTitle">
-      <i aria-hidden="true" class="fas fa-shopping-cart">
-      </i>
-      Deposit Pending
-     </h3>
-     <div id="pendingListContainer">
-      <p class="empty-message">
-       Tidak ada deposit pending saat ini.
-      </p>
-     </div>
+
+    <div class="modal fade vp-notification-modal" id="notificationDetailModal" tabindex="-1" aria-labelledby="notificationDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationDetailModalLabel">
+                        <span id="notificationDetailIcon"></span>
+                        <span id="notificationDetailTitle">Detail Notifikasi</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="notification-detail-message" id="notificationDetailMessage"></div>
+                    <div class="notification-detail-time" id="notificationDetailTime"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <a href="#" class="btn btn-primary" id="notificationDetailLink" style="display: none;" target="_blank">Buka Link</a>
+                </div>
+            </div>
+        </div>
     </div>
-   </div>
-  </header>
-  <main aria-label="Formulir Deposit Saldo" class="container" role="main">
-   <h1>
-    <i aria-hidden="true" class="fas fa-wallet">
-    </i>
-    Deposit Saldo
-   </h1>
-   <form aria-describedby="formDescription" id="depositForm" novalidate="">
-    <p id="formDescription" style="font-weight:600; color:#475569;">
-     Pilih jenis dan metode deposit, lalu masukkan nominal untuk membuat permintaan deposit baru.
-    </p>
-    <div>
-     <label for="depositType">
-      <i aria-hidden="true" class="fas fa-list-alt">
-      </i>
-      Jenis Deposit
-     </label>
-     <select aria-describedby="typeHelp" aria-label="Pilih jenis deposit" aria-required="true" id="depositType" name="type" required="">
-      <option selected="" value="ewallet">
-       E-Wallet
-      </option>
-      <option value="va">
-       Virtual Account
-      </option>
-      <option value="bank">
-       Bank Transfer
-      </option>
-     </select>
-     <small id="typeHelp" style="color:#64748b; font-size:0.85rem; user-select:text;">
-      Pilih jenis metode pembayaran
-     </small>
+
+    <div class="modal fade" id="depositDetailModal" tabindex="-1" aria-labelledby="depositDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="depositDetailModalLabel">Detail Pembayaran Deposit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="depositDetailModalBody">
+                </div>
+                <div class="modal-footer" id="depositDetailModalFooter">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-     <label for="depositMethod">
-      <i aria-hidden="true" class="fas fa-credit-card">
-      </i>
-      Metode Deposit
-     </label>
-     <div aria-label="Daftar metode deposit" class="methods-list" id="methodsList" role="list">
-      <p style="color:#64748b; font-style:italic; text-align:center; margin-top: 12px; user-select:none;">
-       Memuat metode deposit...
-      </p>
-     </div>
-    </div>
-    <div>
-     <label for="nominalInput">
-      <i aria-hidden="true" class="fas fa-coins">
-      </i>
-      Nominal Deposit (Rp)
-     </label>
-     <input aria-describedby="nominalHelp" aria-label="Masukkan nominal deposit dalam rupiah" aria-required="true" autocomplete="off" id="nominalInput" inputmode="numeric" min="500" name="nominal" pattern="[0-9]*" placeholder="Masukkan nominal deposit" required="" step="100" type="number"/>
-     <small id="nominalHelp" style="color:#64748b; font-size:0.85rem; user-select:text;">
-      Minimal deposit Rp 500
-     </small>
-    </div>
-    <button aria-busy="false" aria-live="polite" class="btn-primary" disabled="" type="submit">
-     <i aria-hidden="true" class="fas fa-paper-plane btn-icon">
-     </i>
-     Buat Permintaan Deposit
-    </button>
-   </form>
-   <div id="depositResult" style="display:none; margin-top:32px;"></div>
-  </main>
-  <div aria-label="Informasi deposit sedang berlangsung" aria-modal="true" class="deposit-timer-overlay" id="depositTimerOverlay" role="dialog" style="display:none;">
-   <div class="deposit-timer-box" role="document" tabindex="0">
-    <button aria-label="Tutup informasi deposit" class="deposit-timer-close" id="closeTimerBtn" title="Tutup">
-     ×
-    </button>
-    <h2>
-     <i aria-hidden="true" class="fas fa-hourglass-half">
-     </i>
-     Deposit Sedang Berlangsung
-    </h2>
-    <div class="deposit-timer-details">
-     <dl>
-      <dt>
-       Metode Pembayaran
-      </dt>
-      <dd id="timerMethodName">
-      </dd>
-      <dt>
-       Nominal Deposit
-      </dt>
-      <dd id="timerAmount">
-      </dd>
-      <dt>
-       Biaya Admin
-      </dt>
-      <dd id="timerFee">
-      </dd>
-      <dt>
-       Saldo Masuk (Est.)
-      </dt>
-      <dd id="timerGetBalance">
-      </dd>
-      <dt id="timerBankLabel" style="display:none;">
-      </dt>
-      <dd id="timerBankValue" style="display:none;">
-      </dd>
-      <dt id="timerAccountLabel" style="display:none;">
-      </dt>
-      <dd id="timerAccountValue" style="display:none;">
-      </dd>
-      <dt id="timerNameLabel" style="display:none;">
-      </dt>
-      <dd id="timerNameValue" style="display:none;">
-      </dd>
-      <dt>
-       Waktu Dibuat
-      </dt>
-      <dd id="timerCreatedAt">
-      </dd>
-      <dt>
-       Waktu Kedaluwarsa
-      </dt>
-      <dd id="timerExpiredAt">
-      </dd>
-     </dl>
-    </div>
-    <div class="deposit-timer-status" id="timerStatus">
-    </div>
-    <div class="deposit-timer-countdown" id="timerCountdown">
-    </div>
-    <div class="deposit-timer-qr" id="timerQrContainer">
-    </div>
-    <div class="deposit-timer-buttons">
-     <button class="btn-cancel-deposit" id="cancelDepositBtn" title="Batalkan deposit">
-      <i class="fas fa-times-circle">
-      </i>
-      Batalkan Deposit
-     </button>
-     <button class="btn-close-timer" id="closeDepositBtn" title="Tutup informasi deposit">
-      <i class="fas fa-check-circle">
-      </i>
-      Selesai
-     </button>
-    </div>
-   </div>
-  </div>
-  <script src="/style/deposit/deposit.js"></script>
- </body>
+
+    <div class="vp-sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        const vpSidebar = document.getElementById('vpSidebar');
+        const vpSidebarToggler = document.getElementById('vpSidebarToggler');
+        const vpMainContainer = document.getElementById('vpMainContainer');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        const topbarBrand = document.getElementById('topbarBrand');
+
+        const notificationToggle = document.getElementById('notificationToggle');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationIconEl = document.getElementById('notificationIcon');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const notificationList = document.getElementById('notificationList');
+        let notificationsData = [];
+        
+        const metodeSelect = document.getElementById("metode");
+        const depositResultDiv = document.getElementById("depositResult");
+        const formDeposit = document.getElementById("formDeposit");
+        const submitDepositBtn = document.getElementById("submitDepositBtn");
+        const depositHistoryBody = document.getElementById("depositHistoryBody");
+        const depositDetailModalEl = document.getElementById('depositDetailModal');
+        const depositDetailModal = new bootstrap.Modal(depositDetailModalEl);
+
+
+        function toggleFullScreen(event) {
+            event.preventDefault();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        async function fetchMetodeDeposit() {
+          try {
+            metodeSelect.disabled = true;
+            metodeSelect.innerHTML = '<option value="" disabled selected>Memuat metode...</option>';
+            const res = await fetch('/api/webtrx/deposit/metode', { method: 'POST' });
+            const data = await res.json();
+            if (!data.success || !data.metode) throw new Error(data.message || 'Format respons tidak sesuai');
+
+            metodeSelect.innerHTML = '<option value="" disabled selected>Pilih Metode Pembayaran</option>';
+            data.metode.forEach((m) => {
+              const opt = document.createElement("option");
+              opt.value = m.metode;
+              opt.textContent = `${m.name} (${m.type}) - Min: Rp${parseInt(m.min).toLocaleString("id-ID")}`;
+              opt.dataset.min = m.min;
+              opt.dataset.type = m.type;
+              opt.dataset.name = m.name;
+              metodeSelect.appendChild(opt);
+            });
+          } catch (err) {
+            metodeSelect.innerHTML = `<option disabled selected>Gagal memuat: ${err.message}</option>`;
+            console.error("Error fetching deposit methods:", err);
+          } finally {
+            metodeSelect.disabled = false;
+          }
+        }
+
+        function formatCurrency(amount) {
+            return `Rp${parseInt(amount).toLocaleString('id-ID')}`;
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function renderPaymentDetails(data, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            let paymentInfoHtml = `
+                <div class="payment-details-card">
+                    <h5 class="text-center mb-3">Detail Pembayaran</h5>
+                    <div class="payment-detail-item">
+                        <span class="label">ID Transaksi:</span>
+                        <span class="value">${data.id || data.reff_id || '-'}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Nominal Deposit:</span>
+                        <span class="value">${formatCurrency(data.nominal)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Biaya Admin:</span>
+                        <span class="value">${formatCurrency(data.fee)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label fw-bold">Total Pembayaran:</span>
+                        <span class="value fw-bold text-primary">${formatCurrency(data.nominal)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Saldo Diterima:</span>
+                        <span class="value">${formatCurrency(data.get_balance)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Metode:</span>
+                        <span class="value">${data.metode || '-'}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Status:</span>
+                        <span class="value status-${data.status.toLowerCase()}">${data.status}</span>
+                    </div>`;
+
+            if (data.tujuan) {
+                paymentInfoHtml += `
+                    <div class="payment-detail-item">
+                        <span class="label">Nomor Tujuan/VA:</span>
+                        <span class="value">${data.tujuan}</span>
+                    </div>`;
+            }
+            if (data.atas_nama) {
+                 paymentInfoHtml += `
+                    <div class="payment-detail-item">
+                        <span class="label">Atas Nama:</span>
+                        <span class="value">${data.atas_nama}</span>
+                    </div>`;
+            }
+
+            if (data.qr_image && data.status === 'pending') {
+                paymentInfoHtml += `
+                    <div class="qr-code-container">
+                        <p class="mb-2">Silakan scan QR Code di bawah ini:</p>
+                        <img src="${data.qr_image}" alt="QR Code Pembayaran">
+                    </div>`;
+            }
+            
+            if (data.expired_at) {
+                 paymentInfoHtml += `
+                    <div class="payment-detail-item text-danger">
+                        <span class="label">Bayar Sebelum:</span>
+                        <span class="value">${formatDateTime(data.expired_at)}</span>
+                    </div>`;
+            }
+            paymentInfoHtml += `</div>`;
+            
+            paymentInfoHtml += `<div class="payment-actions">`;
+            if (data.status === 'pending') {
+                paymentInfoHtml += `<button class="btn btn-danger" onclick="cancelDeposit('${data.id}', true)">Batalkan Deposit</button>`;
+            }
+            paymentInfoHtml += `<button class="btn btn-info" onclick="checkDepositStatus('${data.id}', true)">Cek Status Pembayaran</button>`;
+            paymentInfoHtml += `</div>`;
+            
+            container.innerHTML = paymentInfoHtml;
+        }
+
+
+        formDeposit.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            submitDepositBtn.disabled = true;
+            submitDepositBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...`;
+
+            const nominal = parseInt(document.getElementById("nominal").value);
+            const metode = metodeSelect.value;
+            const selectedOption = metodeSelect.options[metodeSelect.selectedIndex];
+            const minDeposit = parseInt(selectedOption.dataset.min) || 0;
+
+            depositResultDiv.innerHTML = '';
+
+            if (!nominal || !metode) {
+                depositResultDiv.innerHTML = `<div class="alert alert-warning">Nominal dan metode wajib diisi!</div>`;
+                submitDepositBtn.disabled = false;
+                submitDepositBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Kirim Deposit';
+                return;
+            }
+            if (nominal < minDeposit) {
+                depositResultDiv.innerHTML = `<div class="alert alert-warning">Nominal minimal untuk metode ${selectedOption.dataset.name} adalah ${formatCurrency(minDeposit)}.</div>`;
+                submitDepositBtn.disabled = false;
+                submitDepositBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Kirim Deposit';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/webtrx/deposit/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nominal, metode })
+                });
+                const result = await res.json();
+
+                if (!result.success) {
+                    depositResultDiv.innerHTML = `<div class="alert alert-danger">Error: ${result.message}</div>`;
+                } else {
+                    const data = result.data;
+                    depositResultDiv.innerHTML = `<div class="alert alert-success">Permintaan deposit berhasil dibuat. Silakan selesaikan pembayaran.</div>`;
+                    renderPaymentDetails(data, 'depositResult');
+                    formDeposit.reset();
+                    fetchDepositHistory(); 
+                }
+            } catch (err) {
+                depositResultDiv.innerHTML = `<div class="alert alert-danger">Terjadi kesalahan: ${err.message}</div>`;
+                console.error("Error creating deposit:", err);
+            } finally {
+                submitDepositBtn.disabled = false;
+                submitDepositBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Kirim Deposit';
+            }
+        });
+
+        async function fetchDepositHistory() {
+            try {
+                depositHistoryBody.innerHTML = `<tr><td colspan="6" class="text-center"><div class="vp-loading-shimmer mx-auto" style="width: 80%; height: 40px;"></div></td></tr>`;
+                const res = await fetch('/api/history/deposit');
+                const data = await res.json();
+
+                if (!data.success || !data.historyDeposit) {
+                    depositHistoryBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Gagal memuat riwayat: ${data.message || 'Data tidak ditemukan'}</td></tr>`;
+                    return;
+                }
+
+                if (data.historyDeposit.length === 0) {
+                    depositHistoryBody.innerHTML = `<tr><td colspan="6" class="text-center">Belum ada riwayat deposit.</td></tr>`;
+                    return;
+                }
+
+                depositHistoryBody.innerHTML = '';
+                data.historyDeposit.slice().reverse().forEach(tx => {
+                    const row = depositHistoryBody.insertRow();
+                    row.innerHTML = `
+                        <td data-label="ID Transaksi">${tx.id}</td>
+                        <td data-label="Nominal">${formatCurrency(tx.nominal)}</td>
+                        <td data-label="Metode">${tx.metode}</td>
+                        <td data-label="Status"><span class="status-badge status-${tx.status.toLowerCase()}">${tx.status}</span></td>
+                        <td data-label="Tanggal">${formatDateTime(tx.created_at)}</td>
+                        <td data-label="Aksi">
+                            <button class="btn btn-sm btn-primary" onclick="showDepositDetail('${tx.id}', '${tx.status}')">
+                                <i class="bi bi-eye-fill"></i> Detail
+                            </button>
+                        </td>
+                    `;
+                });
+            } catch (err) {
+                depositHistoryBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${err.message}</td></tr>`;
+                console.error("Error fetching deposit history:", err);
+            }
+        }
+        
+        function showDepositDetail(depositId, status) {
+            const modalBody = document.getElementById('depositDetailModalBody');
+            const modalFooter = document.getElementById('depositDetailModalFooter');
+            modalBody.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div> <p class="mt-2">Memuat detail...</p></div>';
+            modalFooter.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+            depositDetailModal.show();
+
+            if (status === 'pending') {
+                 fetch('/api/history/deposit')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.historyDeposit) {
+                            const depositData = data.historyDeposit.find(d => d.id === depositId);
+                            if (depositData) {
+                                renderModalContent(depositData, false);
+                            } else {
+                                modalBody.innerHTML = '<p class="text-danger text-center">Detail deposit tidak ditemukan.</p>';
+                            }
+                        } else {
+                             modalBody.innerHTML = '<p class="text-danger text-center">Gagal memuat detail deposit dari riwayat.</p>';
+                        }
+                    })
+                    .catch(err => {
+                        modalBody.innerHTML = `<p class="text-danger text-center">Error: ${err.message}</p>`;
+                    });
+            } else {
+                checkDepositStatus(depositId, false, true); 
+            }
+        }
+
+        function renderModalContent(depositData, isFromApiCheck = false) {
+            const modalBody = document.getElementById('depositDetailModalBody');
+            const modalFooter = document.getElementById('depositDetailModalFooter');
+            
+            let contentHtml = `
+                <div class="payment-details-card">
+                    <div class="payment-detail-item">
+                        <span class="label">ID Transaksi:</span>
+                        <span class="value">${depositData.id || depositData.reff_id || '-'}</span>
+                    </div>
+                     <div class="payment-detail-item">
+                        <span class="label">Reff ID:</span>
+                        <span class="value">${depositData.reff_id || '-'}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Nominal Deposit:</span>
+                        <span class="value">${formatCurrency(depositData.nominal)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Biaya Admin:</span>
+                        <span class="value">${formatCurrency(depositData.fee)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label fw-bold">Total Pembayaran:</span>
+                        <span class="value fw-bold text-primary">${formatCurrency(depositData.nominal)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Saldo Diterima:</span>
+                        <span class="value">${formatCurrency(depositData.get_balance)}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Metode:</span>
+                        <span class="value">${depositData.metode || '-'}</span>
+                    </div>
+                    <div class="payment-detail-item">
+                        <span class="label">Status:</span>
+                        <span class="value status-${depositData.status.toLowerCase()}">${depositData.status}</span>
+                    </div>
+                     <div class="payment-detail-item">
+                        <span class="label">Tanggal Dibuat:</span>
+                        <span class="value">${formatDateTime(depositData.created_at)}</span>
+                    </div>`;
+
+            if (depositData.tujuan) {
+                contentHtml += `
+                    <div class="payment-detail-item">
+                        <span class="label">Nomor Tujuan/VA:</span>
+                        <span class="value">${depositData.tujuan}</span>
+                    </div>`;
+            }
+            if (depositData.atas_nama) {
+                 contentHtml += `
+                    <div class="payment-detail-item">
+                        <span class="label">Atas Nama:</span>
+                        <span class="value">${depositData.atas_nama}</span>
+                    </div>`;
+            }
+
+            if (depositData.qr_image && depositData.status === 'pending') {
+                contentHtml += `
+                    <div class="qr-code-container">
+                        <p class="mb-2">Silakan scan QR Code di bawah ini:</p>
+                        <img src="${depositData.qr_image}" alt="QR Code Pembayaran">
+                    </div>`;
+            }
+            
+            if (depositData.expired_at && depositData.status === 'pending') {
+                 contentHtml += `
+                    <div class="payment-detail-item text-danger">
+                        <span class="label">Bayar Sebelum:</span>
+                        <span class="value">${formatDateTime(depositData.expired_at)}</span>
+                    </div>`;
+            }
+            contentHtml += `</div>`;
+            modalBody.innerHTML = contentHtml;
+
+            let footerHtml = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>`;
+            if (depositData.status === 'pending' || depositData.status === 'processing') {
+                 footerHtml += `<button type="button" class="btn btn-info" id="modalCheckStatusBtn" onclick="checkDepositStatus('${depositData.id}', false, true)">Cek Status (API)</button>`;
+            }
+            if (depositData.status === 'pending') {
+                 footerHtml += `<button type="button" class="btn btn-danger" id="modalCancelBtn" onclick="cancelDeposit('${depositData.id}', false)">Batalkan Deposit</button>`;
+            }
+            modalFooter.innerHTML = footerHtml;
+        }
+
+        async function checkDepositStatus(depositId, isFromResultDiv = false, isFromModal = false) {
+            let targetDiv, checkButton;
+            if (isFromResultDiv) {
+                targetDiv = depositResultDiv;
+            } else if (isFromModal) {
+                targetDiv = document.getElementById('depositDetailModalBody');
+                checkButton = document.getElementById('modalCheckStatusBtn');
+                if(checkButton) {
+                    checkButton.disabled = true;
+                    checkButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengecek...`;
+                }
+            } else {
+                targetDiv = depositResultDiv;
+            }
+            
+            const originalHtml = targetDiv.innerHTML;
+            if(!isFromModal) targetDiv.innerHTML = `<div class="alert alert-info">Mengecek status pembayaran...</div>`;
+
+
+            try {
+                const res = await fetch('/api/webtrx/deposit/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: depositId })
+                });
+                const result = await res.json();
+                
+                if (result.success && result.data) {
+                    if (isFromResultDiv) {
+                        renderPaymentDetails(result.data, 'depositResult');
+                    } else if (isFromModal) {
+                        renderModalContent(result.data, true);
+                    }
+                    if (result.data.status !== 'pending' && result.data.status !== 'processing') {
+                         fetchDepositHistory(); 
+                    }
+                } else {
+                    const message = result.message || 'Gagal memeriksa status.';
+                    if (isFromModal) {
+                        targetDiv.innerHTML = `<p class="text-danger text-center">${message}</p>`;
+                         document.getElementById('modalCheckStatusBtn').style.display = 'none';
+                         document.getElementById('modalCancelBtn').style.display = 'none';
+                    } else {
+                        targetDiv.innerHTML = `<div class="alert alert-danger">${message}</div>` + (isFromResultDiv ? originalHtml.replace(/<div class="alert.*?<\/div>/s, '') : '');
+                    }
+                }
+            } catch (err) {
+                 const message = `Error: ${err.message}`;
+                 if (isFromModal) {
+                    targetDiv.innerHTML = `<p class="text-danger text-center">${message}</p>`;
+                     document.getElementById('modalCheckStatusBtn').style.display = 'none';
+                     document.getElementById('modalCancelBtn').style.display = 'none';
+                 } else {
+                    targetDiv.innerHTML = `<div class="alert alert-danger">${message}</div>` + (isFromResultDiv ? originalHtml.replace(/<div class="alert.*?<\/div>/s, '') : '');
+                 }
+            } finally {
+                if (isFromModal && checkButton) {
+                    checkButton.disabled = false;
+                    checkButton.innerHTML = 'Cek Status (API)';
+                }
+            }
+        }
+
+        async function cancelDeposit(depositId, isFromResultDiv = false) {
+            if (!confirm("Anda yakin ingin membatalkan deposit ini?")) {
+                return;
+            }
+            
+            let cancelButton;
+            if (isFromResultDiv) {
+                 const buttons = depositResultDiv.querySelectorAll('button');
+                 buttons.forEach(btn => btn.disabled = true);
+                 cancelButton = Array.from(buttons).find(btn => btn.textContent.includes('Batalkan'));
+                 if (cancelButton) cancelButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Membatalkan...`;
+            } else {
+                cancelButton = document.getElementById('modalCancelBtn');
+                if (cancelButton) {
+                    cancelButton.disabled = true;
+                    cancelButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Membatalkan...`;
+                }
+                const checkBtnModal = document.getElementById('modalCheckStatusBtn');
+                if(checkBtnModal) checkBtnModal.disabled = true;
+            }
+
+
+            try {
+                const res = await fetch('/api/webtrx/deposit/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: depositId })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    alert('Deposit berhasil dibatalkan.');
+                    if (isFromResultDiv) {
+                        depositResultDiv.innerHTML = `<div class="alert alert-info">Deposit dengan ID ${depositId} telah dibatalkan.</div>`;
+                    } else {
+                        depositDetailModal.hide();
+                    }
+                    fetchDepositHistory();
+                } else {
+                    alert(`Gagal membatalkan deposit: ${result.message}`);
+                }
+            } catch (err) {
+                alert(`Error saat membatalkan deposit: ${err.message}`);
+            } finally {
+                 if (isFromResultDiv) {
+                    const buttons = depositResultDiv.querySelectorAll('button');
+                    buttons.forEach(btn => btn.disabled = false);
+                    if (cancelButton) cancelButton.innerHTML = `Batalkan Deposit`;
+                } else {
+                    if (cancelButton) {
+                        cancelButton.disabled = false;
+                        cancelButton.innerHTML = `Batalkan Deposit`;
+                    }
+                    const checkBtnModal = document.getElementById('modalCheckStatusBtn');
+                    if(checkBtnModal) checkBtnModal.disabled = false;
+                }
+            }
+        }
+
+        const savedTheme = localStorage.getItem('vp-theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'bi bi-sun-fill';
+            } else {
+                themeIcon.className = 'bi bi-moon-fill';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('vp-theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+
+        function updateTopbarBrandVisibility(isSidebarActive) {
+            if (window.innerWidth >= 992) { 
+                if (isSidebarActive) {
+                    topbarBrand.classList.add('desktop-hidden');
+                } else {
+                    topbarBrand.classList.remove('desktop-hidden');
+                }
+            } else { 
+                topbarBrand.classList.remove('desktop-hidden');
+            }
+        }
+
+        function toggleSidebar() {
+            vpSidebar.classList.toggle('active');
+            const isActive = vpSidebar.classList.contains('active');
+            updateTopbarBrandVisibility(isActive);
+            
+            if (window.innerWidth < 992) {
+                sidebarOverlay.style.display = isActive ? 'block' : 'none';
+                setTimeout(() => {
+                    sidebarOverlay.style.opacity = isActive ? '1' : '0';
+                }, 10);
+            }
+        }
+        
+        function closeSidebar() {
+            vpSidebar.classList.remove('active');
+            updateTopbarBrandVisibility(false);
+            sidebarOverlay.style.opacity = '0';
+            setTimeout(() => {
+                sidebarOverlay.style.display = 'none';
+            }, 300);
+        }
+
+        vpSidebarToggler.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        function updateLayoutForSidebar() {
+            const isDesktop = window.innerWidth >= 992;
+            if (isDesktop) {
+                vpSidebar.classList.add('active'); 
+                vpMainContainer.style.paddingLeft = '260px';
+                vpMainContainer.style.width = 'calc(100% - 260px)';
+                sidebarOverlay.style.display = 'none';
+            } else {
+                vpSidebar.classList.remove('active'); 
+                vpMainContainer.style.paddingLeft = '0';
+                vpMainContainer.style.width = '100%';
+            }
+            updateTopbarBrandVisibility(vpSidebar.classList.contains('active'));
+        }
+
+        window.addEventListener('resize', updateLayoutForSidebar);
+
+        function setActiveSidebarLink() {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.vp-sidebar-menu .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        function getTimeAgo(dateString) {
+            const now = new Date();
+            const notificationDate = new Date(dateString);
+            const diffInSeconds = Math.floor((now - notificationDate) / 1000);
+
+            if (diffInSeconds < 60) return 'Baru saja';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`;
+            return `${Math.floor(diffInSeconds / 86400)} hari yang lalu`;
+        }
+
+        function getNotificationIcon(type) {
+            const icons = { info: 'bi-info-circle-fill', promo: 'bi-gift-fill', maintenance: 'bi-tools', success: 'bi-check-circle-fill' };
+            return `<i class="bi ${icons[type] || 'bi-bell-fill'}"></i>`;
+        }
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/api/notif');
+                const data = await response.json();
+                if (data.success && data.data && data.data.success && data.data.data) {
+                    notificationsData = data.data.data;
+                    renderNotifications();
+                    updateNotificationBadge();
+                } else {
+                    renderEmptyNotifications();
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                renderEmptyNotifications();
+            }
+        }
+
+        function renderNotifications() {
+            if (notificationsData.length === 0) {
+                renderEmptyNotifications();
+                return;
+            }
+            notificationList.innerHTML = notificationsData.map(n => `
+                <div class="vp-notification-item" onclick="showNotificationDetail(${n.id})">
+                    <div class="vp-notification-icon ${n.tipe || 'info'}">${getNotificationIcon(n.tipe)}</div>
+                    <div class="vp-notification-content">
+                        <div class="vp-notification-title">${n.judul}</div>
+                        <div class="vp-notification-message">${n.pesan}</div>
+                        <div class="vp-notification-time">${getTimeAgo(n.created_at)}</div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function renderEmptyNotifications() {
+            notificationList.innerHTML = '<div class="vp-notification-empty">Tidak ada notifikasi</div>';
+        }
+
+        function updateNotificationBadge() {
+            notificationBadge.style.display = notificationsData.length > 0 ? 'block' : 'none';
+            if (notificationsData.length > 0) notificationIconEl.classList.add('vp-notification-shake');
+            else notificationIconEl.classList.remove('vp-notification-shake');
+        }
+
+        function showNotificationDetail(notificationId) {
+            const n = notificationsData.find(item => item.id === notificationId);
+            if (!n) return;
+            document.getElementById('notificationDetailTitle').textContent = n.judul;
+            document.getElementById('notificationDetailIcon').innerHTML = getNotificationIcon(n.tipe);
+            document.getElementById('notificationDetailIcon').className = `vp-notification-icon ${n.tipe}`;
+            document.getElementById('notificationDetailMessage').textContent = n.pesan;
+            document.getElementById('notificationDetailTime').textContent = `Dikirim pada: ${new Date(n.created_at).toLocaleString('id-ID')}`;
+            const linkEl = document.getElementById('notificationDetailLink');
+            if (n.url && n.url !== '#' && n.url.trim() !== '') {
+                linkEl.href = n.url;
+                linkEl.style.display = 'inline-block';
+            } else {
+                linkEl.style.display = 'none';
+            }
+            notificationDropdown.classList.remove('show');
+            new bootstrap.Modal(document.getElementById('notificationDetailModal')).show();
+        }
+
+        notificationToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationToggle.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                notificationDropdown.classList.remove('show');
+            }
+        });
+        
+        async function fetchUserDataForNav() {
+            try {
+                const response = await fetch('/profile/users');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                if (data.success && data.user) {
+                    document.getElementById('userFullnameNavDropdown').textContent = data.user.fullname || 'Pengguna';
+                    const profileImgNav = document.getElementById('userProfileImageNav');
+                    if (data.user.profileUrl && data.user.profileUrl.startsWith('http')) {
+                        profileImgNav.src = data.user.profileUrl;
+                    } else {
+                        profileImgNav.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.fullname || 'V P')}&background=0D6EFD&color=fff&size=36&font-size=0.5&bold=true&rounded=true`;
+                    }
+                    profileImgNav.onerror = function() {
+                        this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.fullname || 'V P')}&background=0D6EFD&color=fff&size=36&font-size=0.5&bold=true&rounded=true`;
+                    };
+                } else {
+                     if (data.message && data.message.toLowerCase().includes("user not found")) {
+                        window.location.href = '/auth/login';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data for nav:', error);
+                 if (error.message.includes('HTTP error!')) {
+                    window.location.href = '/auth/login';
+                }
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLayoutForSidebar();
+            setActiveSidebarLink();
+            fetchUserDataForNav();
+            fetchNotifications();
+            fetchMetodeDeposit();
+            fetchDepositHistory();
+        });
+    </script>
+</body>
 </html>

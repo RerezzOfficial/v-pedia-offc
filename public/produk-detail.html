@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Produk dari Provider</title>
+  <style>
+    .produk-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      display: inline-block;
+      border-radius: 10px;
+      text-align: center;
+      width: 180px;
+    }
+    img { max-width: 60px; height: auto; }
+  </style>
+</head>
+<body>
+  <h2 id="judul">Memuat...</h2>
+  <div id="produk-container">Memuat...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category");
+    const provider = params.get("provider");
+
+    // Ubah judul sesuai kondisi
+    const judul = document.getElementById("judul");
+    if (!category) {
+      judul.innerText = "Semua Produk";
+    } else if (provider) {
+      judul.innerText = `Produk: ${provider} (${category})`;
+    } else {
+      judul.innerText = `Kategori: ${category}`;
+    }
+
+    async function loadProduk() {
+      let url = "/api/webtrx/produk";
+      if (category) url += `?category=${encodeURIComponent(category)}`;
+
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+
+        const container = document.getElementById("produk-container");
+        container.innerHTML = "";
+
+        if (!json.success || json.data.length === 0) {
+          container.innerHTML = "<p>Tidak ada produk tersedia.</p>";
+          return;
+        }
+
+        json.data.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "produk-card";
+          div.innerHTML = `
+            <img src="${item.img_url}" alt="icon" />
+            <h4>${item.provider}</h4>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        document.getElementById("produk-container").innerHTML = "<p>Gagal memuat produk.</p>";
+      }
+    }
+
+    loadProduk();
+  </script>
+</body>
+</html>

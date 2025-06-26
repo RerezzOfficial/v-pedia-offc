@@ -10,6 +10,7 @@ const qrcode = require("qrcode");
 const fs = require("fs");
 const FormData = require("form-data");
 const axios = require("axios");
+const qs = require("qs");
 const path = require("path");
 const app = express();
 const footer = 'V-Pedia'
@@ -18,9 +19,6 @@ const BASE_URL = "https://atlantich2h.com";
 
 const API_KEY = process.env.SEKALIPAY_KEY;
 const BASE_URL2 = "https://sekalipay.com/api/v1";
-
-const domain = process.env.PTERO_DOMAIN;
-const apikey = process.env.PTERO_API_KEY;
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/appdb");
 const db = mongoose.connection;
@@ -47,24 +45,45 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: ["0.0.0.0"],
   },
-  history: [
+  historyOrder: [
     {
-      aktivitas: String,
-      nominal: Number,
-      status: String,
+      id: String, 
+      reff_id: String,
+      layanan: String,
       code: String,
-      notes: String,
-      tanggal: Date,
+      target: String,
+      price: Number,
+      sn: String,
+      status: String,
+      created_at: Date,
+    },
+  ],
+  historyDeposit: [
+    {
+      id: String,
+      reff_id: String,
+      nominal: Number,
+      tambahan: Number,
+      fee: Number,
+      get_balance: Number,
+      metode: String,
+      bank: String,
+      tujuan: String,
+      atas_nama: String,
+      status: String,
+      qr_image: String,
+      created_at: Date,
     },
   ],
 });
+
 
 const User = mongoose.model("User", userSchema);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use("/media", express.static(path.join(__dirname, "media")));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -94,9 +113,132 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+async function tambahHistoryDeposit(userId, depositData) {
+  try {
+    const result = await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          historyDeposit: {
+            id: depositData.id,
+            reff_id: depositData.reff_id,
+            nominal: depositData.nominal,
+            tambahan: depositData.tambahan,
+            fee: depositData.fee,
+            get_balance: depositData.get_balance,
+            metode: depositData.metode,
+            bank: depositData.bank,
+            tujuan: depositData.tujuan,
+            atas_nama: depositData.atas_nama,
+            qr_image: depositData.qr_image,
+            status: depositData.status,
+            created_at: depositData.created_at || new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+    return result;
+  } catch (err) {
+    throw new Error("Gagal menambahkan deposit: " + err.message);
+  }
+}
+
+async function editHistoryDeposit(userId, depositId, newStatus) {
+  try {
+    const result = await User.findOneAndUpdate(
+      { _id: userId, "historyDeposit.id": depositId },
+      {
+        $set: {
+          "historyDeposit.$.status": newStatus
+        }
+      },
+      { new: true }
+    );
+    return result;
+  } catch (err) {
+    throw new Error("Gagal mengedit deposit: " + err.message);
+  }
+}
+
+async function tambahHistoryOrder(userId, orderData) {
+  try {
+    const result = await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          historyOrder: {
+            id: orderData.id,
+            reff_id: orderData.reff_id,
+            layanan: orderData.layanan,
+            code: orderData.code,
+            target: orderData.target,
+            price: orderData.price,
+            sn: orderData.sn || null,
+            status: orderData.status,
+            created_at: orderData.created_at || new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+    if (!result) {
+      throw new Error("User tidak ditemukan.");
+    }
+    return result;
+  } catch (err) {
+    throw new Error("Gagal menambahkan history order: " + err.message);
+  }
+}
+
+async function editHistoryOrder(userId, orderId, updateData) {
+  try {
+    const result = await User.findOneAndUpdate(
+      { _id: userId, "historyOrder.id": orderId },
+      {
+        $set: {
+          "historyOrder.$.status": updateData.status,
+          "historyOrder.$.sn": updateData.sn,
+        },
+      },
+      { new: true }
+    );
+    if (!result) {
+      throw new Error("User atau order tidak ditemukan.");
+    }
+    return result;
+  } catch (err) {
+    throw new Error("Gagal mengedit history order: " + err.message);
+  }
+}
+
+function generateApiKey() {
+  const randomPart =
+    Math.random().toString(36).substring(2, 10) +
+    Math.random().toString(36).substring(2, 10);
+  return `VPedia_${randomPart}`;
+}
+
+function generateReferralCode(username) {
+  return username.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+}
+
+const toRupiah = (value) => {
+  return value.toLocaleString("id-ID");
+};
+function generateReffId() {
+  return "TRX-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+}
+
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
+app.get("/support", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "support.html"));
+});
+
 app.get("/auth/forgot-password", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "forgot.html"));
 });
@@ -206,8 +348,8 @@ app.get("/dashboard", requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
-app.get("/transfer", requireLogin, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "transfer.html"));
+app.get("/order", requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "order.html"));
 });
 
 app.get("/profile", requireLogin, (req, res) => {
@@ -222,8 +364,12 @@ app.get("/price-list", requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "price-list.html"));
 });
 
-app.get("/mutation", requireLogin, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "mutation.html"));
+app.get("/mutation-order", requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "mt-order.html"));
+});
+
+app.get("/mutation-deposit", requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "mt-deposit.html"));
 });
 
 app.get("/api-key-page", requireLogin, (req, res) => {
@@ -232,6 +378,10 @@ app.get("/api-key-page", requireLogin, (req, res) => {
 
 app.get("/topup", requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "topup.html"));
+});
+
+app.get("/produk-detail", requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "produk-detail.html"));
 });
 
 app.get("/buy-panel", requireLogin, (req, res) => {
@@ -251,16 +401,7 @@ app.get("/auth/logout", (req, res) => {
   res.redirect("/auth/login");
 });
 
-function generateApiKey() {
-  const randomPart =
-    Math.random().toString(36).substring(2, 10) +
-    Math.random().toString(36).substring(2, 10);
-  return `Fupei-pedia-${randomPart}`;
-}
 
-function generateReferralCode(username) {
-  return username.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-}
 
 app.get("/profile/users", requireLogin, async (req, res) => {
   try {
@@ -289,6 +430,8 @@ app.get("/profile/users", requireLogin, async (req, res) => {
         referralCode: user.referralCode,
         history: user.history,
         whitelistIp: user.whitelistIp,
+        historyOrder: user.historyOrder,
+        historyDeposit: user.historyDeposit,
       },
     });
   } catch (error) {
@@ -296,6 +439,54 @@ app.get("/profile/users", requireLogin, async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+    });
+  }
+});
+
+app.get("/api/history/deposit", requireLogin, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select("historyDeposit");
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      historyDeposit: user.historyDeposit || [],
+    });
+  } catch (error) {
+    console.error("❌ Error mengambil riwayat deposit:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan internal",
+    });
+  }
+});
+
+app.get("/api/history/order", requireLogin, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select("historyOrder");
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      historyOrder: user.historyOrder || [],
+    });
+  } catch (error) {
+    console.error("❌ Error mengambil riwayat order:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan internal",
     });
   }
 });
@@ -758,29 +949,6 @@ app.post("/profile/verify-email", requireLogin, async (req, res) => {
   }
 });
 
-app.get("/history/all", requireLogin, async (req, res) => {
-  try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      history: user.history,
-    });
-  } catch (error) {
-    console.error("Error fetching history:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
 const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
 function isValidIp(ip) {
@@ -1007,727 +1175,7 @@ app.post("/upgrade/reseller", requireLogin, async (req, res) => {
     });
   }
 });
-//=====[ ORDER IN WEBSITE ]=====//
 
-app.post("/api/categori", requireLogin, async (req, res) => {
-  try {
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const data = await response.json();
-    if (!data.status) {
-      return res.status(500).json({
-        success: false,
-        message: "Server maintenance",
-        maintenance: true,
-        ip_message: data.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    const categories = [...new Set(data.data.map((item) => item.category))];
-    res.json({
-      success: true,
-      data: categories,
-      message: "Data kategori berhasil didapatkan",
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/api/providers", requireLogin, async (req, res) => {
-  try {
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const data = await response.json();
-    if (!data.status) {
-      return res.status(500).json({
-        success: false,
-        message: "Server maintenance",
-        maintenance: true,
-        ip_message: data.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    const providers = [...new Set(data.data.map((item) => item.provider))];
-    res.json({
-      success: true,
-      data: providers,
-      message: "Data provider berhasil didapatkan",
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Terjadi kesalahan pada server",
-    });
-  }
-});
-
-app.post("/api/price-list", requireLogin, async (req, res) => {
-  try {
-    const { category, provider } = req.body;
-    const user = await User.findById(req.session.userId); 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const result = await response.json();
-    if (!result.status) {
-      return res.status(500).json({
-        success: false,
-        message: "Internal server error",
-        maintenance: true,
-        ip_message: result.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    let data = result.data || [];
-    data.sort(regeXcomp);
-    if (category) {
-      data = data.filter((i) => i.category && i.category.toLowerCase() === category.toLowerCase());
-    }
-    if (provider) {
-      data = data.filter((i) => i.provider && i.provider.toLowerCase() === provider.toLowerCase());
-    }
-    const formattedData = data.map((i) => {
-      const rawPrice = parseInt(i.price);
-      let finalPrice = rawPrice;
-      if (user.role === "admin") {
-        finalPrice = rawPrice; // 0%
-      } else if (user.role === "reseller") {
-        finalPrice = Math.round(rawPrice * 1.05); // +2%
-      } else {
-        finalPrice = Math.round(rawPrice * 1.10); // +5%
-      }
-      
-      return {
-        code: i.code,
-        name: i.name,
-        category: i.category,
-        type: i.type,
-        provider: i.provider,
-        brand_status: i.brand_status,
-        status: i.status,
-        img_url: i.img_url,
-        final_price: finalPrice,
-        price_formatted: `Rp ${toRupiah(finalPrice)}`,
-        status_emoji: i.status === "available" ? "✅" : "❎",
-      };
-    });
-    res.json({
-      success: true,
-      data: formattedData,
-      message: footer,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/deposit/methode", requireLogin, async (req, res) => {
-  try {
-    const { type, metode } = req.body;
-    const excluded = ['OVO', 'QRIS', 'DANA', 'ovo', 'MANDIRI', 'PERMATA'];
-    const url = `${BASE_URL}/deposit/metode`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    if (type) params.append("type", type);
-    if (metode) params.append("metode", metode);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params,
-    });
-
-    const result = await response.json();
-    if (!result.status || !result.data) {
-      return res.status(400).json({
-        status: false,
-        message: "Internal server error",
-      });
-    }
-
-    const methods = result.data
-      .filter((m) => !excluded.includes(m.metode))
-      .map((m) => {
-        const feePersen = (parseFloat(m.fee_persen || "0") + 0.5).toFixed(2);
-
-        return {
-          metode: m.metode,
-          type: m.type,
-          name: m.name,
-          min: m.metode === "QRISFAST" ? "500" : m.min,
-          max: m.max,
-          fee: m.fee,
-          fee_persen: feePersen,
-          status: m.status,
-          img_url: m.img_url,
-        };
-      });
-
-    res.json({
-      status: true,
-      message: footer,
-      data: methods,
-    });
-  } catch (error) {
-    console.error("❌ Error metode deposit:", error.message);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-
-app.post("/deposit/create", requireLogin, async (req, res) => {
-  try {
-    const { nominal, metode = "qrisfast", type = "ewallet" } = req.body;
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    if (!nominal) {
-      return res.status(400).json({
-        success: false,
-        message: "Parameter nominal wajib diisi",
-      });
-    }
-    const reff_id = generateReffId();
-    const url = `${BASE_URL}/deposit/create`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("reff_id", reff_id);
-    params.append("nominal", nominal);
-    params.append("type", type);
-    params.append("metode", metode);
-    const depositResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const depositData = depositResponse.data?.data;
-    if (!depositData?.id) {
-      return res.status(400).json({
-        success: false,
-        message: "Internal server error",
-      });
-    }
-    const nominalInt = parseInt(nominal);
-    const apiFee = parseInt(depositData.fee || 0);
-    const additionalFee = Math.floor(nominalInt * 0.005);
-    const totalFee = apiFee + additionalFee;
-    const saldoMasukEstimate = nominalInt - totalFee;
-    user.history.push({
-      aktivitas: "Deposit",
-      nominal: nominalInt,
-      status: "pending",
-      code: depositData.id,
-      notes: `Deposit Saldo Via Api pending dengan metode ${metode}`,
-      tanggal: new Date(),
-    });
-    await user.save();
-    res.json({
-      success: true,
-      message: "Permintaan deposit dibuat",
-      data: {
-        id: depositData.id,
-        reff_id: depositData.reff_id,
-        nominal: nominalInt,
-        tambahan: depositData.tambahan,
-        fee: apiFee,
-        get_balance: saldoMasukEstimate,
-        qr_string: depositData.qr_string,
-        qr_image: depositData.qr_image,
-        status: depositData.status,
-        created_at: depositData.created_at,
-        expired_at: depositData.expired_at,
-      },
-    });
-    const checkDeposit = async () => {
-      const statusUrl = `${BASE_URL}/deposit/status`;
-      const statusParams = new URLSearchParams();
-      statusParams.append("api_key", ATLAN_API_KEY);
-      statusParams.append("id", depositData.id);
-      try {
-        const statusResponse = await axios.post(
-          statusUrl,
-          statusParams.toString(),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-        const statusData = statusResponse.data?.data;
-        const status = statusData?.status;
-        let historyIndex = user.history.findIndex(
-          (h) => h.code === depositData.id
-        );
-        if (status === "success") {
-          const originalBalance = parseInt(statusData.get_balance || saldoMasukEstimate);
-          const saldoMasuk = originalBalance - additionalFee;
-          user.saldo += saldoMasuk;
-
-          // Reward coin berdasarkan role
-          let rewardCoin = 0;
-          if (user.role === "admin") {
-            rewardCoin = 3;
-          } else if (user.role === "reseller") {
-            rewardCoin = 2;
-          } else if (user.role === "user") {
-            rewardCoin = 1;
-          }
-          user.coin += rewardCoin;
-
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "Sukses";
-            user.history[historyIndex].nominal = saldoMasuk;
-            user.history[historyIndex].notes = `Deposit Saldo Via Api success dengan metode ${statusData.metode || metode} | Reward: ${rewardCoin} koin`;
-            user.history[historyIndex].tanggal = new Date();
-          } else {
-            user.history.push({
-              aktivitas: "Deposit",
-              nominal: saldoMasuk,
-              status: "Sukses",
-              code: depositData.id,
-              notes: `Deposit Saldo Via Api success dengan metode ${statusData.metode || metode} | Reward: ${rewardCoin} koin`,
-              tanggal: new Date(),
-            });
-          }
-          await user.save();
-          return;
-        } else if (status === "pending") {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "pending";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api pending dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
-            await user.save();
-          }
-        } else if (status === "cancel") {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "cancell";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api cancel dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
-            await user.save();
-          }
-          return;
-        } else {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "cancell";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api status tidak dikenal: ${status} dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
-            await user.save();
-          }
-          return;
-        }
-        setTimeout(checkDeposit, 1000);
-      } catch {
-        setTimeout(checkDeposit, 1000);
-      }
-    };
-    checkDeposit();
-  } catch {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/deposit/status", requireLogin, async (req, res) => {
-  const { trxid } = req.body;
-  const user = await User.findById(req.session.userId);
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
-  }
-  if (!trxid) {
-    return res.status(400).json({
-      success: false,
-      message: "Parameter trxid wajib diisi",
-    });
-  }
-  try {
-    const url = `${BASE_URL}/deposit/status`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("id", trxid);
-    const statusResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const statusData = statusResponse.data?.data;
-    if (!statusData) {
-      return res.status(404).json({
-        success: false,
-        message: "Data tidak ditemukan dari server eksternal",
-      });
-    }
-    const getBalance = parseInt(statusData.get_balance || 0);
-    const feeInternal = Math.floor(getBalance * 0.005); 
-    const saldoMasuk = getBalance - feeInternal;
-    return res.json({
-      success: true,
-      message: "Status deposit ditemukan",
-      data: {
-        trxid: statusData.reff_id,
-        status: statusData.status,
-        nominal: parseInt(statusData.nominal || 0),
-        metode: statusData.metode || "Tidak diketahui",
-        fee_dari_api: parseInt(statusData.fee || 0),
-        saldo_masuk: saldoMasuk,
-        created_at: statusData.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error saat cek status deposit:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/deposit/cancel", requireLogin, async (req, res) => {
-  const { trxid } = req.body;
-  const user = await User.findById(req.session.userId);
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
-  }
-  if (!trxid) {
-    return res.status(400).json({
-      success: false,
-      message: "Parameter trxid wajib diisi",
-    });
-  }
-  try {
-    const url = `${BASE_URL}/deposit/cancel`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("id", trxid);
-    const cancelResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const cancelData = cancelResponse.data?.data;
-    if (!cancelData) {
-      return res.status(404).json({
-        success: false,
-        message: "Data tidak ditemukan dari server eksternal",
-      });
-    }
-    return res.json({
-      success: true,
-      message: "Deposit berhasil dibatalkan",
-      data: {
-        trxid: cancelData.id,
-        status: cancelData.status,
-        created_at: cancelData.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error saat membatalkan deposit:", error);
-    if (error.response?.data) {
-      return res.status(error.response.status || 500).json({
-        success: false,
-        message: error.response.data.message || "Gagal membatalkan deposit",
-      });
-    }
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/order/create", requireLogin, async (req, res) => {
-  try {
-    const { code, target } = req.body;
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    if (!code || !target) {
-      return res.status(400).json({
-        success: false,
-        message: "Parameter code dan target wajib diisi",
-      });
-    }
-    const priceListUrl = `${BASE_URL}/layanan/price_list`;
-    const priceParams = new URLSearchParams({ api_key: ATLAN_API_KEY, type: "prabayar" });
-    const priceResponse = await axios.post(priceListUrl, priceParams, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    if (!priceResponse.data.status) {
-      return res.status(503).json({
-        success: false,
-        message: "Server H2H maintenance",
-      });
-    }
-    const product = priceResponse.data.data.find(item => item.code === code);
-    if (!product || isNaN(parseInt(product.price))) {
-      return res.status(404).json({
-        success: false,
-        message: "Produk tidak ditemukan atau harga tidak valid",
-      });
-    }
-    const basePrice = parseInt(product.price);
-    const feePercent = user.role === "reseller" ? 0.05 : user.role === "admin" ? 0 : 0.10;
-    const totalPrice = Math.round(basePrice * (1 + feePercent));
-    if (user.saldo < totalPrice) {
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal - Saldo tidak cukup",
-        code: generateReffId(),
-        tanggal: new Date(),
-        notes: `Order ${code} target ${target}`,
-      });
-      await user.save();
-      return res.status(400).json({
-        success: false,
-        message: "Saldo tidak mencukupi",
-      });
-    }
-    user.saldo -= totalPrice;
-    user.history.push({
-      aktivitas: "Order",
-      nominal: totalPrice,
-      status: "Pending",
-      code: generateReffId(),
-      notes: `Order ${code} target ${target}`,
-      tanggal: new Date(),
-    });
-    await user.save();
-    const reff_id = generateReffId();
-    const transactionParams = new URLSearchParams({
-      api_key: ATLAN_API_KEY,
-      code,
-      reff_id,
-      target,
-    });
-    const trxResponse = await axios.post(`${BASE_URL}/transaksi/create`, transactionParams, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    const trx = trxResponse.data?.data;
-    if (!trx?.id || !trx?.price) {
-      user.saldo += totalPrice;
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal - Internal server error",
-        code: reff_id,
-        notes: `Order ${code} target ${target} - Refunded`,
-        tanggal: new Date(),
-      });
-      await user.save();
-      return res.status(502).json({
-        success: false,
-        message: "Internal server error",
-      });
-    }
-    user.history.find(h => h.code === reff_id).code = trx.id;
-    await user.save();
-    res.json({
-      success: true,
-      message: "Transaksi berhasil dibuat",
-      data: {
-        ...trx,
-        price: totalPrice,
-      },
-    });
-    const checkStatus = async () => {
-      try {
-        const statusParams = new URLSearchParams({
-          api_key: ATLAN_API_KEY,
-          id: trx.id,
-          type: "prabayar",
-        });
-        const statusResponse = await axios.post(`${BASE_URL}/transaksi/status`, statusParams, {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        });
-        const status = statusResponse.data.data?.status;
-        if (status === "success") {
-          if (user.role === "reseller") {
-            user.coin += Math.floor(totalPrice * 0.01);
-          }
-          user.history.push({
-            aktivitas: "Order",
-            nominal: totalPrice,
-            status: "Sukses",
-            code: trx.id,
-            notes: `Order ${code} target ${target}`,
-            tanggal: new Date(),
-          });
-          await user.save();
-          return;
-        }
-        if (status === "failed") {
-          user.saldo += totalPrice;
-          user.history.push({
-            aktivitas: "Order",
-            nominal: totalPrice,
-            status: "Gagal",
-            code: trx.id,
-            notes: `Order ${code} target ${target} - Refunded`,
-            tanggal: new Date(),
-          });
-          await user.save();
-          return;
-        }
-        setTimeout(checkStatus, 1000);
-      } catch (err) {
-        setTimeout(checkStatus, 1000);
-      }
-    };
-    checkStatus();
-  } catch (error) {
-    const user = await User.findById(req.session.userId);
-    if (user) {
-      user.saldo += totalPrice;
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal",
-        code: generateReffId(),
-        notes: `Order ${code} target ${target} - Refunded`,
-        tanggal: new Date(),
-      });
-      await user.save();
-    }
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.post("/order/check", requireLogin, async (req, res) => {
-  try {
-    const { trxid } = req.body; 
-    const user = await User.findById(req.session.userId); 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    if (!trxid) {
-      return res.status(400).json({
-        success: false,
-        message: 'Parameter "trxid" harus diisi',
-      });
-    }
-    const statusUrl = `${BASE_URL}/transaksi/status`;
-    const statusParams = new URLSearchParams({
-      api_key: ATLAN_API_KEY,
-      id: trxid,
-      type: "prabayar",
-    });
-    const response = await axios.post(statusUrl, statusParams, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const trx = response.data?.data;
-    if (!trx?.status) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaksi tidak ditemukan atau gagal mendapatkan status",
-      });
-    }
-    let statusMessage = "Status transaksi tidak diketahui";
-    if (trx.status === "success") statusMessage = "Transaksi berhasil";
-    else if (trx.status === "pending") statusMessage = "Transaksi sedang diproses";
-    else if (trx.status === "failed") statusMessage = "Transaksi gagal";
-    const basePrice = parseInt(trx.price);
-    const feePercent = user.role === "reseller" ? 0.05 : user.role === "admin" ? 0 : 0.10;
-    const totalPrice = Math.round(basePrice * (1 + feePercent));
-    res.json({
-      success: true,
-      message: statusMessage,
-      data: {
-        id: trx.id,
-        reff_id: trx.reff_id,
-        layanan: trx.layanan,
-        code: trx.code,
-        target: trx.target,
-        price: totalPrice,
-        sn: trx.sn,
-        status: trx.status,
-        created_at: trx.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error:", error.response?.data || error.message);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-
-//=====[ PRODUCT ENDPOINT ]=====//
 
 async function getServerPublicIp() {
   try {
@@ -1816,957 +1264,129 @@ function validateApiKey(req, res, next) {
       });
     });
 }
-
-const customImageUrl =
-  "https://i.pinimg.com/236x/f2/7d/e0/f27de0e4a01ba9dfe8607ac03a4f7aae.jpg";
-const regeXcomp = (a, b) => {
-  const aPrice = Number(a.price.replace(/[^0-9.-]+/g, ""));
-  const bPrice = Number(b.price.replace(/[^0-9.-]+/g, ""));
-  return aPrice - bPrice;
-};
-const calculateFinalPrice = (price) => {
-  const cleanPrice = Number(price.toString().replace(/[^0-9.-]+/g, ""));
-  const markup = cleanPrice * 0.02; 
-  return Math.round(cleanPrice + markup); 
-};
-const toRupiah = (value) => {
-  return value.toLocaleString("id-ID");
-};
-function generateReffId() {
-  return "TRX-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-}
-
-
-app.get("/api/profile", validateApiKey, async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    const userData = {
-      fullname: user.fullname,
-      username: user.username,
-      nomor: user.nomor,
-      email: user.email,
-      profileUrl: user.profileUrl,
-      saldo: user.saldo,
-      coin: user.coin,
-      apiKey: user.apiKey,
-      tanggalDaftar: user.tanggalDaftar,
-      role: user.role,
-      isVerified: user.isVerified,
-      lastLogin: user.lastLogin,
-      referralCode: user.referralCode,
-      history: user.history.slice(-5).reverse(),
-    };
-    res.json({
-      success: true,
-      message: "Profile data retrieved successfully",
-      data: userData,
-    });
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    res.status(500).json({
+/*
+function validateApiKey(req, res, next) {
+  const apiKey = req.headers['x-apikey'] || req.query.apikey;
+  if (!apiKey) {
+    return res.status(400).json({
       success: false,
-      message: "Internal server error",
+      message: 'API Key harus disertakan di header "X-APIKEY" atau query param "apikey"',
     });
   }
-});
-
-app.get("/api/mutasi", validateApiKey, async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    return res.status(200).json({
-      success: true,
-      history: user.history,
-    });
-  } catch (error) {
-    console.error("Error fetching history:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-//=====[ ATLANTIC INTEGRATION ]=====//
-
-app.get("/h2h/categori", validateApiKey, async (req, res) => {
-  try {
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const data = await response.json();
-    if (!data.status) {
-      return res.status(500).json({
-        status: false,
-        message: "Server maintenance",
-        maintenance: true,
-        ip_message: data.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    const categories = [...new Set(data.data.map((item) => item.category))];
-    res.json({
-      status: true,
-      data: categories,
-      message: footer,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/provider", validateApiKey, async (req, res) => {
-  try {
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const data = await response.json();
-    if (!data.status) {
-      return res.status(500).json({
-        status: false,
-        message: "Internal server error",
-        maintenance: true,
-        ip_message: data.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    const providers = [...new Set(data.data.map((item) => item.provider))];
-    res.json({
-      status: true,
-      data: providers,
-      message: footer, 
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/products", validateApiKey, async (req, res) => {
-  try {
-    const { category, provider } = req.query;
-    const user = req.user;
-    const url = `${BASE_URL}/layanan/price_list`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("type", "prabayar");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: url,
-      },
-      body: params,
-    });
-    const result = await response.json();
-    if (!result.status) {
-      return res.status(500).json({
-        status: false,
-        message: "Internal server error",
-        maintenance: true,
-        ip_message: result.message.replace(/[^0-9.]+/g, ""),
-      });
-    }
-    let data = result.data || [];
-    data.sort(regeXcomp);
-    if (category) {
-      data = data.filter((i) => i.category && i.category.toLowerCase() === category.toLowerCase());
-    }
-    if (provider) {
-      data = data.filter((i) => i.provider && i.provider.toLowerCase() === provider.toLowerCase());
-    }
-    const formattedData = data.map((i) => {
-      const rawPrice = parseInt(i.price);
-      const feePercent = user.role === "reseller" ? 0.05 : user.role === "admin" ? 0 : 0.10;
-      const finalPrice = Math.round(rawPrice * (1 + feePercent));
-      return {
-        code: i.code,
-        name: i.name,
-        category: i.category,
-        type: i.type,
-        provider: i.provider,
-        brand_status: i.brand_status,
-        status: i.status,
-        img_url: customImageUrl,
-        final_price: finalPrice,
-        price_formatted: `Rp ${toRupiah(finalPrice)}`,
-        status_emoji: i.status === "available" ? "✅" : "❎",
-      };
-    });
-    res.json({
-      status: true,
-      data: formattedData,
-      message: footer,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/deposit/methode", validateApiKey, async (req, res) => {
-  try {
-    const { type, metode } = req.query;
-    const excluded = ['OVO', 'QRIS', 'DANA', 'ovo', 'MANDIRI', 'PERMATA'];
-    const url = `${BASE_URL}/deposit/metode`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    if (type) params.append("type", type);
-    if (metode) params.append("metode", metode);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params,
-    });
-    const result = await response.json();
-    if (!result.status || !result.data) {
-      return res.status(400).json({
-        status: false,
-        message: "Internal server error",
-      });
-    }
-    const methods = result.data
-      .filter((m) => !excluded.includes(m.metode))
-      .map((m) => ({
-        metode: m.metode,
-        type: m.type,
-        name: m.name,
-        min: m.min,
-        max: m.max,
-        fee: m.fee,
-        fee_persen: (parseFloat(m.fee_persen || "0") + 0.5).toFixed(2),
-        status: m.status,
-        img_url: m.img_url,
-      }));
-    res.json({
-      status: true,
-      message: footer,
-      data: methods,
-    });
-  } catch (error) {
-    console.error("❌ Error metode deposit:", error.message);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/deposit/create", validateApiKey, async (req, res) => {
-  try {
-    const { nominal, metode = "qrisfast", type = "ewallet" } = req.query;
-    const user = req.user;
-    if (!nominal) {
-      return res.status(400).json({
-        success: false,
-        message: "Parameter nominal wajib diisi",
-      });
-    }
-    const reff_id = generateReffId();
-    const url = `${BASE_URL}/deposit/create`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("reff_id", reff_id);
-    params.append("nominal", nominal);
-    params.append("type", type);
-    params.append("metode", metode);
-    const depositResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const depositData = depositResponse.data?.data;
-    if (!depositData?.id) {
-      return res.status(400).json({
-        success: false,
-        message: "Internal server error",
-      });
-    }
-    const nominalInt = parseInt(nominal);
-    const apiFee = parseInt(depositData.fee || 0);
-    const additionalFee = Math.floor(nominalInt * 0.005);
-    const totalFee = apiFee + additionalFee;
-    const saldoMasukEstimate = nominalInt - totalFee;
-    user.history.push({
-      aktivitas: "Deposit",
-      nominal: nominalInt,
-      status: "pending",
-      code: depositData.id,
-      notes: `Deposit Saldo Via Api pending dengan metode ${metode}`,
-      tanggal: new Date(),
-    });
-    await user.save();
-    res.json({
-      success: true,
-      message: "Permintaan deposit dibuat",
-      data: {
-        id: depositData.id,
-        reff_id: depositData.reff_id,
-        nominal: nominalInt,
-        tambahan: depositData.tambahan,
-        fee: apiFee,
-        get_balance: saldoMasukEstimate,
-        qr_string: depositData.qr_string,
-        qr_image: depositData.qr_image,
-        status: depositData.status,
-        created_at: depositData.created_at,
-        expired_at: depositData.expired_at,
-      },
-    });
-    const checkDeposit = async () => {
-      const statusUrl = `${BASE_URL}/deposit/status`;
-      const statusParams = new URLSearchParams();
-      statusParams.append("api_key", ATLAN_API_KEY);
-      statusParams.append("id", depositData.id);
-      try {
-        const statusResponse = await axios.post(
-          statusUrl,
-          statusParams.toString(),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-        const statusData = statusResponse.data?.data;
-        const status = statusData?.status;
-        let historyIndex = user.history.findIndex(
-          (h) => h.code === depositData.id
-        );
-        if (status === "success") {
-          const originalBalance = parseInt(statusData.get_balance || saldoMasukEstimate);
-          const saldoMasuk = originalBalance - additionalFee;
-          user.saldo += saldoMasuk;
-
-          let rewardCoin = 0;
-          if (user.role === "admin") {
-            rewardCoin = 3;
-          } else if (user.role === "reseller") {
-            rewardCoin = 2;
-          } else if (user.role === "user") {
-            rewardCoin = 1;
-          }
-          user.coin += rewardCoin;
-
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "Sukses";
-            user.history[historyIndex].nominal = saldoMasuk;
-            user.history[historyIndex].notes = `Deposit Saldo Via Api success dengan metode ${statusData.metode || metode} | Reward: ${rewardCoin} koin`;
-            user.history[historyIndex].tanggal = new Date();
-          } else {
-            user.history.push({
-              aktivitas: "Deposit",
-              nominal: saldoMasuk,
-              status: "Sukses",
-              code: depositData.id,
-              notes: `Deposit Saldo Via Api success dengan metode ${statusData.metode || metode} | Reward: ${rewardCoin} koin`,
-              tanggal: new Date(),
+  User.findOne({ apiKey })
+    .then(async (user) => {
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid API Key",
+        });
+      }
+      const requestIp =
+        req.headers['x-forwarded-for']?.split(',').shift().trim() || 
+        req.ip ||
+        req.connection.remoteAddress; 
+      const detectedIp = ['::1', '127.0.0.1'].includes(requestIp)
+        ? await getServerPublicIp()
+        : requestIp;
+      const whitelistIpArray = Array.isArray(user.whitelistIp)
+        ? user.whitelistIp
+        : user.whitelistIp.split(',').map(ip => ip.trim());
+      if (whitelistIpArray.length > 0 && !whitelistIpArray.includes('0.0.0.0')) {
+        if (!detectedIp || !whitelistIpArray.includes(detectedIp)) {
+          console.warn(`Unauthorized API access from IP ${detectedIp} for user ${user.username}. IP not in whitelist: [${whitelistIpArray.join(', ')}]`);
+          return res.status(403).json({
+            success: false,
+            message: "IP Anda saat ini tidak diizinkan untuk menggunakan API Key ini.",
+            your_ip: detectedIp
+          });
+        }
+      }
+      if (user.isLocked) {
+        return res.status(429).json({
+          success: false,
+          message: "Anda harus menunggu 5 detik sebelum melakukan request lagi.",
+        });
+      }
+      user.isLocked = true;
+      await user.save();
+      setTimeout(async () => {
+        try {
+          if (!user.isVerified) {
+            return res.status(403).json({
+              success: false,
+              message: "Akun belum terverifikasi. Silakan verifikasi akun terlebih dahulu.",
             });
           }
-          await user.save();
-          return;
-        } else if (status === "pending") {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "pending";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api pending dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
+          req.user = user;
+          next();
+        } catch (error) {
+          console.error("Error during API Key validation timeout:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Internal server error during validation",
+          });
+        } finally {
+          user.isLocked = false;
+          try {
             await user.save();
+          } catch (saveError) {
+            console.error("Error saving user after unlocking in validateApiKey:", saveError);
           }
-        } else if (status === "cancel") {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "cancell";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api cancel dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
-            await user.save();
-          }
-          return;
-        } else {
-          if (historyIndex !== -1) {
-            user.history[historyIndex].status = "cancell";
-            user.history[historyIndex].notes = `Deposit Saldo Via Api status tidak dikenal: ${status} dengan metode ${statusData.metode || metode}`;
-            user.history[historyIndex].tanggal = new Date();
-            await user.save();
-          }
-          return;
         }
-        setTimeout(checkDeposit, 1000);
-      } catch {
-        setTimeout(checkDeposit, 1000);
-      }
-    };
-    checkDeposit();
-  } catch {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/deposit/status", validateApiKey, async (req, res) => {
-  const { trxid } = req.query;
-  const user = req.user;
-  if (!trxid) {
-    return res.status(400).json({
-      success: false,
-      message: "Parameter trxid wajib diisi",
-    });
-  }
-  try {
-    const url = `${BASE_URL}/deposit/status`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("id", trxid);
-    const statusResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const statusData = statusResponse.data?.data;
-    if (!statusData) {
-      return res.status(404).json({
-        success: false,
-        message: "Data tidak ditemukan dari server eksternal",
-      });
-    }
-    const getBalance = parseInt(statusData.get_balance || 0);
-    const feeInternal = Math.floor(getBalance * 0.005); 
-    const saldoMasuk = getBalance - feeInternal;
-    return res.json({
-      success: true,
-      message: "Status deposit ditemukan",
-      data: {
-        trxid: statusData.reff_id,
-        status: statusData.status,
-        nominal: parseInt(statusData.nominal || 0),
-        metode: statusData.metode || "Tidak diketahui",
-        fee_dari_api: parseInt(statusData.fee || 0),
-        saldo_masuk: saldoMasuk,
-        created_at: statusData.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error saat cek status deposit:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-app.get("/h2h/deposit/cancel", validateApiKey, async (req, res) => {
-  const { trxid } = req.query;
-  const user = req.user;
-  if (!trxid) {
-    return res.status(400).json({
-      success: false,
-      message: "Parameter trxid wajib diisi",
-    });
-  }
-  try {
-    const url = `${BASE_URL}/deposit/cancel`;
-    const params = new URLSearchParams();
-    params.append("api_key", ATLAN_API_KEY);
-    params.append("id", trxid);
-    const cancelResponse = await axios.post(url, params.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const cancelData = cancelResponse.data?.data;
-    if (!cancelData) {
-      return res.status(404).json({
-        success: false,
-        message: "Data tidak ditemukan dari server eksternal",
-      });
-    }
-    return res.json({
-      success: true,
-      message: "Deposit berhasil dibatalkan",
-      data: {
-        trxid: cancelData.id,
-        status: cancelData.status,
-        created_at: cancelData.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error saat membatalkan deposit:", error);
-    if (error.response?.data) {
-      return res.status(error.response.status || 500).json({
-        success: false,
-        message: error.response.data.message || "Gagal membatalkan deposit",
-      });
-    }
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-
-app.get("/h2h/order/create", validateApiKey, async (req, res) => {
-  try {
-    const { code, target } = req.query;
-    const user = req.user;
-    if (!code || !target) {
-      return res.status(400).json({
-        success: false,
-        message: "Parameter code dan target wajib diisi",
-      });
-    }
-    const priceListUrl = `${BASE_URL}/layanan/price_list`;
-    const priceParams = new URLSearchParams({ api_key: ATLAN_API_KEY, type: "prabayar" });
-    const priceResponse = await axios.post(priceListUrl, priceParams, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    if (!priceResponse.data.status) {
-      return res.status(503).json({
-        success: false,
-        message: "Server H2H maintenance",
-      });
-    }
-    const product = priceResponse.data.data.find(item => item.code === code);
-    if (!product || isNaN(parseInt(product.price))) {
-      return res.status(404).json({
-        success: false,
-        message: "Produk tidak ditemukan atau harga tidak valid",
-      });
-    }
-    const basePrice = parseInt(product.price);
-    const feePercent = user.role === "reseller" ? 0.05 : user.role === "admin" ? 0 : 0.10;
-    const totalPrice = Math.round(basePrice * (1 + feePercent));
-    if (user.saldo < totalPrice) {
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal - Saldo tidak cukup",
-        code: generateReffId(),
-        tanggal: new Date(),
-        notes: `Order ${code} target ${target}`,
-      });
-      await user.save();
-      return res.status(400).json({
-        success: false,
-        message: "Saldo tidak mencukupi",
-      });
-    }
-    user.saldo -= totalPrice;
-    user.history.push({
-      aktivitas: "Order",
-      nominal: totalPrice,
-      status: "Pending",
-      code: generateReffId(),
-      notes: `Order ${code} target ${target}`,
-      tanggal: new Date(),
-    });
-    await user.save();
-    const reff_id = generateReffId();
-    const transactionParams = new URLSearchParams({
-      api_key: ATLAN_API_KEY,
-      code,
-      reff_id,
-      target,
-    });
-    const trxResponse = await axios.post(`${BASE_URL}/transaksi/create`, transactionParams, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    const trx = trxResponse.data?.data;
-    if (!trx?.id || !trx?.price) {
-      user.saldo += totalPrice;
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal - Internal server error",
-        code: reff_id,
-        notes: `Order ${code} target ${target} - Refunded`,
-        tanggal: new Date(),
-      });
-      await user.save();
-      return res.status(502).json({
+      }, 5000);
+    })
+    .catch((error) => {
+      console.error("Error validating API Key (DB query):", error);
+      return res.status(500).json({
         success: false,
         message: "Internal server error",
       });
-    }
-    user.history.find(h => h.code === reff_id).code = trx.id;
-    await user.save();
-    res.json({
-      success: true,
-      message: "Transaksi berhasil dibuat",
-      data: {
-        ...trx,
-        price: totalPrice,
-      },
     });
-    const checkStatus = async () => {
-      try {
-        const statusParams = new URLSearchParams({
-          api_key: ATLAN_API_KEY,
-          id: trx.id,
-          type: "prabayar",
-        });
-        const statusResponse = await axios.post(`${BASE_URL}/transaksi/status`, statusParams, {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        });
-        const status = statusResponse.data.data?.status;
-        if (status === "success") {
-          if (user.role === "reseller") {
-            user.coin += Math.floor(totalPrice * 0.01);
-          }
-          user.history.push({
-            aktivitas: "Order",
-            nominal: totalPrice,
-            status: "Sukses",
-            code: trx.id,
-            notes: `Order ${code} target ${target}`,
-            tanggal: new Date(),
-          });
-          await user.save();
-          return;
-        }
-        if (status === "failed") {
-          user.saldo += totalPrice;
-          user.history.push({
-            aktivitas: "Order",
-            nominal: totalPrice,
-            status: "Gagal",
-            code: trx.id,
-            notes: `Order ${code} target ${target} - Refunded`,
-            tanggal: new Date(),
-          });
-          await user.save();
-          return;
-        }
-        setTimeout(checkStatus, 1000);
-      } catch (err) {
-        setTimeout(checkStatus, 1000);
-      }
-    };
-    checkStatus();
-  } catch (error) {
-    const user = req.user;
-    if (user) {
-      user.saldo += totalPrice;
-      user.history.push({
-        aktivitas: "Order",
-        nominal: totalPrice,
-        status: "Gagal",
-        code: generateReffId(),
-        notes: `Order ${code} target ${target} - Refunded`,
-        tanggal: new Date(),
-      });
-      await user.save();
-    }
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
+}
+*/
+module.exports = { 
+  validateApiKey, 
+  User,   
+  tambahHistoryDeposit,
+  BASE_URL,
+  ATLAN_API_KEY,
+  generateReffId,
+  editHistoryDeposit,
+  tambahHistoryOrder,
+  editHistoryOrder,
+  requireLogin
+};
+app.use("/h2h", require("./endpoint/api"));
+app.use("/api/webtrx", require("./endpoint/bacend"));
 
-app.get("/h2h/order/check", validateApiKey, async (req, res) => {
-  try {
-    const { trxid } = req.query;
-    const user = req.user;
-    if (!trxid) {
-      return res.status(400).json({
-        success: false,
-        message: 'Parameter "trxid" harus diisi',
-      });
-    }
-    const statusUrl = `${BASE_URL}/transaksi/status`;
-    const statusParams = new URLSearchParams({
-      api_key: ATLAN_API_KEY,
-      id: trxid,
-      type: "prabayar",
-    });
-    const response = await axios.post(statusUrl, statusParams, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    const trx = response.data?.data;
-    if (!trx?.status) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaksi tidak ditemukan atau gagal mendapatkan status",
-      });
-    }
-    let statusMessage = "Status transaksi tidak diketahui";
-    if (trx.status === "success") statusMessage = "Transaksi berhasil";
-    else if (trx.status === "pending") statusMessage = "Transaksi sedang diproses";
-    else if (trx.status === "failed") statusMessage = "Transaksi gagal";
-    const basePrice = parseInt(trx.price);
-    const feePercent = user.role === "reseller" ? 0.05 : user.role === "admin" ? 0 : 0.10;
-    const totalPrice = Math.round(basePrice * (1 + feePercent));
-    res.json({
-      success: true,
-      message: statusMessage,
-      data: {
-        id: trx.id,
-        reff_id: trx.reff_id,
-        layanan: trx.layanan,
-        code: trx.code,
-        target: trx.target,
-        price: totalPrice,
-        sn: trx.sn,
-        status: trx.status,
-        created_at: trx.created_at,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error:", error.response?.data || error.message);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
 
-app.get("/api/v1/buy-panel", validateApiKey, async (req, res) => {
-  const { username, paket } = req.query;
-  const user = req.user;
-  const availablePackets = ["1gb", "2gb", "3gb", "4gb", "5gb", "6gb", "7gb", "8gb", "9gb", "20gb", "unli"];
-  if (!username) {
-    return res.status(400).json({
-      success: false,
-      message: "Parameter 'username' harus diisi",
-    });
-  }
-  if (!paket || !availablePackets.includes(paket.toLowerCase())) {
-    return res.status(400).json({
-      success: false,
-      message: `Paket tidak valid. Paket yang tersedia: ${availablePackets.join(", ")}`,
-    });
-  }
-  let memo, disk, cpu, harga;
-  switch (paket.toLowerCase()) {
-    case "1gb":
-      memo = 1024;
-      disk = 1024;
-      cpu = 50;
-      harga = 1000;
-      break;
-    case "2gb":
-      memo = 2048;
-      disk = 2048;
-      cpu = 100;
-      harga = 2000;
-      break;
-    case "3gb":
-      memo = 3072;
-      disk = 3072;
-      cpu = 150;
-      harga = 3000;
-      break;
-    case "4gb":
-      memo = 4096;
-      disk = 4096;
-      cpu = 200;
-      harga = 4000;
-      break;
-    case "5gb":
-      memo = 5120;
-      disk = 5120;
-      cpu = 250;
-      harga = 5000;
-      break;
-    case "6gb":
-      memo = 6144;
-      disk = 6144;
-      cpu = 300;
-      harga = 6000;
-      break;
-    case "7gb":
-      memo = 7168;
-      disk = 7168;
-      cpu = 350;
-      harga = 7000;
-      break;
-    case "8gb":
-      memo = 8192;
-      disk = 8192;
-      cpu = 400;
-      harga = 8000;
-      break;
-    case "9gb":
-      memo = 9216;
-      disk = 9216;
-      cpu = 450;
-      harga = 9000;
-      break;
-    case "10gb":
-      memo = 10240;
-      disk = 10240;
-      cpu = 500;
-      harga = 10000;
-      break;
-    case "unli":
-      memo = 0;
-      disk = 0;
-      cpu = 0;
-      harga = 15000;
-      break;
-    default:
-      return res.status(400).json({
+app.get("/api/notif", (req, res) => {
+  const notifPath = path.join(__dirname, "./notif.json");
+
+  fs.readFile(notifPath, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({
         success: false,
-        message: "Paket tidak dikenali",
+        message: "Gagal membaca file notifikasi.",
+        error: err.message,
       });
-  }
-  if (user.saldo < harga) {
-    user.history.push({
-      aktivitas: "Buy Panel",
-      nominal: harga,
-      status: "Gagal - Saldo tidak mencukupi",
-      tanggal: new Date(),
-    });
-    await user.save();
-    return res.status(400).json({
-      success: false,
-      message: "Saldo tidak mencukupi",
-    });
-  }
-  try {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apikey}`,
-    };
-    const email = `${username}@gmail.com`;
-    const password = `${username}${disk}`; 
-    const createUserResponse = await axios.post(
-      `${domain}/api/application/users`,
-      {
-        email,
-        username,
-        first_name: username,
-        last_name: username,
-        language: "en",
-        password,
-      },
-      { headers }
-    );
-    const newUser = createUserResponse.data.attributes;
-    const createServerResponse = await axios.post(
-      `${domain}/api/application/servers`,
-      {
-        name: username,
-        description: "Server dibuat via API Buy Panel",
-        user: newUser.id,
-        egg: 15, 
-        docker_image: "ghcr.io/parkervcp/yolks:nodejs_18",
-        startup: "npm start",
-        environment: {
-          INST: "npm",
-          USER_UPLOAD: "0",
-          AUTO_UPDATE: "0",
-          CMD_RUN: "npm start",
-          JS_FILE: "index.js",
-        },
-        limits: {
-          memory: memo,
-          swap: 0,
-          disk,
-          io: 500,
-          cpu,
-        },
-        feature_limits: {
-          databases: 5,
-          backups: 5,
-          allocations: 5,
-        },
-        deploy: {
-          locations: [1],
-          dedicated_ip: false,
-          port_range: [],
-        },
-      },
-      { headers }
-    );
-    const newServer = createServerResponse.data.attributes;
-    user.saldo -= harga;
-    user.history.push({
-      aktivitas: "Buy Panel",
-      nominal: harga,
-      status: "Sukses",
-      tanggal: new Date(),
-    });
-    await user.save();
-    return res.status(201).json({
-      success: true,
-      message: "Server berhasil dibuat",
-      data: {
-        user: {
-          id: newUser.id,
-          username: newUser.username,
-          email,
-          password,
-        },
-        server: {
-          id: newServer.id,
-          name: newServer.name,
-          memory: memo,
-          disk,
-          cpu,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Error creating server:", error.response?.data || error.message);
-    user.history.push({
-      aktivitas: "Buy Panel",
-      nominal: harga,
-      status: "Gagal - Internal server error",
-      tanggal: new Date(),
-    });
-    await user.save();
-    return res.status(500).json({
-      success: false,
-      message: "Terjadi kesalahan saat membuat server",
-      error: error.response?.data || error.message,
-    });
-  }
+    }
+
+    try {
+      const notifikasi = JSON.parse(data);
+      res.status(200).json({
+        success: true,
+        total: notifikasi.length,
+        data: notifikasi,
+      });
+    } catch (parseErr) {
+      res.status(500).json({
+        success: false,
+        message: "Format JSON tidak valid.",
+        error: parseErr.message,
+      });
+    }
+  });
 });
 
 //=====[ ADMIN BACKEND ]=====//
@@ -2863,9 +1483,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-/*
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Server running di http://192.168.36.240:3000');
-});
-*/
