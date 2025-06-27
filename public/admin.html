@@ -24,6 +24,8 @@
       --bs-success-rgb: 40, 167, 69;
       --bs-danger-rgb: 220, 53, 69;
       --bs-warning-rgb: 255, 193, 7;
+      --bs-info-rgb: 23, 162, 184;
+      --bs-primary-rgb: 52, 152, 219;
     }
     body {
       background-color: var(--content-bg);
@@ -83,12 +85,11 @@
     .stat-card .stat-info .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
     .stat-card .stat-info .stat-label { font-size: 0.8rem; color: var(--text-secondary-dark); text-transform: uppercase; }
 
-    .bg-soft-primary { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary);}
-    .bg-soft-success { background-color: rgba(var(--bs-success-rgb), 0.1); color: var(--bs-success);}
-    .bg-soft-warning { background-color: rgba(var(--bs-warning-rgb), 0.1); color: var(--bs-warning);}
-    .bg-soft-info   { background-color: rgba(var(--bs-info-rgb), 0.1); color: var(--bs-info);}
+    .bg-soft-primary { background-color: rgba(var(--bs-primary-rgb), 0.1); }
+    .bg-soft-success { background-color: rgba(var(--bs-success-rgb), 0.1); }
+    .bg-soft-warning { background-color: rgba(var(--bs-warning-rgb), 0.1); }
+    .bg-soft-info   { background-color: rgba(var(--bs-info-rgb), 0.1); }
     .text-primary { color: var(--primary-accent) !important; }
-
 
     .overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -119,7 +120,7 @@
     .list-group-item { padding: 0.7rem 1rem; font-size: 0.9rem; }
     .sticky-top { z-index: 100; }
     .data-table th { font-weight: 500; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary-dark); }
-    .data-table td { font-size: 0.875rem; }
+    .data-table td { font-size: 0.875rem; vertical-align: middle; }
     .page-title {
         font-size: 1.6rem; font-weight: 500; margin-bottom: 1.75rem; display: flex; align-items: center;
         color: var(--text-primary-dark);
@@ -160,7 +161,7 @@
                     <div class="stat-main">
                         <div class="stat-icon-bg bg-primary"><i class="bi bi-people-fill"></i></div>
                         <div class="stat-info ms-2">
-                            <p class="stat-value" id="totalUsersCount1">2427</p>
+                            <p class="stat-value" id="totalUsersCount">0</p>
                             <p class="stat-label">Total Users</p>
                         </div>
                     </div>
@@ -173,7 +174,7 @@
                     <div class="stat-main">
                         <div class="stat-icon-bg bg-success"><i class="bi bi-person-check-fill"></i></div>
                         <div class="stat-info ms-2">
-                            <p class="stat-value" id="verifiedUsersCount1">1053</p>
+                            <p class="stat-value" id="verifiedUsersCount">0</p>
                             <p class="stat-label">Verified Users</p>
                         </div>
                     </div>
@@ -186,7 +187,7 @@
                     <div class="stat-main">
                         <div class="stat-icon-bg bg-warning"><i class="bi bi-person-x-fill"></i></div>
                         <div class="stat-info ms-2">
-                            <p class="stat-value" id="unverifiedUsersCount1">1374</p>
+                            <p class="stat-value" id="unverifiedUsersCount">0</p>
                             <p class="stat-label">Unverified Users</p>
                         </div>
                     </div>
@@ -228,6 +229,7 @@
                             <option value="">Semua Role</option>
                             <option value="admin">Admin</option>
                             <option value="user">User</option>
+                            <option value="reseller">Reseller</option>
                         </select>
                     </div>
                 </div>
@@ -253,7 +255,7 @@
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        Total Deposit Harian
+                        Total Deposit Sukses
                         <small class="text-muted">(7 Hari Terakhir)</small>
                     </div>
                     <div class="card-body">
@@ -266,7 +268,7 @@
             <div class="col-lg-6">
                 <div class="card h-100">
                      <div class="card-header d-flex justify-content-between align-items-center">
-                        Total Order Harian
+                        Total Order Sukses
                         <small class="text-muted">(7 Hari Terakhir)</small>
                     </div>
                     <div class="card-body">
@@ -281,33 +283,25 @@
       <div class="mb-5">
         <h4 class="mb-3 fw-normal fs-5"><i class="bi bi-calendar-day me-2"></i>Ringkasan Hari Ini</h4>
         <div class="row g-3">
-          <div class="col-md-4">
-            <div class="card stat-card h-100 bg-soft-primary"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-primary"><i class="bi bi-cash-stack"></i></div><div class="stat-info ms-2"><p class="stat-value text-primary" id="totalTransaksiToday">Rp 0</p><p class="stat-label">Total Transaksi</p></div></div></div></div>
-          </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="card stat-card h-100 bg-soft-info"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-info"><i class="bi bi-arrow-down-circle-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-info" id="depositToday">Rp 0</p><p class="stat-label">Deposit Sukses</p></div></div></div></div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="card stat-card h-100 bg-soft-warning"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-warning"><i class="bi bi-cart-check-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-warning" id="orderToday">Rp 0</p><p class="stat-label">Order Sukses</p></div></div></div></div>
           </div>
         </div>
-        <div class="card mt-3"><div class="card-body py-2"><h6 class="card-subtitle mb-1 text-muted small">Perbandingan vs Kemarin</h6><p id="profitCompareToday" class="mb-0 small">Memuat...</p></div></div>
       </div>
 
       <div>
         <h4 class="mb-3 fw-normal fs-5"><i class="bi bi-calendar-week me-2"></i>Ringkasan Minggu Ini (7 Hari Terakhir)</h4>
         <div class="row g-3">
-          <div class="col-md-4">
-             <div class="card stat-card h-100 bg-soft-primary"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-primary"><i class="bi bi-graph-up"></i></div><div class="stat-info ms-2"><p class="stat-value text-primary" id="totalTransaksiThisWeek">Rp 0</p><p class="stat-label">Total Transaksi</p></div></div></div></div>
-          </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
              <div class="card stat-card h-100 bg-soft-info"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-info"><i class="bi bi-piggy-bank-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-info" id="depositThisWeek">Rp 0</p><p class="stat-label">Deposit Sukses</p></div></div></div></div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="card stat-card h-100 bg-soft-warning"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-warning"><i class="bi bi-bag-check-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-warning" id="orderThisWeek">Rp 0</p><p class="stat-label">Order Sukses</p></div></div></div></div>
           </div>
         </div>
-         <div class="card mt-3"><div class="card-body py-2"><h6 class="card-subtitle mb-1 text-muted small">Perbandingan vs Minggu Lalu</h6><p id="profitCompareThisWeek" class="mb-0 small">Memuat...</p></div></div>
       </div>
     </div>
 
@@ -320,21 +314,21 @@
                     <div class="col-lg-8 col-md-7">
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" id="globalHistorySearchInput" class="form-control form-control-sm" placeholder="Cari aktivitas, username, nama, kode...">
+                            <input type="text" id="globalHistorySearchInput" class="form-control form-control-sm" placeholder="Cari layanan, username, reff_id, atau target...">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-5">
                         <select id="globalHistoryCategoryFilter" class="form-select form-select-sm">
                             <option value="">Semua Kategori</option>
-                            <option value="Deposit">Deposit</option><option value="Order">Order</option>
-                            <option value="Transfer">Transfer</option><option value="Receive">Receive</option>
+                            <option value="Deposit">Deposit</option>
+                            <option value="Order">Order</option>
                         </select>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover table-striped align-middle data-table">
                         <thead class="table-light">
-                            <tr><th>Tanggal</th><th>Username</th><th>Aktivitas</th><th>Nominal</th><th>Status</th><th>Kode</th></tr>
+                            <tr><th>Tanggal</th><th>Username</th><th>Aktivitas</th><th>Nominal/Harga</th><th>Status</th><th>Reff ID</th></tr>
                         </thead>
                         <tbody id="globalHistoryTableBody"></tbody>
                     </table>
@@ -355,7 +349,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4" id="userDetailModalBody">
-        <div class="text-center" id="userDetailLoading" style="display:none; padding: 2rem 0;">
+        <div class="text-center" id="userDetailLoading" style="padding: 2rem 0;">
           <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"><span class="visually-hidden">Loading...</span></div>
           <p class="mt-2 text-muted">Memuat detail pengguna...</p>
         </div>
@@ -378,248 +372,440 @@
   let userTableCurrentPage = 1;
   const USER_TABLE_ITEMS_PER_PAGE = 10;
 
-  function toggleSidebar() {
+  const toggleSidebar = () => {
     const s = document.getElementById('sidebar'), o = document.getElementById('overlay');
-    s.classList.toggle('show'); o.classList.toggle('show');
-  }
+    s.classList.toggle('show');
+    o.classList.toggle('show');
+  };
 
-  function showSection(id) {
+  const showSection = (id) => {
     document.querySelectorAll('.main-section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.sidebar ul li').forEach(l => l.classList.remove('active-link'));
     document.getElementById(`nav-${id}`).classList.add('active-link');
     if (window.innerWidth <= 992 && document.getElementById('sidebar').classList.contains('show')) toggleSidebar();
-    if (allUsersData.length === 0 && id !== 'dashboard' && id !== 'users') {}
+    
     if (id === 'dashboard') loadDashboardStats();
-    else if (id === 'users') loadUsersTable(1);
-    else if (id === 'transaksi') { loadTransaksiData(); renderTransactionCharts(); }
-    else if (id === 'globalHistory') loadGlobalHistory(1);
-  }
+    if (id === 'users') loadUsersTable(1);
+    if (id === 'transaksi') { loadTransaksiData(); renderTransactionCharts(); }
+    if (id === 'globalHistory') loadGlobalHistory(1);
+  };
 
-  function logout() { window.location.href = '/auth/logout'; }
-  function formatRupiah(a) { if (a===undefined||a===null||isNaN(Number(a))) return 'Rp 0'; return `Rp ${Number(a).toLocaleString('id-ID')}`; }
-  function getDateStr(d) { return d.toISOString().split('T')[0]; }
-  function formatTanggalIndo(iso, wt=true) {
+  const logout = () => { window.location.href = '/auth/logout'; };
+  const formatRupiah = (val) => {
+    if (val === undefined || val === null || isNaN(Number(val))) return 'Rp 0';
+    return `Rp ${Number(val).toLocaleString('id-ID')}`;
+  };
+  const getDateStr = (d) => d.toISOString().split('T')[0];
+  const formatTanggalIndo = (iso, withTime = true) => {
     if (!iso) return 'N/A';
     try {
-        const d = new Date(iso); if (isNaN(d.getTime())) return 'Tgl Invalid';
-        const o = {day:'2-digit',month:'short',year:'numeric'}; if(wt){o.hour='2-digit';o.minute='2-digit';}
-        return d.toLocaleString('id-ID', o);
-    } catch (e) { return 'Err Tgl'; }
-  }
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return 'Tgl Invalid';
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        if (withTime) {
+            options.hour = '2-digit';
+            options.minute = '2-digit';
+        }
+        return d.toLocaleString('id-ID', options).replace(/\./g, ':');
+    } catch (e) {
+        return 'Err Tgl';
+    }
+  };
 
-  async function fetchDataAndInitialize() {
+  const fetchDataAndInitialize = async () => {
     try {
-        const r = await fetch('/data/users'); if (!r.ok) throw new Error(`HTTP err! s: ${r.status}`);
-        allUsersData = await r.json();
-        const cas = document.querySelector('.sidebar ul li.active-link')?.id.replace('nav-', '') || 'dashboard';
-        showSection(cas);
-    } catch (e) { document.body.innerHTML = `<div class="alert alert-danger m-5">Gagal muat data server. Error: ${e.message}</div>`; }
-  }
+        const response = await fetch('/data/users');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        allUsersData = await response.json();
+        const currentActiveSection = document.querySelector('.sidebar ul li.active-link')?.id.replace('nav-', '') || 'dashboard';
+        showSection(currentActiveSection);
+    } catch (e) {
+        document.body.innerHTML = `<div class="alert alert-danger m-5">Gagal memuat data dari server. Silakan refresh halaman. Error: ${e.message}</div>`;
+    }
+  };
   
-  function loadDashboardStats() {
-    if (allUsersData.length === 0 && document.getElementById('totalUsersCount')) {
-        document.getElementById('totalUsersCount').textContent = '...'; return;
-    }
-    let vc=0, ts=0; allUsersData.forEach(u => { if(u.isVerified)vc++; ts+=u.saldo||0; });
-    if(document.getElementById('totalUsersCount'))document.getElementById('totalUsersCount').textContent=allUsersData.length;
-    if(document.getElementById('verifiedUsersCount'))document.getElementById('verifiedUsersCount').textContent=vc;
-    if(document.getElementById('unverifiedUsersCount'))document.getElementById('unverifiedUsersCount').textContent=allUsersData.length-vc;
-    if(document.getElementById('totalSaldoAllUsers'))document.getElementById('totalSaldoAllUsers').textContent=formatRupiah(ts);
-  }
-
-  function loadUsersTable(page = 1) {
-    userTableCurrentPage = page;
-    if (allUsersData.length === 0 && document.getElementById('userTableBody')) {
-        document.getElementById('userTableBody').innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Memuat data pengguna...</td></tr>`; return;
-    }
-    const tb = document.getElementById('userTableBody'); if (!tb) return;
-    const sv = document.getElementById('userSearchInput')?.value.toLowerCase() || '';
-    const rv = document.getElementById('userRoleFilter')?.value || '';
-    tb.innerHTML = '';
+  const loadDashboardStats = () => {
+    if (!allUsersData.length) return;
     
-    const fu = allUsersData.filter(u => 
-      (!rv || u.role === rv) &&
-      (!sv || (u.username&&u.username.toLowerCase().includes(sv)) || (u.fullname&&u.fullname.toLowerCase().includes(sv)) || (u.email&&u.email.toLowerCase().includes(sv)))
-    );
-    const si = (page - 1) * USER_TABLE_ITEMS_PER_PAGE;
-    const ei = si + USER_TABLE_ITEMS_PER_PAGE;
-    const pu = fu.slice(si, ei);
+    let verifiedCount = 0;
+    let totalSaldo = 0;
+    allUsersData.forEach(u => {
+        if (u.isVerified) verifiedCount++;
+        totalSaldo += u.saldo || 0;
+    });
 
-    if (pu.length === 0) {
-      tb.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada pengguna yang cocok dengan kriteria.</td></tr>`;
+    document.getElementById('totalUsersCount').textContent = allUsersData.length;
+    document.getElementById('verifiedUsersCount').textContent = verifiedCount;
+    document.getElementById('unverifiedUsersCount').textContent = allUsersData.length - verifiedCount;
+    document.getElementById('totalSaldoAllUsers').textContent = formatRupiah(totalSaldo);
+  };
+  
+  const renderPagination = (containerId, totalItems, currentPage, itemsPerPage, callback) => {
+    const pc = document.getElementById(containerId);
+    if (!pc) return;
+    pc.innerHTML = '';
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (totalPages <= 1) return;
+
+    const ul = document.createElement('ul');
+    ul.className = 'pagination pagination-sm';
+
+    const createPageItem = (pageNum, text, isActive = false, isDisabled = false) => {
+        const li = document.createElement('li');
+        li.className = `page-item ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.innerHTML = text;
+        if (!isDisabled && pageNum !== 0) {
+            a.onclick = (e) => {
+                e.preventDefault();
+                callback(pageNum);
+            };
+        }
+        li.appendChild(a);
+        return li;
+    };
+
+    ul.appendChild(createPageItem(currentPage - 1, '«', false, currentPage === 1));
+    
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+    
+    if (totalPages <= 5) {
+        startPage = 1;
+        endPage = totalPages;
     } else {
-      pu.forEach((u, i) => {
+        if (currentPage <= 3) endPage = 5;
+        else if (currentPage >= totalPages - 2) startPage = totalPages - 4;
+    }
+
+    if (startPage > 1) {
+        ul.appendChild(createPageItem(1, '1'));
+        if (startPage > 2) ul.appendChild(createPageItem(0, '...', false, true));
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        ul.appendChild(createPageItem(i, i, i === currentPage));
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) ul.appendChild(createPageItem(0, '...', false, true));
+        ul.appendChild(createPageItem(totalPages, totalPages));
+    }
+
+    ul.appendChild(createPageItem(currentPage + 1, '»', false, currentPage === totalPages));
+    pc.appendChild(ul);
+  };
+
+  const loadUsersTable = (page = 1) => {
+    userTableCurrentPage = page;
+    const tbody = document.getElementById('userTableBody');
+    if (!tbody) return;
+    
+    if (!allUsersData.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Memuat data pengguna...</td></tr>`;
+        return;
+    }
+
+    const searchValue = document.getElementById('userSearchInput')?.value.toLowerCase() || '';
+    const roleValue = document.getElementById('userRoleFilter')?.value || '';
+    
+    const filteredUsers = allUsersData.filter(u => 
+      (!roleValue || u.role === roleValue) &&
+      (!searchValue || 
+        (u.username && u.username.toLowerCase().includes(searchValue)) || 
+        (u.fullname && u.fullname.toLowerCase().includes(searchValue)) || 
+        (u.email && u.email.toLowerCase().includes(searchValue))
+      )
+    );
+
+    const startIndex = (page - 1) * USER_TABLE_ITEMS_PER_PAGE;
+    const endIndex = startIndex + USER_TABLE_ITEMS_PER_PAGE;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    
+    tbody.innerHTML = '';
+    if (paginatedUsers.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada pengguna yang cocok dengan kriteria.</td></tr>`;
+    } else {
+      paginatedUsers.forEach((u, index) => {
+        const roleBadge = u.role === 'admin' ? 'danger' : (u.role === 'reseller' ? 'info' : 'primary');
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${si + i + 1}</td><td>${u.fullname||'N/A'}</td>
-          <td><strong>${u.username}</strong><br><small class="text-muted">Saldo: ${formatRupiah(u.saldo||0)}</small></td>
-          <td>${u.email||'N/A'}</td>
-          <td><span class="badge bg-${u.role==='admin'?'danger-subtle text-danger-emphasis':'primary-subtle text-primary-emphasis'}">${u.role||'user'}</span></td>
-          <td><span class="badge ${u.isVerified?'bg-success-subtle text-success-emphasis':'bg-warning-subtle text-warning-emphasis'}">${u.isVerified?'<i class="bi bi-check-circle me-1"></i>Verified':'<i class="bi bi-hourglass-split me-1"></i>Pending'}</span></td>
+          <td>${startIndex + index + 1}</td>
+          <td>${u.fullname || 'N/A'}</td>
+          <td><strong>${u.username}</strong><br><small class="text-muted">Saldo: ${formatRupiah(u.saldo || 0)}</small></td>
+          <td>${u.email || 'N/A'}</td>
+          <td><span class="badge text-bg-${roleBadge}">${u.role || 'user'}</span></td>
+          <td><span class="badge ${u.isVerified ? 'text-bg-success' : 'text-bg-warning'}">${u.isVerified ? '<i class="bi bi-check-circle me-1"></i>Verified' : '<i class="bi bi-hourglass-split me-1"></i>Pending'}</span></td>
           <td>
             <button class="btn btn-sm btn-outline-primary me-1 py-1 px-2" onclick="showUserDetail('${u._id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
             ${!u.isVerified ? `<button class="btn btn-sm btn-outline-success py-1 px-2" onclick="verifyUser('${u.username}')" title="Verifikasi"><i class="bi bi-patch-check-fill"></i></button>` : ''}
           </td>`;
-        tb.appendChild(tr);
+        tbody.appendChild(tr);
       });
     }
-    renderUserTablePagination(fu.length, page);
-  }
+    renderPagination('userTablePagination', filteredUsers.length, page, USER_TABLE_ITEMS_PER_PAGE, loadUsersTable);
+  };
   
-  function renderUserTablePagination(ti, cp) {
-    const pc = document.getElementById('userTablePagination'); if (!pc) return;
-    pc.innerHTML = ''; const tp = Math.ceil(ti / USER_TABLE_ITEMS_PER_PAGE); if (tp <= 1) return;
-    const ul = document.createElement('ul'); ul.className = 'pagination pagination-sm';
-    const cpi = (pn, t, ia=false, id=false) => {
-        const li=document.createElement('li');li.className=`page-item ${ia?'active':''} ${id?'disabled':''}`;
-        const a=document.createElement('a');a.className='page-link';a.href='#';a.textContent=t;
-        if(!id && pn!==0)a.onclick=(e)=>{e.preventDefault();loadUsersTable(pn);};
-        li.appendChild(a);return li;
-    };
-    ul.appendChild(cpi(cp-1,'‹',false,cp===1));
-    let sp=Math.max(1,cp-2), ep=Math.min(tp,cp+2);
-    if(tp<=5){sp=1;ep=tp;}else{if(cp<=3)ep=5;else if(cp>=tp-2)sp=tp-4;}
-    if(sp>1){ul.appendChild(cpi(1,'1'));if(sp>2)ul.appendChild(cpi(0,'...',false,true));}
-    for(let i=sp;i<=ep;i++)ul.appendChild(cpi(i,i,i===cp));
-    if(ep<tp){if(ep<tp-1)ul.appendChild(cpi(0,'...',false,true));ul.appendChild(cpi(tp,tp));}
-    ul.appendChild(cpi(cp+1,'›',false,cp===tp)); pc.appendChild(ul);
-  }
+  const calculateTransactionsForPeriod = (type, startDate, endDate) => {
+      let total = 0;
+      const start = new Date(startDate); start.setHours(0,0,0,0);
+      const end = new Date(endDate); end.setHours(23,59,59,999);
+      
+      allUsersData.forEach(user => {
+          const historySource = type === 'Deposit' ? user.historyDeposit : user.historyOrder;
+          if(historySource && Array.isArray(historySource)){
+              historySource.forEach(h => {
+                  const hDate = new Date(h.created_at);
+                  if (h.status.toLowerCase() === 'success' && hDate >= start && hDate <= end) {
+                      const amount = type === 'Deposit' ? h.get_balance : h.price;
+                      total += amount || 0;
+                  }
+              });
+          }
+      });
+      return total;
+  };
+
+  const loadTransaksiData = () => {
+    if (!allUsersData.length) return;
+    const today = new Date();
+    const todayStr = getDateStr(today);
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6);
+    const weekStartStr = getDateStr(weekStart);
+
+    document.getElementById('depositToday').textContent = formatRupiah(calculateTransactionsForPeriod('Deposit', todayStr, todayStr));
+    document.getElementById('orderToday').textContent = formatRupiah(calculateTransactionsForPeriod('Order', todayStr, todayStr));
+    document.getElementById('depositThisWeek').textContent = formatRupiah(calculateTransactionsForPeriod('Deposit', weekStartStr, todayStr));
+    document.getElementById('orderThisWeek').textContent = formatRupiah(calculateTransactionsForPeriod('Order', weekStartStr, todayStr));
+  };
   
-  function calculateTransactionsForPeriod(us, sd, ed) {
-    let dep=0,ord=0,tot=0;const s=new Date(sd);s.setHours(0,0,0,0);const e=new Date(ed);e.setHours(23,59,59,999);
-    us.forEach(u=>{if(u.history&&Array.isArray(u.history)){u.history.forEach(h=>{const hd=new Date(h.tanggal);
-    if(h.status==='Sukses'&&hd>=s&&hd<=e){const n=h.nominal||0;tot+=n;if(h.aktivitas==='Deposit')dep+=n;if(h.aktivitas&&h.aktivitas.startsWith('Order'))ord+=n;}});}});
-    return {total:tot,deposit:dep,order:ord};
-  }
-
-  function generateComparisonText(cur,pre) {
-    let pc=0,tt='',tc='text-muted';
-    if(pre>0){pc=((cur-pre)/pre*100);if(cur>pre){tt=`naik <i class="bi bi-arrow-up-short"></i> ${pc.toFixed(1)}%`;tc='text-success';}
-    else if(cur<pre){tt=`turun <i class="bi bi-arrow-down-short"></i> ${Math.abs(pc).toFixed(1)}%`;tc='text-danger';}
-    else tt='stabil.';}else if(cur>0){tt='naik dari nol.';tc='text-success';}else tt='tidak ada data signifikan.';
-    return `<span class="${tc}">${tt}</span>`;
-  }
-
-  function loadTransaksiData() {
-    if(allUsersData.length===0){document.getElementById('profitCompareToday').innerHTML=`<span class="text-warning small">Data user belum dimuat.</span>`;return;}
-    const us=allUsersData, tdy=new Date(), ts=getDateStr(tdy);
-    const yst=new Date(tdy);yst.setDate(tdy.getDate()-1);const ys=getDateStr(yst);
-    const tws=new Date(tdy);tws.setDate(tdy.getDate()-6);const twss=getDateStr(tws);
-    const lwe=new Date(tws);lwe.setDate(tws.getDate()-1);
-    const lws=new Date(lwe);lws.setDate(lwe.getDate()-6);
-    const ttx=calculateTransactionsForPeriod(us,ts,ts);
-    document.getElementById('totalTransaksiToday').textContent=formatRupiah(ttx.total);
-    document.getElementById('depositToday').textContent=formatRupiah(ttx.deposit);
-    document.getElementById('orderToday').textContent=formatRupiah(ttx.order);
-    const ytx=calculateTransactionsForPeriod(us,ys,ys);
-    document.getElementById('profitCompareToday').innerHTML=`Total hari ini ${generateComparisonText(ttx.total,ytx.total)} dari kemarin.`;
-    const twtx=calculateTransactionsForPeriod(us,twss,ts);
-    document.getElementById('totalTransaksiThisWeek').textContent=formatRupiah(twtx.total);
-    document.getElementById('depositThisWeek').textContent=formatRupiah(twtx.deposit);
-    document.getElementById('orderThisWeek').textContent=formatRupiah(twtx.order);
-    const ltx=calculateTransactionsForPeriod(us,getDateStr(lws),getDateStr(lwe));
-    document.getElementById('profitCompareThisWeek').innerHTML=`Total 7 hari ini ${generateComparisonText(twtx.total,ltx.total)} dari 7 hari sebelumnya.`;
-  }
-
-  function aggregateDataForChart(days=7,type='Deposit') {
-    const dd={};const tdy=new Date();for(let i=0;i<days;i++){const d=new Date(tdy);d.setDate(tdy.getDate()-i);dd[getDateStr(d)]=0;}
-    allUsersData.forEach(u=>{if(u.history&&Array.isArray(u.history)){u.history.forEach(h=>{
-    if(h.status==='Sukses'&&h.aktivitas&&h.aktivitas.toLowerCase().startsWith(type.toLowerCase())){try{
-    const tdo=new Date(h.tanggal);if(isNaN(tdo.getTime()))return;const td=getDateStr(tdo);
-    if(dd.hasOwnProperty(td))dd[td]+=h.nominal||0;}catch(e){return;}}});}});
-    const l=Object.keys(dd).sort((a,b)=>new Date(a)-new Date(b));const d=l.map(lbl=>dd[lbl]);
-    return{labels:l.map(x=>formatTanggalIndo(x,false)),data:d};
-  }
-
-  function renderTransactionCharts() {
-    if(allUsersData.length===0){
-        const ndm="Data user belum ada untuk chart.",dctx=document.getElementById('depositChart')?.getContext('2d'),octx=document.getElementById('orderChart')?.getContext('2d');
-        if(dctx){if(depositChartInstance)depositChartInstance.destroy();dctx.clearRect(0,0,dctx.canvas.width,dctx.canvas.height);dctx.textAlign="center";dctx.fillText(ndm,dctx.canvas.width/2,dctx.canvas.height/2);}
-        if(octx){if(orderChartInstance)orderChartInstance.destroy();octx.clearRect(0,0,octx.canvas.width,octx.canvas.height);octx.textAlign="center";octx.fillText(ndm,octx.canvas.width/2,octx.canvas.height/2);}
-        return;
+  const aggregateDataForChart = (days, type) => {
+    const dataMap = {};
+    const today = new Date();
+    for (let i = 0; i < days; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        dataMap[getDateStr(d)] = 0;
     }
-    const dcd=aggregateDataForChart(7,'Deposit'),ocd=aggregateDataForChart(7,'Order');
-    const co={responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{callback:v=>formatRupiah(v).replace('Rp ','')}}},plugins:{tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${formatRupiah(c.raw)}`}}}};
-    const dc=document.getElementById('depositChart');if(dc){if(depositChartInstance)depositChartInstance.destroy();depositChartInstance=new Chart(dc,{type:'line',data:{labels:dcd.labels,datasets:[{label:'Deposit',data:dcd.data,borderColor:'#3498db',backgroundColor:'rgba(52,152,219,0.1)',tension:0.3,fill:true}]},options:co});}
-    const oc=document.getElementById('orderChart');if(oc){if(orderChartInstance)orderChartInstance.destroy();orderChartInstance=new Chart(oc,{type:'line',data:{labels:ocd.labels,datasets:[{label:'Order',data:ocd.data,borderColor:'#e74c3c',backgroundColor:'rgba(231,76,60,0.1)',tension:0.3,fill:true}]},options:co});}
-  }
+    
+    allUsersData.forEach(user => {
+        const historySource = type === 'Deposit' ? user.historyDeposit : user.historyOrder;
+        if (historySource && Array.isArray(historySource)) {
+            historySource.forEach(h => {
+                if (h.status.toLowerCase() === 'success') {
+                    const hDateStr = getDateStr(new Date(h.created_at));
+                    if (dataMap.hasOwnProperty(hDateStr)) {
+                        const amount = type === 'Deposit' ? h.get_balance : h.price;
+                        dataMap[hDateStr] += amount || 0;
+                    }
+                }
+            });
+        }
+    });
+
+    const labels = Object.keys(dataMap).sort((a, b) => new Date(a) - new Date(b));
+    const data = labels.map(label => dataMap[label]);
+    return { labels: labels.map(l => formatTanggalIndo(l, false)), data };
+  };
+
+  const renderTransactionCharts = () => {
+    if (!allUsersData.length) return;
+
+    const depositChartData = aggregateDataForChart(7, 'Deposit');
+    const orderChartData = aggregateDataForChart(7, 'Order');
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, ticks: { callback: v => formatRupiah(v).replace('Rp ', '') } } },
+        plugins: { tooltip: { callbacks: { label: c => `${c.dataset.label}: ${formatRupiah(c.raw)}` } } }
+    };
+
+    const depositCtx = document.getElementById('depositChart');
+    if (depositCtx) {
+        if (depositChartInstance) depositChartInstance.destroy();
+        depositChartInstance = new Chart(depositCtx, { type: 'line', data: { labels: depositChartData.labels, datasets: [{ label: 'Deposit', data: depositChartData.data, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.1)', tension: 0.3, fill: true }] }, options: chartOptions });
+    }
+    const orderCtx = document.getElementById('orderChart');
+    if (orderCtx) {
+        if (orderChartInstance) orderChartInstance.destroy();
+        orderChartInstance = new Chart(orderCtx, { type: 'line', data: { labels: orderChartData.labels, datasets: [{ label: 'Order', data: orderChartData.data, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.1)', tension: 0.3, fill: true }] }, options: chartOptions });
+    }
+  };
   
-  function showUserDetail(uid) {
-    const u=allUsersData.find(x=>x._id===uid),mb=document.getElementById('userDetailModalBody'),mt=document.getElementById('userDetailModalLabel'),ld=document.getElementById('userDetailLoading');
-    mb.innerHTML='';ld.style.display='block';mb.appendChild(ld);
-    if(u){mt.textContent=`Detail: ${u.username||'N/A'}`;let hh='<p class="text-center text-muted small my-3">Tidak ada riwayat transaksi.</p>';
-    if(u.history&&u.history.length>0){const sh=[...u.history].sort((a,b)=>new Date(b.tanggal)-new Date(a.tanggal));
-    hh=`<div class="table-responsive mt-3 border rounded" style="max-height:350px;overflow-y:auto;"><table class="table table-sm table-striped table-bordered table-hover mb-0"><thead class="table-light sticky-top"><tr><th>Tanggal</th><th>Aktivitas</th><th>Nominal</th><th>Status</th><th>Kode</th></tr></thead><tbody>`;
-    sh.forEach(h=>{let nc='';if(h.status==='Sukses'){if(h.aktivitas?.toLowerCase().includes('receive')||h.aktivitas?.toLowerCase().includes('deposit'))nc='text-success';else if(h.aktivitas?.toLowerCase().includes('transfer')||h.aktivitas?.toLowerCase().includes('order'))nc='text-danger';}
-    hh+=`<tr><td>${formatTanggalIndo(h.tanggal,true)}</td><td>${h.aktivitas||'N/A'}</td><td class="${nc} fw-bold">${formatRupiah(h.nominal)}</td><td><span class="badge ${h.status==='Sukses'?'bg-success-subtle text-success-emphasis':(h.status?.toLowerCase().includes('gagal')?'bg-danger-subtle text-danger-emphasis':'bg-warning-subtle text-warning-emphasis')}">${h.status||'N/A'}</span></td><td><small class="text-muted">${h.code||'N/A'}</small></td></tr>`;});
-    hh+=`</tbody></table></div>`;}
-    const dc=`
-    <div class="row g-4"><div class="col-lg-3 text-center"><img src="${u.profileUrl||'https://via.placeholder.com/120/2c3e50/FFFFFF?text=N/A'}" class="img-fluid rounded-circle mb-2 shadow-sm" alt="Foto Profil" style="width:120px;height:120px;object-fit:cover;">
-    <h5 class="mb-0">${u.fullname||'Anonim'}</h5><p class="text-muted small mb-1">@${u.username}</p><span class="badge bg-${u.role==='admin'?'danger':'primary'} rounded-pill">${u.role||'user'}</span></div>
-    <div class="col-lg-9"><h6 class="mb-3 text-primary"><i class="bi bi-info-circle-fill me-2"></i>Informasi Akun</h6>
-    <div class="row"><div class="col-md-6 mb-3"><ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-envelope me-2 text-muted"></i>Email</span><strong class="text-dark">${u.email||'N/A'}</strong></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-phone me-2 text-muted"></i>No. HP</span><strong class="text-dark">${u.nomor||'N/A'}</strong></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-wallet2 me-2 text-muted"></i>Saldo</span><strong class="text-success fw-bolder">${formatRupiah(u.saldo)}</strong></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-coin me-2 text-muted"></i>Koin</span><strong class="text-warning fw-bolder">${u.coin||0}</strong></li>
-    </ul></div><div class="col-md-6 mb-3"><ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-patch-check me-2 text-muted"></i>Verified</span><span class="badge ${u.isVerified?'bg-success-subtle text-success-emphasis':'bg-danger-subtle text-danger-emphasis'}">${u.isVerified?'Ya':'Tidak'}</span></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-calendar-plus me-2 text-muted"></i>Daftar</span><small class="text-dark">${formatTanggalIndo(u.tanggalDaftar,true)}</small></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-clock me-2 text-muted"></i>Login Akhir</span><small class="text-dark">${formatTanggalIndo(u.lastLogin,true)}</small></li>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-award me-2 text-muted"></i>Ref. Code</span><strong class="text-dark">${u.referralCode||'N/A'}</strong></li>
-    </ul></div></div><h6 class="mt-2 mb-1 text-primary"><i class="bi bi-key-fill me-2"></i>API Key</h6><p class="user-select-all bg-light p-2 rounded font-monospace small" style="word-break:break-all;">${u.apiKey||'N/A'}</p></div></div>
-    <hr class="my-4"><h6 class="mb-3 text-primary"><i class="bi bi-list-ul me-2"></i>Riwayat Transaksi (Terbaru)</h6>${hh}`;
-    ld.style.display='none';mb.innerHTML=dc;}else{mt.textContent='User Tidak Ditemukan';ld.style.display='none';mb.innerHTML=`<p class="text-danger text-center py-4">Detail user ID ${uid} tidak ditemukan.</p>`;}
-    if(!userDetailModalInstance)userDetailModalInstance=new bootstrap.Modal(document.getElementById('userDetailModal'));
+  const showUserDetail = (userId) => {
+    const user = allUsersData.find(u => u._id === userId);
+    const modalBody = document.getElementById('userDetailModalBody');
+    const modalTitle = document.getElementById('userDetailModalLabel');
+    const loadingDiv = document.getElementById('userDetailLoading');
+
+    modalBody.innerHTML = '';
+    loadingDiv.style.display = 'block';
+    modalBody.appendChild(loadingDiv);
+    
+    if (!userDetailModalInstance) userDetailModalInstance = new bootstrap.Modal(document.getElementById('userDetailModal'));
     userDetailModalInstance.show();
-  }
 
-  async function verifyUser(un) {
-    if(!confirm(`Verifikasi user ${un}?`))return;
-    try{const r=await fetch('/admin/verify-user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:un})});
-    const res=await r.json();alert(res.message||(res.success?`User ${un} berhasil diverifikasi.`:'Gagal verifikasi.'));
-    if(res.success)await fetchDataAndInitialize();}catch(e){alert('Error verifikasi user.');}
-  }
+    if (user) {
+      modalTitle.textContent = `Detail Pengguna: ${user.username || 'N/A'}`;
+      
+      let historyHtml = '<p class="text-center text-muted small my-3">Tidak ada riwayat transaksi.</p>';
+      const combinedHistory = [
+          ...(user.historyDeposit || []).map(h => ({ ...h, type: 'Deposit', amount: h.get_balance, date: h.created_at, ref: h.reff_id, details: `${h.metode} - ${h.bank}` })),
+          ...(user.historyOrder || []).map(h => ({ ...h, type: 'Order', amount: h.price, date: h.created_at, ref: h.reff_id, details: h.layanan })),
+      ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  function loadGlobalHistory(p=1) {
-    if(allUsersData.length===0&&document.getElementById('globalHistoryTableBody')){document.getElementById('globalHistoryTableBody').innerHTML=`<tr><td colspan="6" class="text-center py-4 text-muted">Memuat histori...</td></tr>`;return;}
-    globalHistoryCurrentPage=p;const tb=document.getElementById('globalHistoryTableBody');if(!tb)return;
-    const sv=document.getElementById('globalHistorySearchInput').value.toLowerCase();const cv=document.getElementById('globalHistoryCategoryFilter').value;tb.innerHTML='';
-    let fh=[];allUsersData.forEach(u=>{if(u.history&&Array.isArray(u.history)){u.history.forEach(h=>{fh.push({...h,username:u.username,fullname:u.fullname});});}});
-    fh.sort((a,b)=>new Date(b.tanggal)-new Date(a.tanggal));
-    const fih=fh.filter(h=>{const ms=!sv||(h.aktivitas&&h.aktivitas.toLowerCase().includes(sv))||(h.username&&h.username.toLowerCase().includes(sv))||(h.fullname&&h.fullname.toLowerCase().includes(sv))||(h.code&&h.code.toLowerCase().includes(sv));
-    const mc=!cv||(h.aktivitas&&h.aktivitas.toLowerCase().startsWith(cv.toLowerCase()));return ms&&mc;});
-    const si=(p-1)*GLOBAL_HISTORY_ITEMS_PER_PAGE,ei=si+GLOBAL_HISTORY_ITEMS_PER_PAGE;const ph=fih.slice(si,ei);
-    if(ph.length===0){tb.innerHTML=`<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada riwayat yang cocok.</td></tr>`;}else{
-    ph.forEach(h=>{const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${formatTanggalIndo(h.tanggal)}</td><td>${h.username}</td><td>${h.aktivitas||'N/A'}</td><td>${formatRupiah(h.nominal)}</td>
-    <td><span class="badge ${h.status==='Sukses'?'bg-success-subtle text-success-emphasis':(h.status?.toLowerCase().includes('gagal')?'bg-danger-subtle text-danger-emphasis':'bg-warning-subtle text-warning-emphasis')}">${h.status||'N/A'}</span></td>
-    <td><small class="text-muted">${h.code||'N/A'}</small></td>`;tb.appendChild(tr);});}
-    renderGlobalHistoryPagination(fih.length,p);
-  }
+      if (combinedHistory.length > 0) {
+        historyHtml = `<div class="table-responsive mt-3 border rounded" style="max-height:350px;overflow-y:auto;"><table class="table table-sm table-striped table-bordered table-hover mb-0"><thead class="table-light sticky-top"><tr><th>Tanggal</th><th>Tipe</th><th>Detail</th><th>Jumlah</th><th>Status</th><th>Reff ID</th></tr></thead><tbody>`;
+        combinedHistory.forEach(h => {
+          let amountColor = h.type === 'Deposit' ? 'text-success' : 'text-danger';
+          let statusBadge = h.status.toLowerCase() === 'success' ? 'success' : (h.status.toLowerCase() === 'failed' || h.status.toLowerCase() === 'error' ? 'danger' : 'warning');
+          historyHtml += `
+            <tr>
+              <td>${formatTanggalIndo(h.date)}</td>
+              <td><span class="badge text-bg-${h.type === 'Deposit' ? 'info' : 'primary'}">${h.type}</span></td>
+              <td>${h.details || 'N/A'}</td>
+              <td class="fw-bold ${amountColor}">${formatRupiah(h.amount)}</td>
+              <td><span class="badge text-bg-${statusBadge}">${h.status}</span></td>
+              <td><small class="text-muted">${h.ref || 'N/A'}</small></td>
+            </tr>`;
+        });
+        historyHtml += `</tbody></table></div>`;
+      }
+      
+      const detailContent = `
+        <div class="row g-4">
+          <div class="col-lg-3 text-center">
+            <img src="${user.profileUrl || 'https://i.pinimg.com/236x/a2/80/e2/a280e2a50bf6240f29b49a72875adee5.jpg'}" class="img-fluid rounded-circle mb-2 shadow-sm" alt="Foto Profil" style="width:120px;height:120px;object-fit:cover;">
+            <h5 class="mb-0">${user.fullname || 'Anonim'}</h5>
+            <p class="text-muted small mb-1">@${user.username}</p>
+            <span class="badge bg-${user.role === 'admin' ? 'danger' : 'primary'} rounded-pill">${user.role || 'user'}</span>
+          </div>
+          <div class="col-lg-9">
+            <h6 class="mb-3 text-primary"><i class="bi bi-info-circle-fill me-2"></i>Informasi Akun</h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-envelope me-2 text-muted"></i>Email</span><strong class="text-dark">${user.email || 'N/A'}</strong></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-phone me-2 text-muted"></i>No. HP</span><strong class="text-dark">${user.nomor || 'N/A'}</strong></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-wallet2 me-2 text-muted"></i>Saldo</span><strong class="text-success fw-bolder">${formatRupiah(user.saldo)}</strong></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-coin me-2 text-muted"></i>Koin</span><strong class="text-warning fw-bolder">${user.coin || 0}</strong></li>
+                </ul>
+              </div>
+              <div class="col-md-6 mb-3">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-patch-check me-2 text-muted"></i>Verified</span><span class="badge text-bg-${user.isVerified ? 'success' : 'danger'}">${user.isVerified ? 'Ya' : 'Tidak'}</span></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-calendar-plus me-2 text-muted"></i>Daftar</span><small class="text-dark">${formatTanggalIndo(user.tanggalDaftar)}</small></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-clock me-2 text-muted"></i>Login Akhir</span><small class="text-dark">${formatTanggalIndo(user.lastLogin)}</small></li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-award me-2 text-muted"></i>Ref. Code</span><strong class="text-dark">${user.referralCode || 'N/A'}</strong></li>
+                </ul>
+              </div>
+            </div>
+            <h6 class="mt-2 mb-1 text-primary"><i class="bi bi-key-fill me-2"></i>API Key</h6>
+            <p class="user-select-all bg-light p-2 rounded font-monospace small" style="word-break:break-all;">${user.apiKey || 'N/A'}</p>
+             <h6 class="mt-2 mb-1 text-primary"><i class="bi bi-shield-lock me-2"></i>Whitelist IP</h6>
+            <p class="bg-light p-2 rounded font-monospace small">${(user.whitelistIp || ['N/A']).join(', ')}</p>
+          </div>
+        </div>
+        <hr class="my-4">
+        <h6 class="mb-3 text-primary"><i class="bi bi-list-ul me-2"></i>Riwayat Transaksi (Terbaru)</h6>
+        ${historyHtml}`;
+      
+      loadingDiv.style.display = 'none';
+      modalBody.innerHTML = detailContent;
+    } else {
+      modalTitle.textContent = 'User Tidak Ditemukan';
+      loadingDiv.style.display = 'none';
+      modalBody.innerHTML = `<p class="text-danger text-center py-4">Detail user dengan ID ${userId} tidak dapat ditemukan.</p>`;
+    }
+  };
 
-  function renderGlobalHistoryPagination(ti,cp) {
-    const pc=document.getElementById('globalHistoryPagination');if(!pc)return;pc.innerHTML='';const tp=Math.ceil(ti/GLOBAL_HISTORY_ITEMS_PER_PAGE);if(tp<=1)return;
-    const ul=document.createElement('ul');ul.className='pagination pagination-sm';
-    const cpi=(pn,t,ia=false,id=false)=>{const li=document.createElement('li');li.className=`page-item ${ia?'active':''} ${id?'disabled':''}`;
-    const a=document.createElement('a');a.className='page-link';a.href='#';a.textContent=t;if(!id&&pn!==0)a.onclick=(e)=>{e.preventDefault();loadGlobalHistory(pn);};li.appendChild(a);return li;};
-    ul.appendChild(cpi(cp-1,'‹',false,cp===1));let sp=Math.max(1,cp-2),ep=Math.min(tp,cp+2);
-    if(tp<=5){sp=1;ep=tp;}else{if(cp<=3)ep=5;else if(cp>=tp-2)sp=tp-4;}
-    if(sp>1){ul.appendChild(cpi(1,'1'));if(sp>2)ul.appendChild(cpi(0,'...',false,true));}
-    for(let i=sp;i<=ep;i++)ul.appendChild(cpi(i,i,i===cp));
-    if(ep<tp){if(ep<tp-1)ul.appendChild(cpi(0,'...',false,true));ul.appendChild(cpi(tp,tp));}
-    ul.appendChild(cpi(cp+1,'›',false,cp===tp));pc.appendChild(ul);
-  }
+  const verifyUser = async (username) => {
+    if (!confirm(`Apakah Anda yakin ingin memverifikasi pengguna: ${username}?`)) return;
+    try {
+      const response = await fetch('/admin/verify-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username })
+      });
+      const result = await response.json();
+      alert(result.message || (result.success ? `Pengguna ${username} berhasil diverifikasi.` : 'Gagal melakukan verifikasi.'));
+      if (result.success) await fetchDataAndInitialize();
+    } catch (e) {
+      alert('Terjadi kesalahan saat mencoba verifikasi pengguna.');
+    }
+  };
+  
+  const loadGlobalHistory = (page = 1) => {
+    globalHistoryCurrentPage = page;
+    const tbody = document.getElementById('globalHistoryTableBody');
+    if (!tbody) return;
 
-  document.addEventListener('DOMContentLoaded',async()=>{
+    if (!allUsersData.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Memuat riwayat transaksi...</td></tr>`;
+      return;
+    }
+    
+    const searchValue = document.getElementById('globalHistorySearchInput').value.toLowerCase();
+    const categoryValue = document.getElementById('globalHistoryCategoryFilter').value;
+
+    let flatHistory = [];
+    allUsersData.forEach(user => {
+        (user.historyDeposit || []).forEach(h => flatHistory.push({ ...h, username: user.username, type: 'Deposit', amount: h.get_balance, date: h.created_at, ref: h.reff_id, details: h.layanan || h.metode }));
+        (user.historyOrder || []).forEach(h => flatHistory.push({ ...h, username: user.username, type: 'Order', amount: h.price, date: h.created_at, ref: h.reff_id, details: h.layanan }));
+    });
+    flatHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const filteredHistory = flatHistory.filter(h => {
+        const matchCategory = !categoryValue || h.type === categoryValue;
+        const matchSearch = !searchValue || 
+            (h.details && h.details.toLowerCase().includes(searchValue)) ||
+            (h.username && h.username.toLowerCase().includes(searchValue)) ||
+            (h.ref && h.ref.toLowerCase().includes(searchValue)) ||
+            (h.target && h.target.toLowerCase().includes(searchValue));
+        return matchCategory && matchSearch;
+    });
+
+    const startIndex = (page - 1) * GLOBAL_HISTORY_ITEMS_PER_PAGE;
+    const paginatedHistory = filteredHistory.slice(startIndex, startIndex + GLOBAL_HISTORY_ITEMS_PER_PAGE);
+
+    tbody.innerHTML = '';
+    if (paginatedHistory.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada riwayat yang cocok.</td></tr>`;
+    } else {
+      paginatedHistory.forEach(h => {
+        const statusBadge = h.status.toLowerCase() === 'success' ? 'success' : (h.status.toLowerCase() === 'failed' || h.status.toLowerCase() === 'error' ? 'danger' : 'warning');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${formatTanggalIndo(h.date)}</td>
+            <td>${h.username}</td>
+            <td>${h.details || 'N/A'}</td>
+            <td>${formatRupiah(h.amount)}</td>
+            <td><span class="badge text-bg-${statusBadge}">${h.status}</span></td>
+            <td><small class="text-muted">${h.ref || 'N/A'}</small></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    renderPagination('globalHistoryPagination', filteredHistory.length, page, GLOBAL_HISTORY_ITEMS_PER_PAGE, loadGlobalHistory);
+  };
+
+
+  document.addEventListener('DOMContentLoaded', async () => {
     await fetchDataAndInitialize();
-    if(document.getElementById('userDetailModal'))userDetailModalInstance=new bootstrap.Modal(document.getElementById('userDetailModal'));
-    document.getElementById('globalHistorySearchInput')?.addEventListener('input',()=>loadGlobalHistory(1));
-    document.getElementById('globalHistoryCategoryFilter')?.addEventListener('change',()=>loadGlobalHistory(1));
-    document.getElementById('userSearchInput')?.addEventListener('input',()=>loadUsersTable(1));
-    document.getElementById('userRoleFilter')?.addEventListener('change',()=>loadUsersTable(1));
-    window.addEventListener('resize',()=>{if(depositChartInstance)depositChartInstance.resize();if(orderChartInstance)orderChartInstance.resize();});
+    
+    document.getElementById('globalHistorySearchInput')?.addEventListener('input', () => loadGlobalHistory(1));
+    document.getElementById('globalHistoryCategoryFilter')?.addEventListener('change', () => loadGlobalHistory(1));
+    document.getElementById('userSearchInput')?.addEventListener('input', () => loadUsersTable(1));
+    document.getElementById('userRoleFilter')?.addEventListener('change', () => loadUsersTable(1));
+    
+    window.addEventListener('resize', () => {
+        if (depositChartInstance) depositChartInstance.resize();
+        if (orderChartInstance) orderChartInstance.resize();
+    });
   });
 </script>
 </body>
