@@ -121,6 +121,7 @@
     .sticky-top { z-index: 100; }
     .data-table th { font-weight: 500; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary-dark); }
     .data-table td { font-size: 0.875rem; vertical-align: middle; }
+    .data-table tr:hover { background-color: #f8f9fa; }
     .page-title {
         font-size: 1.6rem; font-weight: 500; margin-bottom: 1.75rem; display: flex; align-items: center;
         color: var(--text-primary-dark);
@@ -129,6 +130,7 @@
     .pagination .page-link { font-size: 0.85rem; padding: 0.4rem 0.75rem; }
     .form-control-sm { font-size: 0.8rem !important; }
     .form-select-sm { font-size: 0.8rem !important; }
+    .clickable-row { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -279,36 +281,12 @@
                 </div>
             </div>
         </div>
-
-      <div class="mb-5">
-        <h4 class="mb-3 fw-normal fs-5"><i class="bi bi-calendar-day me-2"></i>Ringkasan Hari Ini</h4>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="card stat-card h-100 bg-soft-info"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-info"><i class="bi bi-arrow-down-circle-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-info" id="depositToday">Rp 0</p><p class="stat-label">Deposit Sukses</p></div></div></div></div>
-          </div>
-          <div class="col-md-6">
-            <div class="card stat-card h-100 bg-soft-warning"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-warning"><i class="bi bi-cart-check-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-warning" id="orderToday">Rp 0</p><p class="stat-label">Order Sukses</p></div></div></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h4 class="mb-3 fw-normal fs-5"><i class="bi bi-calendar-week me-2"></i>Ringkasan Minggu Ini (7 Hari Terakhir)</h4>
-        <div class="row g-3">
-          <div class="col-md-6">
-             <div class="card stat-card h-100 bg-soft-info"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-info"><i class="bi bi-piggy-bank-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-info" id="depositThisWeek">Rp 0</p><p class="stat-label">Deposit Sukses</p></div></div></div></div>
-          </div>
-          <div class="col-md-6">
-            <div class="card stat-card h-100 bg-soft-warning"><div class="card-body"><div class="stat-main"><div class="stat-icon-bg bg-warning"><i class="bi bi-bag-check-fill"></i></div><div class="stat-info ms-2"><p class="stat-value text-warning" id="orderThisWeek">Rp 0</p><p class="stat-label">Order Sukses</p></div></div></div></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div id="globalHistory" class="main-section">
         <h3 class="page-title"><i class="bi bi-archive"></i>Global History Semua User</h3>
         <div class="card">
-            <div class="card-header">Riwayat Transaksi Seluruh Pengguna</div>
+            <div class="card-header">Riwayat Transaksi Seluruh Pengguna (Klik baris untuk detail)</div>
             <div class="card-body">
                 <div class="row mb-3 gy-2">
                     <div class="col-lg-8 col-md-7">
@@ -349,7 +327,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4" id="userDetailModalBody">
-        <div class="text-center" id="userDetailLoading" style="padding: 2rem 0;">
+        <div class="text-center" style="padding: 2rem 0;">
           <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"><span class="visually-hidden">Loading...</span></div>
           <p class="mt-2 text-muted">Memuat detail pengguna...</p>
         </div>
@@ -361,10 +339,28 @@
   </div>
 </div>
 
+<div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-labelledby="transactionDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="transactionDetailModalLabel"><i class="bi bi-receipt-cutoff me-2 text-primary"></i>Detail Transaksi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4" id="transactionDetailModalBody">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   let allUsersData = [];
   let userDetailModalInstance = null;
+  let transactionDetailModalInstance = null;
   let depositChartInstance = null;
   let orderChartInstance = null;
   let globalHistoryCurrentPage = 1;
@@ -387,7 +383,7 @@
     
     if (id === 'dashboard') loadDashboardStats();
     if (id === 'users') loadUsersTable(1);
-    if (id === 'transaksi') { loadTransaksiData(); renderTransactionCharts(); }
+    if (id === 'transaksi') { renderTransactionCharts(); }
     if (id === 'globalHistory') loadGlobalHistory(1);
   };
 
@@ -541,46 +537,12 @@
           <td><span class="badge ${u.isVerified ? 'text-bg-success' : 'text-bg-warning'}">${u.isVerified ? '<i class="bi bi-check-circle me-1"></i>Verified' : '<i class="bi bi-hourglass-split me-1"></i>Pending'}</span></td>
           <td>
             <button class="btn btn-sm btn-outline-primary me-1 py-1 px-2" onclick="showUserDetail('${u._id}')" title="Detail"><i class="bi bi-eye-fill"></i></button>
-            ${!u.isVerified ? `<button class="btn btn-sm btn-outline-success py-1 px-2" onclick="verifyUser('${u.username}')" title="Verifikasi"><i class="bi bi-patch-check-fill"></i></button>` : ''}
+            ${!u.isVerified ? `<button class="btn btn-sm btn-outline-success py-1 px-2" onclick="event.stopPropagation(); verifyUser('${u.username}');" title="Verifikasi"><i class="bi bi-patch-check-fill"></i></button>` : ''}
           </td>`;
         tbody.appendChild(tr);
       });
     }
     renderPagination('userTablePagination', filteredUsers.length, page, USER_TABLE_ITEMS_PER_PAGE, loadUsersTable);
-  };
-  
-  const calculateTransactionsForPeriod = (type, startDate, endDate) => {
-      let total = 0;
-      const start = new Date(startDate); start.setHours(0,0,0,0);
-      const end = new Date(endDate); end.setHours(23,59,59,999);
-      
-      allUsersData.forEach(user => {
-          const historySource = type === 'Deposit' ? user.historyDeposit : user.historyOrder;
-          if(historySource && Array.isArray(historySource)){
-              historySource.forEach(h => {
-                  const hDate = new Date(h.created_at);
-                  if (h.status.toLowerCase() === 'success' && hDate >= start && hDate <= end) {
-                      const amount = type === 'Deposit' ? h.get_balance : h.price;
-                      total += amount || 0;
-                  }
-              });
-          }
-      });
-      return total;
-  };
-
-  const loadTransaksiData = () => {
-    if (!allUsersData.length) return;
-    const today = new Date();
-    const todayStr = getDateStr(today);
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - 6);
-    const weekStartStr = getDateStr(weekStart);
-
-    document.getElementById('depositToday').textContent = formatRupiah(calculateTransactionsForPeriod('Deposit', todayStr, todayStr));
-    document.getElementById('orderToday').textContent = formatRupiah(calculateTransactionsForPeriod('Order', todayStr, todayStr));
-    document.getElementById('depositThisWeek').textContent = formatRupiah(calculateTransactionsForPeriod('Deposit', weekStartStr, todayStr));
-    document.getElementById('orderThisWeek').textContent = formatRupiah(calculateTransactionsForPeriod('Order', weekStartStr, todayStr));
   };
   
   const aggregateDataForChart = (days, type) => {
@@ -638,45 +600,18 @@
   };
   
   const showUserDetail = (userId) => {
+    event.stopPropagation();
     const user = allUsersData.find(u => u._id === userId);
     const modalBody = document.getElementById('userDetailModalBody');
     const modalTitle = document.getElementById('userDetailModalLabel');
-    const loadingDiv = document.getElementById('userDetailLoading');
-
-    modalBody.innerHTML = '';
-    loadingDiv.style.display = 'block';
-    modalBody.appendChild(loadingDiv);
+    
+    modalBody.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
     
     if (!userDetailModalInstance) userDetailModalInstance = new bootstrap.Modal(document.getElementById('userDetailModal'));
     userDetailModalInstance.show();
 
     if (user) {
       modalTitle.textContent = `Detail Pengguna: ${user.username || 'N/A'}`;
-      
-      let historyHtml = '<p class="text-center text-muted small my-3">Tidak ada riwayat transaksi.</p>';
-      const combinedHistory = [
-          ...(user.historyDeposit || []).map(h => ({ ...h, type: 'Deposit', amount: h.get_balance, date: h.created_at, ref: h.reff_id, details: `${h.metode} - ${h.bank}` })),
-          ...(user.historyOrder || []).map(h => ({ ...h, type: 'Order', amount: h.price, date: h.created_at, ref: h.reff_id, details: h.layanan })),
-      ].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      if (combinedHistory.length > 0) {
-        historyHtml = `<div class="table-responsive mt-3 border rounded" style="max-height:350px;overflow-y:auto;"><table class="table table-sm table-striped table-bordered table-hover mb-0"><thead class="table-light sticky-top"><tr><th>Tanggal</th><th>Tipe</th><th>Detail</th><th>Jumlah</th><th>Status</th><th>Reff ID</th></tr></thead><tbody>`;
-        combinedHistory.forEach(h => {
-          let amountColor = h.type === 'Deposit' ? 'text-success' : 'text-danger';
-          let statusBadge = h.status.toLowerCase() === 'success' ? 'success' : (h.status.toLowerCase() === 'failed' || h.status.toLowerCase() === 'error' ? 'danger' : 'warning');
-          historyHtml += `
-            <tr>
-              <td>${formatTanggalIndo(h.date)}</td>
-              <td><span class="badge text-bg-${h.type === 'Deposit' ? 'info' : 'primary'}">${h.type}</span></td>
-              <td>${h.details || 'N/A'}</td>
-              <td class="fw-bold ${amountColor}">${formatRupiah(h.amount)}</td>
-              <td><span class="badge text-bg-${statusBadge}">${h.status}</span></td>
-              <td><small class="text-muted">${h.ref || 'N/A'}</small></td>
-            </tr>`;
-        });
-        historyHtml += `</tbody></table></div>`;
-      }
-      
       const detailContent = `
         <div class="row g-4">
           <div class="col-lg-3 text-center">
@@ -688,38 +623,24 @@
           <div class="col-lg-9">
             <h6 class="mb-3 text-primary"><i class="bi bi-info-circle-fill me-2"></i>Informasi Akun</h6>
             <div class="row">
-              <div class="col-md-6 mb-3">
-                <ul class="list-group list-group-flush">
+              <div class="col-md-6 mb-3"><ul class="list-group list-group-flush">
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-envelope me-2 text-muted"></i>Email</span><strong class="text-dark">${user.email || 'N/A'}</strong></li>
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-phone me-2 text-muted"></i>No. HP</span><strong class="text-dark">${user.nomor || 'N/A'}</strong></li>
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-wallet2 me-2 text-muted"></i>Saldo</span><strong class="text-success fw-bolder">${formatRupiah(user.saldo)}</strong></li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-coin me-2 text-muted"></i>Koin</span><strong class="text-warning fw-bolder">${user.coin || 0}</strong></li>
-                </ul>
-              </div>
-              <div class="col-md-6 mb-3">
-                <ul class="list-group list-group-flush">
+              </ul></div>
+              <div class="col-md-6 mb-3"><ul class="list-group list-group-flush">
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-patch-check me-2 text-muted"></i>Verified</span><span class="badge text-bg-${user.isVerified ? 'success' : 'danger'}">${user.isVerified ? 'Ya' : 'Tidak'}</span></li>
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-calendar-plus me-2 text-muted"></i>Daftar</span><small class="text-dark">${formatTanggalIndo(user.tanggalDaftar)}</small></li>
                   <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-clock me-2 text-muted"></i>Login Akhir</span><small class="text-dark">${formatTanggalIndo(user.lastLogin)}</small></li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="bi bi-award me-2 text-muted"></i>Ref. Code</span><strong class="text-dark">${user.referralCode || 'N/A'}</strong></li>
-                </ul>
-              </div>
+              </ul></div>
             </div>
             <h6 class="mt-2 mb-1 text-primary"><i class="bi bi-key-fill me-2"></i>API Key</h6>
             <p class="user-select-all bg-light p-2 rounded font-monospace small" style="word-break:break-all;">${user.apiKey || 'N/A'}</p>
-             <h6 class="mt-2 mb-1 text-primary"><i class="bi bi-shield-lock me-2"></i>Whitelist IP</h6>
-            <p class="bg-light p-2 rounded font-monospace small">${(user.whitelistIp || ['N/A']).join(', ')}</p>
           </div>
-        </div>
-        <hr class="my-4">
-        <h6 class="mb-3 text-primary"><i class="bi bi-list-ul me-2"></i>Riwayat Transaksi (Terbaru)</h6>
-        ${historyHtml}`;
-      
-      loadingDiv.style.display = 'none';
+        </div>`;
       modalBody.innerHTML = detailContent;
     } else {
       modalTitle.textContent = 'User Tidak Ditemukan';
-      loadingDiv.style.display = 'none';
       modalBody.innerHTML = `<p class="text-danger text-center py-4">Detail user dengan ID ${userId} tidak dapat ditemukan.</p>`;
     }
   };
@@ -755,8 +676,8 @@
 
     let flatHistory = [];
     allUsersData.forEach(user => {
-        (user.historyDeposit || []).forEach(h => flatHistory.push({ ...h, username: user.username, type: 'Deposit', amount: h.get_balance, date: h.created_at, ref: h.reff_id, details: h.layanan || h.metode }));
-        (user.historyOrder || []).forEach(h => flatHistory.push({ ...h, username: user.username, type: 'Order', amount: h.price, date: h.created_at, ref: h.reff_id, details: h.layanan }));
+        (user.historyDeposit || []).forEach(h => flatHistory.push({ ...h, userId: user._id, username: user.username, type: 'Deposit', amount: h.get_balance, date: h.created_at, ref: h.reff_id, details: h.metode }));
+        (user.historyOrder || []).forEach(h => flatHistory.push({ ...h, userId: user._id, username: user.username, type: 'Order', amount: h.price, date: h.created_at, ref: h.reff_id, details: h.layanan }));
     });
     flatHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -766,7 +687,7 @@
             (h.details && h.details.toLowerCase().includes(searchValue)) ||
             (h.username && h.username.toLowerCase().includes(searchValue)) ||
             (h.ref && h.ref.toLowerCase().includes(searchValue)) ||
-            (h.target && h.target.toLowerCase().includes(searchValue));
+            (h.target && String(h.target).toLowerCase().includes(searchValue));
         return matchCategory && matchSearch;
     });
 
@@ -778,8 +699,10 @@
       tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada riwayat yang cocok.</td></tr>`;
     } else {
       paginatedHistory.forEach(h => {
-        const statusBadge = h.status.toLowerCase() === 'success' ? 'success' : (h.status.toLowerCase() === 'failed' || h.status.toLowerCase() === 'error' ? 'danger' : 'warning');
+        const statusBadge = h.status.toLowerCase() === 'success' ? 'success' : (h.status.toLowerCase().includes('fail') || h.status.toLowerCase().includes('error') ? 'danger' : 'warning');
         const tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.onclick = () => showTransactionDetail(h.userId, h.id, h.type);
         tr.innerHTML = `
             <td>${formatTanggalIndo(h.date)}</td>
             <td>${h.username}</td>
@@ -792,7 +715,61 @@
     }
     renderPagination('globalHistoryPagination', filteredHistory.length, page, GLOBAL_HISTORY_ITEMS_PER_PAGE, loadGlobalHistory);
   };
+  
+  const showTransactionDetail = (userId, transactionId, type) => {
+    const user = allUsersData.find(u => u._id === userId);
+    if (!user) return;
+    
+    const historySource = type === 'Deposit' ? user.historyDeposit : user.historyOrder;
+    const trx = historySource.find(t => t.id === transactionId);
+    if (!trx) return;
 
+    const modalBody = document.getElementById('transactionDetailModalBody');
+    const modalTitle = document.getElementById('transactionDetailModalLabel');
+    modalTitle.textContent = `Detail ${type}: ${trx.reff_id || trx.id}`;
+
+    let contentHtml = `<ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between"><span>Username</span><strong>${user.username}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span>ID Transaksi</span><strong class="user-select-all">${trx.id}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span>Reff ID</span><strong class="user-select-all">${trx.reff_id || 'N/A'}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span>Tanggal</span><strong>${formatTanggalIndo(trx.created_at)}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span>Status</span><strong>${trx.status}</strong></li>
+    </ul><hr>`;
+
+    if (type === 'Deposit') {
+        contentHtml += `
+        <h6 class="mt-3 mb-2">Detail Deposit</h6>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>Metode</span><strong>${trx.metode || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Bank</span><strong>${trx.bank || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Atas Nama</span><strong>${trx.atas_nama || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Tujuan</span><strong class="user-select-all">${trx.tujuan || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Nominal</span><strong>${formatRupiah(trx.nominal)}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Biaya</span><strong>${formatRupiah(trx.fee)}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Saldo Diterima</span><strong class="text-success fw-bold">${formatRupiah(trx.get_balance)}</strong></li>
+        </ul>`;
+        if (trx.qr_image) {
+            contentHtml += `<h6 class="mt-4 mb-2">QR Code</h6><div class="text-center"><img src="${trx.qr_image}" class="img-fluid rounded" style="max-width: 250px;" alt="QR Code"></div>`;
+        }
+    } else { // Order
+        contentHtml += `
+        <h6 class="mt-3 mb-2">Detail Order</h6>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>Layanan</span><strong>${trx.layanan || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Kode Layanan</span><strong>${trx.code || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Target</span><strong class="user-select-all">${trx.target || 'N/A'}</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Harga</span><strong class="text-danger fw-bold">${formatRupiah(trx.price)}</strong></li>
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between"><span>SN / Catatan</span></div>
+                <div class="p-2 mt-1 bg-light rounded user-select-all"><pre class="mb-0" style="white-space: pre-wrap; word-break: break-all;">${trx.sn || 'N/A'}</pre></div>
+            </li>
+        </ul>`;
+    }
+    modalBody.innerHTML = contentHtml;
+    
+    if (!transactionDetailModalInstance) transactionDetailModalInstance = new bootstrap.Modal(document.getElementById('transactionDetailModal'));
+    transactionDetailModalInstance.show();
+  };
 
   document.addEventListener('DOMContentLoaded', async () => {
     await fetchDataAndInitialize();
