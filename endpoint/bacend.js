@@ -1,12 +1,13 @@
 const express = require("express");
-const axios = require("axios");
 const qs = require("qs");
 const multer = require('multer');
 const cloudscraper = require("cloudscraper");
 const upload = multer();
 const app = express();
 const router = express.Router();
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+  extended: true
+}));
 app.use(express.json());
 
 const domain = process.env.PTERO_DOMAIN;
@@ -24,26 +25,23 @@ const {
   editHistoryOrder,
 } = require("../index.js");
 
+const cloudscraperHeaders = {
+  "Content-Type": "application/x-www-form-urlencoded",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+};
+
 async function getAtlanticDepositMethods() {
   try {
     const formData = {
       api_key: process.env.ATLAN_API_KEY,
     };
-    const urlnyaa = `${BASE_URL}/deposit/metode`;
-    const response = await axios.post(
-      urlnyaa,
-      qs.stringify(formData),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          'User-Agent': 'MyCustomUserAgent/1.0 (compatible; RerezzBot/2025)',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': urlnyaa,
-        },
-      }
-    );
-    if (response.data && response.data.status && Array.isArray(response.data.data)) {
-      return response.data.data;
+    const response = await cloudscraper.post(`${BASE_URL}/deposit/metode`, {
+      body: qs.stringify(formData),
+      headers: cloudscraperHeaders,
+    });
+    const result = JSON.parse(response);
+    if (result && result.status && Array.isArray(result.data)) {
+      return result.data;
     }
     return null;
   } catch (error) {
@@ -56,10 +54,10 @@ router.post("/deposit/metode", requireLogin, async (req, res) => {
   try {
     const atlanticMethods = await getAtlanticDepositMethods();
     if (!atlanticMethods) {
-        return res.status(502).json({
-            success: false,
-            message: "Gagal mengambil daftar metode dari provider.",
-        });
+      return res.status(502).json({
+        success: false,
+        message: "Gagal mengambil daftar metode dari provider.",
+      });
     }
 
     const role = req.session.role || "user";
@@ -82,10 +80,8 @@ router.post("/deposit/metode", requireLogin, async (req, res) => {
           QRISFAST: "/media/metode/qrisfast.png",
         };
         const fullUrl = `${req.protocol}://${req.get("host")}`;
-
         const baseFee = parseFloat(item.fee_persen) || 0;
         const adjustedFee = (baseFee + tambahanPersen).toFixed(2);
-
         return {
           metode: item.metode,
           type: item.type,
@@ -95,9 +91,9 @@ router.post("/deposit/metode", requireLogin, async (req, res) => {
           fee: item.fee,
           fee_persen: adjustedFee,
           status: item.status,
-          img_url: localImageMap[metodeUpper]
-            ? `${fullUrl}${localImageMap[metodeUpper]}`
-            : `${fullUrl}/media/metode/default.png`,
+          img_url: localImageMap[metodeUpper] ?
+            `${fullUrl}${localImageMap[metodeUpper]}` :
+            `${fullUrl}/media/metode/default.png`,
         };
       });
     return res.status(200).json({
@@ -116,18 +112,23 @@ router.post("/deposit/metode", requireLogin, async (req, res) => {
 
 router.post("/deposit/create", requireLogin, async (req, res) => {
   console.log("🔔 [DEPOSIT] Endpoint /deposit/create dipanggil");
-
   const user = await User.findById(req.session.userId);
   if (!user) {
     console.log("🚫 User tidak ditemukan atau sesi tidak valid. ID Session:", req.session.userId);
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-
-  const { nominal, metode: metodePilihanPengguna } = req.body;
-
+  const {
+    nominal,
+    metode: metodePilihanPengguna
+  } = req.body;
   console.log(`📥 Permintaan deposit oleh ${user.username || user.email || user._id}`);
-  console.log("🧾 Data diterima:", { nominal, metode: metodePilihanPengguna });
-
+  console.log("🧾 Data diterima:", {
+    nominal,
+    metode: metodePilihanPengguna
+  });
   if (!nominal || isNaN(nominal)) {
     console.log("❗ Nominal tidak valid:", nominal);
     return res.status(400).json({
@@ -139,35 +140,28 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
   let selectedMetodeCode = "QRISFAST";
   let selectedMetodeType = "ewallet";
   let minDepositForMetode = 500;
-
   if (metodePilihanPengguna) {
     try {
       const metodeResponse = await cloudscraper.post(
-        `${BASE_URL}/deposit/metode`,
-        {
-          body: qs.stringify({ api_key: process.env.ATLAN_API_KEY }),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
-          }
+        `${BASE_URL}/deposit/metode`, {
+          body: qs.stringify({
+            api_key: process.env.ATLAN_API_KEY
+          }),
+          headers: cloudscraperHeaders
         }
       );
-
       const allMetode = JSON.parse(metodeResponse).data || [];
-
       const foundMetode = allMetode.find(
         (m) =>
-          m.metode?.toUpperCase() === metodePilihanPengguna.toUpperCase() &&
-          (m.status?.toLowerCase() === "aktif" || m.status?.toLowerCase() === "on")
+        m.metode?.toUpperCase() === metodePilihanPengguna.toUpperCase() &&
+        (m.status?.toLowerCase() === "aktif" || m.status?.toLowerCase() === "on")
       );
-
       if (!foundMetode) {
         return res.status(400).json({
           success: false,
           message: `Metode pembayaran '${metodePilihanPengguna}' tidak ditemukan atau tidak aktif.`,
         });
       }
-
       selectedMetodeCode = foundMetode.metode;
       selectedMetodeType = foundMetode.type;
       minDepositForMetode = selectedMetodeCode.toUpperCase() === "QRISPAST" ? 500 : parseInt(foundMetode.min) || 0;
@@ -179,14 +173,12 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
       });
     }
   }
-
   if (parsedNominal < minDepositForMetode) {
     return res.status(400).json({
       success: false,
       message: `Nominal minimal untuk metode ${selectedMetodeCode} adalah ${minDepositForMetode}. Nominal Anda: ${parsedNominal}.`,
     });
   }
-
   const reff_id = generateReffId();
   const formDataToAtlantic = {
     api_key: process.env.ATLAN_API_KEY,
@@ -195,19 +187,13 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
     type: selectedMetodeType,
     metode: selectedMetodeCode,
   };
-
   try {
     const atlanticResponse = await cloudscraper.post(
-      `${BASE_URL}/deposit/create`,
-      {
+      `${BASE_URL}/deposit/create`, {
         body: qs.stringify(formDataToAtlantic),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
-        }
+        headers: cloudscraperHeaders
       }
     );
-
     const resultFromAtlantic = JSON.parse(atlanticResponse);
     if (!resultFromAtlantic || !resultFromAtlantic.status || !resultFromAtlantic.data) {
       return res.status(502).json({
@@ -216,21 +202,17 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
         error: resultFromAtlantic?.data || resultFromAtlantic,
       });
     }
-
     const depositDetails = resultFromAtlantic.data;
     const originalFee = parseInt(depositDetails.fee) || 0;
     const originalGetBalance = parseInt(depositDetails.get_balance) || 0;
-
     let additionalFee = 0;
     if (user.role === "user") {
       additionalFee = Math.ceil(originalGetBalance * 0.002);
     } else if (user.role === "reseller") {
       additionalFee = Math.ceil(originalGetBalance * 0.001);
     }
-
     const totalFee = originalFee + additionalFee;
     const finalBalance = originalGetBalance - additionalFee;
-
     const historyDataForDb = {
       id: depositDetails.id,
       reff_id: depositDetails.reff_id,
@@ -246,9 +228,7 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
       qr_image: depositDetails.qr_image || depositDetails.url || null,
       created_at: depositDetails.created_at ? new Date(depositDetails.created_at) : new Date(),
     };
-
     await tambahHistoryDeposit(user._id, historyDataForDb);
-
     res.status(200).json({
       success: true,
       data: {
@@ -257,41 +237,38 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
         get_balance: finalBalance,
       },
     });
-
     const intervalId = setInterval(async () => {
       try {
         const checkStatusResponse = await cloudscraper.post(
-          `${BASE_URL}/deposit/status`,
-          {
+          `${BASE_URL}/deposit/status`, {
             body: qs.stringify({
               api_key: process.env.ATLAN_API_KEY,
               id: depositDetails.id,
             }),
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
-            }
+            headers: cloudscraperHeaders
           }
         );
-
         const statusUpdateData = JSON.parse(checkStatusResponse);
         if (statusUpdateData && statusUpdateData.status && statusUpdateData.data) {
           const currentTxStatus = statusUpdateData.data.status;
-          const currentTxGetBalance = parseInt(statusUpdateData.data.get_balance) || 0;
-
-          const userToCheck = await User.findOne({ _id: user._id, "historyDeposit.id": depositDetails.id }, { "historyDeposit.$": 1, saldo: 1 });
+          const userToCheck = await User.findOne({
+            _id: user._id,
+            "historyDeposit.id": depositDetails.id
+          }, {
+            "historyDeposit.$": 1,
+            saldo: 1
+          });
           const txInDb = userToCheck && userToCheck.historyDeposit && userToCheck.historyDeposit.length > 0 ? userToCheck.historyDeposit[0] : null;
-
           if (txInDb && txInDb.status !== currentTxStatus) {
             await editHistoryDeposit(user._id, depositDetails.id, currentTxStatus);
           }
-
           if (currentTxStatus === "success" && txInDb && txInDb.status !== "success") {
             await User.findByIdAndUpdate(user._id, {
-              $inc: { saldo: finalBalance },
+              $inc: {
+                saldo: finalBalance
+              },
             });
           }
-
           if (["success", "failed", "expired", "cancel"].includes(currentTxStatus)) {
             clearInterval(intervalId);
           }
@@ -310,13 +287,17 @@ router.post("/deposit/create", requireLogin, async (req, res) => {
   }
 });
 
-
 router.post("/deposit/status", requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) {
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-  const { id } = req.body;
+  const {
+    id
+  } = req.body;
   if (!id) {
     return res.status(400).json({
       success: false,
@@ -324,11 +305,12 @@ router.post("/deposit/status", requireLogin, async (req, res) => {
     });
   }
   try {
-    const userHistory = await User.findOne(
-      { _id: user._id, "historyDeposit.id": id },
-      { "historyDeposit.$": 1 }
-    );
-
+    const userHistory = await User.findOne({
+      _id: user._id,
+      "historyDeposit.id": id
+    }, {
+      "historyDeposit.$": 1
+    });
     if (!userHistory || userHistory.historyDeposit.length === 0) {
       return res.status(404).json({
         success: false,
@@ -341,10 +323,7 @@ router.post("/deposit/status", requireLogin, async (req, res) => {
     };
     const response = await cloudscraper.post(`${BASE_URL}/deposit/status`, {
       body: qs.stringify(formDataToAtlantic),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
-      }
+      headers: cloudscraperHeaders
     });
     const resultFromAtlantic = JSON.parse(response);
     if (!resultFromAtlantic || !resultFromAtlantic.status || !resultFromAtlantic.data) {
@@ -390,9 +369,14 @@ router.post("/deposit/status", requireLogin, async (req, res) => {
 router.post("/deposit/cancel", requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) {
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-  const { id } = req.body;
+  const {
+    id
+  } = req.body;
   if (!id) {
     return res.status(400).json({
       success: false,
@@ -400,10 +384,12 @@ router.post("/deposit/cancel", requireLogin, async (req, res) => {
     });
   }
   try {
-    const userHistory = await User.findOne(
-      { _id: user._id, "historyDeposit.id": id },
-      { "historyDeposit.$": 1 }
-    );
+    const userHistory = await User.findOne({
+      _id: user._id,
+      "historyDeposit.id": id
+    }, {
+      "historyDeposit.$": 1
+    });
     if (!userHistory || userHistory.historyDeposit.length === 0) {
       return res.status(404).json({
         success: false,
@@ -416,10 +402,7 @@ router.post("/deposit/cancel", requireLogin, async (req, res) => {
     };
     const response = await cloudscraper.post(`${BASE_URL}/deposit/cancel`, {
       body: qs.stringify(formDataToAtlantic),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
-      }
+      headers: cloudscraperHeaders
     });
     const resultFromAtlantic = JSON.parse(response);
     if (!resultFromAtlantic || !resultFromAtlantic.status || !resultFromAtlantic.data) {
@@ -448,35 +431,28 @@ router.post("/deposit/cancel", requireLogin, async (req, res) => {
   }
 });
 
-
 router.post("/layanan/price-list", requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) {
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-  const { code } = req.body;
-
+  const {
+    code
+  } = req.body;
   try {
     const formDataToAtlantic = {
       api_key: process.env.ATLAN_API_KEY,
       type: 'prabayar',
       code: code,
     };
-  const urlnya = `${BASE_URL}/layanan/price_list`
-    const atlanticResponse = await axios.post(
-     urlnya,
-      qs.stringify(formDataToAtlantic),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          'User-Agent': 'MyCustomUserAgent/1.0 (compatible; RerezzBot/2025)',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': urlnya,
-        },
-      }
-    );
-
-    const resultFromAtlantic = atlanticResponse.data;
+    const response = await cloudscraper.post(`${BASE_URL}/layanan/price_list`, {
+      body: qs.stringify(formDataToAtlantic),
+      headers: cloudscraperHeaders
+    });
+    const resultFromAtlantic = JSON.parse(response);
     if (!resultFromAtlantic || !resultFromAtlantic.status || !Array.isArray(resultFromAtlantic.data)) {
       return res.status(502).json({
         success: false,
@@ -484,17 +460,14 @@ router.post("/layanan/price-list", requireLogin, async (req, res) => {
         error: resultFromAtlantic?.data || resultFromAtlantic,
       });
     }
-
     const modifiedData = resultFromAtlantic.data.map((item) => {
       let originalPrice = parseInt(item.price) || 0;
       let modifiedPrice = originalPrice;
-
       if (user.role === "user") {
-        modifiedPrice = Math.ceil(originalPrice * 1.1);
+        modifiedPrice = originalPrice + 10;
       } else if (user.role === "reseller") {
-        modifiedPrice = Math.ceil(originalPrice * 1.05);
+        modifiedPrice = originalPrice + 7;
       }
-
       return {
         code: item.code,
         name: item.name,
@@ -507,7 +480,6 @@ router.post("/layanan/price-list", requireLogin, async (req, res) => {
         img_url: item.img_url,
       };
     });
-
     return res.status(200).json({
       success: true,
       data: modifiedData,
@@ -523,41 +495,32 @@ router.post("/layanan/price-list", requireLogin, async (req, res) => {
 });
 
 router.get("/produk", requireLogin, async (req, res) => {
-  const { category } = req.query;
+  const {
+    category
+  } = req.query;
   const user = await User.findById(req.session.userId);
-
   if (!user) {
-    return res.status(400).json({ success: false, message: "User tidak ditemukan." });
+    return res.status(400).json({
+      success: false,
+      message: "User tidak ditemukan."
+    });
   }
-
   try {
     const formDataToAtlantic = {
       api_key: process.env.ATLAN_API_KEY,
       type: "prabayar",
       code: "",
     };
-const urlnya = `${BASE_URL}/layanan/price_list`
-    const atlanticResponse = await axios.post(
-      urlnya,
-      qs.stringify(formDataToAtlantic),
-      {
-        headers: { 
-          "Content-Type": "application/x-www-form-urlencoded",
-          'User-Agent': 'MyCustomUserAgent/1.0 (compatible; RerezzBot/2025)',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': urlnya,
-        },
-      }
-    );
-
-    const allProduk = atlanticResponse.data.data || [];
-
-    const filtered = category
-      ? allProduk.filter((item) => item.category?.toLowerCase() === category.toLowerCase())
-      : allProduk;
-
+    const response = await cloudscraper.post(`${BASE_URL}/layanan/price_list`, {
+      body: qs.stringify(formDataToAtlantic),
+      headers: cloudscraperHeaders,
+    });
+    const result = JSON.parse(response);
+    const allProduk = result.data || [];
+    const filtered = category ?
+      allProduk.filter((item) => item.category?.toLowerCase() === category.toLowerCase()) :
+      allProduk;
     const providerMap = {};
-
     filtered.forEach(item => {
       if (!providerMap[item.provider]) {
         providerMap[item.provider] = {
@@ -566,10 +529,11 @@ const urlnya = `${BASE_URL}/layanan/price_list`
         };
       }
     });
-
     const listProvider = Object.values(providerMap);
-
-    return res.json({ success: true, data: listProvider });
+    return res.json({
+      success: true,
+      data: listProvider
+    });
   } catch (error) {
     const errData = error.response?.data;
     return res.status(500).json({
@@ -581,50 +545,38 @@ const urlnya = `${BASE_URL}/layanan/price_list`
 });
 
 router.get("/produk-provider", requireLogin, async (req, res) => {
-  const { provider } = req.query;
+  const {
+    provider
+  } = req.query;
   const user = await User.findById(req.session.userId);
-
   if (!user) {
-    return res.status(400).json({ success: false, message: "User tidak ditemukan." });
+    return res.status(400).json({
+      success: false,
+      message: "User tidak ditemukan."
+    });
   }
-
   try {
     const formDataToAtlantic = {
       api_key: process.env.ATLAN_API_KEY,
       type: "prabayar",
       code: "",
     };
-
-    const urlnya = `${BASE_URL}/layanan/price_list`;
-
-    const atlanticResponse = await axios.post(
-      urlnya,
-      qs.stringify(formDataToAtlantic),
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Origin': 'https://v-pedia.web.id',
-          'Referer': urlnya,
-          'Connection': 'keep-alive'
-        }
-      }
-    );
-
-    const allProduk = atlanticResponse.data.data || [];
-
+    const response = await cloudscraper.post(`${BASE_URL}/layanan/price_list`, {
+      body: qs.stringify(formDataToAtlantic),
+      headers: cloudscraperHeaders,
+    });
+    const result = JSON.parse(response);
+    const allProduk = result.data || [];
     if (provider) {
       const produkByProvider = allProduk.filter(item =>
         item.provider?.toLowerCase() === provider.toLowerCase()
       );
-
-      return res.json({ success: true, data: produkByProvider });
+      return res.json({
+        success: true,
+        data: produkByProvider
+      });
     }
-
     const providerMap = {};
-
     allProduk.forEach(item => {
       if (!providerMap[item.provider]) {
         providerMap[item.provider] = {
@@ -633,11 +585,11 @@ router.get("/produk-provider", requireLogin, async (req, res) => {
         };
       }
     });
-
     const listProvider = Object.values(providerMap);
-
-    return res.json({ success: true, data: listProvider });
-
+    return res.json({
+      success: true,
+      data: listProvider
+    });
   } catch (error) {
     const errData = error.response?.data;
     return res.status(500).json({
@@ -648,40 +600,35 @@ router.get("/produk-provider", requireLogin, async (req, res) => {
   }
 });
 
-
 router.post("/order/create", requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) {
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-  const { code, tujuan: target } = req.body;
-
+  const {
+    code,
+    tujuan: target
+  } = req.body;
   if (!code || !target) {
     return res.status(400).json({
       success: false,
       message: "Kode layanan dan tujuan harus diisi.",
     });
   }
-
   try {
     const formDataToAtlanticPriceList = {
       api_key: process.env.ATLAN_API_KEY,
       type: "prabayar",
       code: code,
     };
-
-    const atlanticPriceListResponse = await axios.post(
-      `${BASE_URL}/layanan/price_list`,
-      qs.stringify(formDataToAtlanticPriceList),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-
-    const priceListResult = atlanticPriceListResponse.data;
-
+    const priceResponse = await cloudscraper.post(`${BASE_URL}/layanan/price_list`, {
+      body: qs.stringify(formDataToAtlanticPriceList),
+      headers: cloudscraperHeaders,
+    });
+    const priceListResult = JSON.parse(priceResponse);
     if (!priceListResult || !priceListResult.status || !priceListResult.data) {
       return res.status(502).json({
         success: false,
@@ -689,35 +636,28 @@ router.post("/order/create", requireLogin, async (req, res) => {
         error: priceListResult?.data || priceListResult,
       });
     }
-
     const productList = Array.isArray(priceListResult.data) ? priceListResult.data : [priceListResult.data];
     const product = productList.find((item) => item.code === code && item.status === "available");
-
     if (!product) {
       return res.status(400).json({
         success: false,
         message: "Kode layanan tidak ditemukan atau tidak tersedia.",
       });
     }
-
     let originalPrice = parseInt(product.price) || 0;
     let modifiedPrice = originalPrice;
-
     if (user.role === "user") {
-      modifiedPrice = Math.ceil(originalPrice * 1.1);
+      modifiedPrice = originalPrice + 10;
     } else if (user.role === "reseller") {
-      modifiedPrice = Math.ceil(originalPrice * 1.05);
+      modifiedPrice = originalPrice + 7;
     }
-
     if (user.saldo < modifiedPrice) {
       return res.status(400).json({
         success: false,
         message: "Saldo Anda tidak mencukupi untuk melakukan transaksi ini.",
       });
     }
-
     const reff_id = generateReffId();
-
     const formDataToAtlanticCreate = {
       api_key: process.env.ATLAN_API_KEY,
       code: code,
@@ -725,19 +665,11 @@ router.post("/order/create", requireLogin, async (req, res) => {
       target: target,
       type: "prabayar",
     };
-
-    const atlanticCreateResponse = await axios.post(
-      `${BASE_URL}/transaksi/create`,
-      qs.stringify(formDataToAtlanticCreate),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-
-    const createResult = atlanticCreateResponse.data;
-
+    const createResponse = await cloudscraper.post(`${BASE_URL}/transaksi/create`, {
+      body: qs.stringify(formDataToAtlanticCreate),
+      headers: cloudscraperHeaders,
+    });
+    const createResult = JSON.parse(createResponse);
     if (!createResult || !createResult.status || !createResult.data) {
       return res.status(502).json({
         success: false,
@@ -745,13 +677,12 @@ router.post("/order/create", requireLogin, async (req, res) => {
         error: createResult?.data || createResult,
       });
     }
-
     const transactionDetails = createResult.data;
-
     await User.findByIdAndUpdate(user._id, {
-      $inc: { saldo: -modifiedPrice },
+      $inc: {
+        saldo: -modifiedPrice
+      },
     });
-
     const historyDataForDb = {
       id: transactionDetails.id,
       reff_id: transactionDetails.reff_id,
@@ -761,62 +692,59 @@ router.post("/order/create", requireLogin, async (req, res) => {
       price: modifiedPrice.toString(),
       sn: transactionDetails.sn || null,
       status: transactionDetails.status,
-      created_at: transactionDetails.created_at
-        ? new Date(transactionDetails.created_at)
-        : new Date(),
+      created_at: transactionDetails.created_at ?
+        new Date(transactionDetails.created_at) :
+        new Date(),
     };
     await tambahHistoryOrder(user._id, historyDataForDb);
-
     const maxPollingTime = 5 * 60 * 1000;
     const startTime = Date.now();
     const intervalId = setInterval(async () => {
       try {
-        const checkStatusResponse = await axios.post(
-          `${BASE_URL}/transaksi/status`,
-          qs.stringify({
+        const statusResponse = await cloudscraper.post(`${BASE_URL}/transaksi/status`, {
+          body: qs.stringify({
             api_key: process.env.ATLAN_API_KEY,
             id: transactionDetails.id,
             type: "prabayar",
           }),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-
-        const statusUpdateData = checkStatusResponse.data;
-
+          headers: cloudscraperHeaders,
+        });
+        const statusUpdateData = JSON.parse(statusResponse);
         if (statusUpdateData && statusUpdateData.status && statusUpdateData.data) {
           const currentTxStatus = statusUpdateData.data.status;
           const currentSn = statusUpdateData.data.sn || null;
-
           await editHistoryOrder(user._id, transactionDetails.id, {
             status: currentTxStatus,
             sn: currentSn,
           });
-
           if (currentTxStatus === "success") {
             clearInterval(intervalId);
           }
-
           if (["failed", "cancel"].includes(currentTxStatus)) {
-            const orderInDb = await User.findOne(
-                { _id: user._id, "historyOrder.id": transactionDetails.id, "historyOrder.status": { $ne: "failed_refunded" } },
-                { "historyOrder.$": 1 }
-            );
+            const orderInDb = await User.findOne({
+              _id: user._id,
+              "historyOrder.id": transactionDetails.id,
+              "historyOrder.status": {
+                $ne: "failed_refunded"
+              }
+            }, {
+              "historyOrder.$": 1
+            });
             if (orderInDb && orderInDb.historyOrder.length > 0 && orderInDb.historyOrder[0].status !== "failed_refunded") {
-                 await User.updateOne(
-                    { _id: user._id, "historyOrder.id": transactionDetails.id },
-                    { 
-                        $inc: { saldo: modifiedPrice },
-                        $set: { "historyOrder.$.status": "failed_refunded" }
-                    }
-                );
+              await User.updateOne({
+                _id: user._id,
+                "historyOrder.id": transactionDetails.id
+              }, {
+                $inc: {
+                  saldo: modifiedPrice
+                },
+                $set: {
+                  "historyOrder.$.status": "failed_refunded"
+                }
+              });
             }
             clearInterval(intervalId);
           }
-
           if (
             ["success", "failed", "cancel"].includes(currentTxStatus) ||
             Date.now() - startTime > maxPollingTime
@@ -828,7 +756,6 @@ router.post("/order/create", requireLogin, async (req, res) => {
         console.error(pollError?.response?.data || pollError.message);
       }
     }, 1000);
-
     return res.status(200).json({
       success: true,
       data: {
@@ -849,48 +776,43 @@ router.post("/order/create", requireLogin, async (req, res) => {
 router.post("/order/check", requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) {
-    return res.status(401).json({ success: false, message: "User tidak ditemukan atau sesi tidak valid." });
+    return res.status(401).json({
+      success: false,
+      message: "User tidak ditemukan atau sesi tidak valid."
+    });
   }
-  const { id } = req.body;
-
+  const {
+    id
+  } = req.body;
   if (!id) {
     return res.status(400).json({
       success: false,
       message: "ID order harus diisi.",
     });
   }
-
   try {
-    const userWithOrder = await User.findOne(
-      { _id: user._id, "historyOrder.id": id },
-      { "historyOrder.$": 1 }
-    );
-
+    const userWithOrder = await User.findOne({
+      _id: user._id,
+      "historyOrder.id": id
+    }, {
+      "historyOrder.$": 1
+    });
     if (!userWithOrder || !userWithOrder.historyOrder.length) {
       return res.status(404).json({
         success: false,
         message: "Order Tidak Ditemukan Di Mutasi Anda.",
       });
     }
-
     const formDataToAtlanticStatus = {
       api_key: process.env.ATLAN_API_KEY,
       id: id,
       type: "prabayar",
     };
-
-    const checkStatusResponse = await axios.post(
-      `${BASE_URL}/transaksi/status`,
-      qs.stringify(formDataToAtlanticStatus),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-
-    const statusResult = checkStatusResponse.data;
-
+    const statusResponse = await cloudscraper.post(`${BASE_URL}/transaksi/status`, {
+      body: qs.stringify(formDataToAtlanticStatus),
+      headers: cloudscraperHeaders,
+    });
+    const statusResult = JSON.parse(statusResponse);
     if (!statusResult || !statusResult.status || !statusResult.data) {
       return res.status(502).json({
         success: false,
@@ -898,9 +820,7 @@ router.post("/order/check", requireLogin, async (req, res) => {
         error: statusResult?.data || statusResult,
       });
     }
-
     const orderDetails = statusResult.data;
-
     return res.status(200).json({
       status: true,
       data: {
