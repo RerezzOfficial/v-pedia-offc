@@ -1,5 +1,4 @@
 const express = require("express");
-const axios = require("axios");
 const qs = require("qs");
 const cloudscraper = require("cloudscraper");
 const router = express.Router();
@@ -7,29 +6,31 @@ const router = express.Router();
 const domain = process.env.PTERO_DOMAIN;
 const apikey = process.env.PTERO_API_KEY;
 
-const { 
+const {
   validateApiKey,
-  User,   
+  User,
   tambahHistoryDeposit,
   generateReffId,
   BASE_URL,
   ATLAN_API_KEY,
   editHistoryDeposit,
   tambahHistoryOrder,
-  editHistoryOrder
+  editHistoryOrder,
 } = require("../index.js");
 
-
-
+const cloudscraperHeaders = {
+  "Content-Type": "application/x-www-form-urlencoded",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+};
 
 router.get("/profile", validateApiKey, async (req, res) => {
   try {
-    const user = req.user; 
-    
+    const user = req.user;
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found after API key validation", 
+        message: "User not found after API key validation",
       });
     }
 
@@ -72,7 +73,7 @@ router.get("/mutasi", validateApiKey, async (req, res) => {
 
     const historyDeposit = user.historyDeposit || [];
     const historyOrder = user.historyOrder || [];
-    
+
     historyDeposit.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     historyOrder.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -96,17 +97,10 @@ router.get("/deposit/metode", validateApiKey, async (req, res) => {
       api_key: process.env.ATLAN_API_KEY,
     };
 
-    const response = await cloudscraper.post(
-      "https://atlantich2h.com/deposit/metode",
-      {
-        body: qs.stringify(formData),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-        },
-      }
-    );
+    const response = await cloudscraper.post("https://atlantich2h.com/deposit/metode", {
+      body: qs.stringify(formData),
+      headers: cloudscraperHeaders,
+    });
 
     const result = JSON.parse(response);
 
@@ -150,9 +144,9 @@ router.get("/deposit/metode", validateApiKey, async (req, res) => {
           fee: item.fee,
           fee_persen: adjustedFee,
           status: item.status,
-          img_url: localImageMap[metodeUpper]
-            ? `${fullUrl}${localImageMap[metodeUpper]}`
-            : `${fullUrl}/media/metode/default.png`,
+          img_url: localImageMap[metodeUpper] ?
+            `${fullUrl}${localImageMap[metodeUpper]}` :
+            `${fullUrl}/media/metode/default.png`,
         };
       });
 
@@ -170,12 +164,14 @@ router.get("/deposit/metode", validateApiKey, async (req, res) => {
   }
 });
 
-const qs = require("querystring");
-const cloudscraper = require("cloudflare-scraper");
-
 router.get("/deposit/create", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { nominal, metode: metodePilihanPengguna } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    nominal,
+    metode: metodePilihanPengguna
+  } = req.query;
 
   if (!nominal || isNaN(nominal)) {
     return res.status(400).json({
@@ -192,12 +188,10 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
   if (metodePilihanPengguna) {
     try {
       const metodeResponse = await cloudscraper.post(`${BASE_URL}/deposit/metode`, {
-        body: qs.stringify({ api_key: process.env.ATLAN_API_KEY }),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-        },
+        body: qs.stringify({
+          api_key: process.env.ATLAN_API_KEY
+        }),
+        headers: cloudscraperHeaders,
       });
 
       const parsedMetode = JSON.parse(metodeResponse);
@@ -205,8 +199,8 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
 
       const foundMetode = allMetode.find(
         (m) =>
-          m.metode?.toUpperCase() === metodePilihanPengguna.toUpperCase() &&
-          (m.status?.toLowerCase() === "aktif" || m.status?.toLowerCase() === "on")
+        m.metode?.toUpperCase() === metodePilihanPengguna.toUpperCase() &&
+        (m.status?.toLowerCase() === "aktif" || m.status?.toLowerCase() === "on")
       );
 
       if (!foundMetode) {
@@ -247,11 +241,7 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
   try {
     const depositResponse = await cloudscraper.post(`${BASE_URL}/deposit/create`, {
       body: qs.stringify(formData),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-      },
+      headers: cloudscraperHeaders,
     });
 
     const result = JSON.parse(depositResponse);
@@ -311,11 +301,7 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
             api_key: process.env.ATLAN_API_KEY,
             id: d.id,
           }),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-          },
+          headers: cloudscraperHeaders,
         });
 
         const statusData = JSON.parse(statusRes);
@@ -323,10 +309,13 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
           const currStatus = statusData.data.status;
           const currBalance = parseInt(statusData.data.get_balance) || 0;
 
-          const userCheck = await User.findOne(
-            { _id: user._id, "historyDeposit.id": d.id },
-            { "historyDeposit.$": 1, saldo: 1 }
-          );
+          const userCheck = await User.findOne({
+            _id: user._id,
+            "historyDeposit.id": d.id
+          }, {
+            "historyDeposit.$": 1,
+            saldo: 1
+          });
           const txInDb = userCheck?.historyDeposit?.[0];
 
           if (txInDb && txInDb.status !== currStatus) {
@@ -335,7 +324,9 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
 
           if (currStatus === "success" && txInDb?.status !== "success") {
             await User.findByIdAndUpdate(user._id, {
-              $inc: { saldo: finalBalance },
+              $inc: {
+                saldo: finalBalance
+              },
             });
           }
 
@@ -360,10 +351,13 @@ router.get("/deposit/create", validateApiKey, async (req, res) => {
   }
 });
 
-
 router.get("/deposit/status", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { id } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    id
+  } = req.query;
 
   if (!id) {
     return res.status(400).json({
@@ -373,10 +367,12 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
   }
 
   try {
-    const userHistory = await User.findOne(
-      { _id: user._id, "historyDeposit.id": id },
-      { "historyDeposit.$": 1 }
-    );
+    const userHistory = await User.findOne({
+      _id: user._id,
+      "historyDeposit.id": id
+    }, {
+      "historyDeposit.$": 1
+    });
 
     if (!userHistory || userHistory.historyDeposit.length === 0) {
       return res.status(404).json({
@@ -392,11 +388,7 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
 
     const atlanticResponse = await cloudscraper.post(`${BASE_URL}/deposit/status`, {
       body: qs.stringify(formDataToAtlantic),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-      },
+      headers: cloudscraperHeaders,
     });
 
     const resultFromAtlantic = JSON.parse(atlanticResponse);
@@ -404,8 +396,7 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
     if (!resultFromAtlantic || !resultFromAtlantic.status || !resultFromAtlantic.data) {
       return res.status(502).json({
         success: false,
-        message:
-          resultFromAtlantic?.data?.message ||
+        message: resultFromAtlantic?.data?.message ||
           resultFromAtlantic?.message ||
           "Gagal memeriksa status deposit ke provider.",
         error: resultFromAtlantic?.data || resultFromAtlantic,
@@ -417,9 +408,9 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
 
     let finalBalance = originalGetBalance;
     if (user.role === "user") {
-      finalBalance = Math.floor(originalGetBalance * 0.998); // Kurangi 0.2% untuk user
+      finalBalance = Math.floor(originalGetBalance * 0.998);
     } else if (user.role === "reseller") {
-      finalBalance = Math.floor(originalGetBalance * 0.999); // Kurangi 0.1% untuk reseller
+      finalBalance = Math.floor(originalGetBalance * 0.999);
     }
 
     const responseData = {
@@ -442,8 +433,7 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
     const apiError = error.response?.data;
     return res.status(500).json({
       success: false,
-      message:
-        apiError?.data?.message ||
+      message: apiError?.data?.message ||
         apiError?.message ||
         "Terjadi kesalahan internal saat memeriksa status deposit.",
       error: apiError || error.message,
@@ -452,8 +442,12 @@ router.get("/deposit/status", validateApiKey, async (req, res) => {
 });
 
 router.get("/deposit/cancel", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { id } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    id
+  } = req.query;
 
   if (!id) {
     return res.status(400).json({
@@ -463,10 +457,12 @@ router.get("/deposit/cancel", validateApiKey, async (req, res) => {
   }
 
   try {
-    const userHistory = await User.findOne(
-      { _id: user._id, "historyDeposit.id": id },
-      { "historyDeposit.$": 1 }
-    );
+    const userHistory = await User.findOne({
+      _id: user._id,
+      "historyDeposit.id": id
+    }, {
+      "historyDeposit.$": 1
+    });
 
     if (!userHistory || userHistory.historyDeposit.length === 0) {
       return res.status(404).json({
@@ -482,11 +478,7 @@ router.get("/deposit/cancel", validateApiKey, async (req, res) => {
 
     const atlanticResponse = await cloudscraper.post(`${BASE_URL}/deposit/cancel`, {
       body: qs.stringify(formDataToAtlantic),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-      },
+      headers: cloudscraperHeaders,
     });
 
     const resultFromAtlantic = JSON.parse(atlanticResponse);
@@ -494,8 +486,7 @@ router.get("/deposit/cancel", validateApiKey, async (req, res) => {
     if (!resultFromAtlantic || !resultFromAtlantic.status || !resultFromAtlantic.data) {
       return res.status(502).json({
         success: false,
-        message:
-          resultFromAtlantic?.data?.message ||
+        message: resultFromAtlantic?.data?.message ||
           resultFromAtlantic?.message ||
           "Gagal membatalkan deposit.",
         error: resultFromAtlantic?.data || resultFromAtlantic,
@@ -515,8 +506,7 @@ router.get("/deposit/cancel", validateApiKey, async (req, res) => {
     const apiError = error.response?.data;
     return res.status(500).json({
       success: false,
-      message:
-        apiError?.data?.message ||
+      message: apiError?.data?.message ||
         apiError?.message ||
         "Terjadi kesalahan internal saat membatalkan deposit.",
       error: apiError || error.message,
@@ -525,8 +515,12 @@ router.get("/deposit/cancel", validateApiKey, async (req, res) => {
 });
 
 router.get("/layanan/price-list", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { code } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    code
+  } = req.query;
 
   try {
     const formDataToAtlantic = {
@@ -535,17 +529,12 @@ router.get("/layanan/price-list", validateApiKey, async (req, res) => {
       code: code,
     };
 
-    const responseBody = await cloudscraper.post({
-      uri: `${BASE_URL}/layanan/price_list`,
-      form: formDataToAtlantic,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "MyCustomUserAgent/1.0 (compatible; RerezzBot/2025)",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": `${BASE_URL}/layanan/price_list`,
-      },
-      json: true,
+    const response = await cloudscraper.post(`${BASE_URL}/layanan/price_list`, {
+      body: qs.stringify(formDataToAtlantic),
+      headers: cloudscraperHeaders,
     });
+
+    const responseBody = JSON.parse(response);
 
     if (!responseBody || !responseBody.status || !Array.isArray(responseBody.data)) {
       return res.status(502).json({
@@ -560,9 +549,9 @@ router.get("/layanan/price-list", validateApiKey, async (req, res) => {
       let modifiedPrice = originalPrice;
 
       if (user.role === "user") {
-        modifiedPrice = Math.ceil(originalPrice * 1.1); // +10%
+        modifiedPrice = originalPrice + 10;
       } else if (user.role === "reseller") {
-        modifiedPrice = Math.ceil(originalPrice * 1.05); // +5%
+        modifiedPrice = originalPrice + 7;
       }
 
       return {
@@ -591,10 +580,14 @@ router.get("/layanan/price-list", validateApiKey, async (req, res) => {
   }
 });
 
-
 router.get("/order/create", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { code, tujuan: target } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    code,
+    tujuan: target
+  } = req.query;
 
   if (!code || !target) {
     return res.status(400).json({
@@ -610,17 +603,14 @@ router.get("/order/create", validateApiKey, async (req, res) => {
       code: code,
     };
 
-    const atlanticPriceListResponse = await axios.post(
-      `${BASE_URL}/layanan/price_list`,
-      qs.stringify(formDataToAtlanticPriceList),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+    const atlanticPriceListResponse = await cloudscraper.post(
+      `${BASE_URL}/layanan/price_list`, {
+        body: qs.stringify(formDataToAtlanticPriceList),
+        headers: cloudscraperHeaders,
       }
     );
 
-    const priceListResult = atlanticPriceListResponse.data;
+    const priceListResult = JSON.parse(atlanticPriceListResponse);
 
     if (!priceListResult || !priceListResult.status || !priceListResult.data) {
       return res.status(502).json({
@@ -644,9 +634,9 @@ router.get("/order/create", validateApiKey, async (req, res) => {
     let modifiedPrice = originalPrice;
 
     if (user.role === "user") {
-      modifiedPrice = Math.ceil(originalPrice * 1.1);
+      modifiedPrice = originalPrice + 10;
     } else if (user.role === "reseller") {
-      modifiedPrice = Math.ceil(originalPrice * 1.05);
+      modifiedPrice = originalPrice + 7;
     }
 
     if (user.saldo < modifiedPrice) {
@@ -666,17 +656,14 @@ router.get("/order/create", validateApiKey, async (req, res) => {
       type: "prabayar",
     };
 
-    const atlanticCreateResponse = await axios.post(
-      `${BASE_URL}/transaksi/create`,
-      qs.stringify(formDataToAtlanticCreate),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+    const atlanticCreateResponse = await cloudscraper.post(
+      `${BASE_URL}/transaksi/create`, {
+        body: qs.stringify(formDataToAtlanticCreate),
+        headers: cloudscraperHeaders,
       }
     );
 
-    const createResult = atlanticCreateResponse.data;
+    const createResult = JSON.parse(atlanticCreateResponse);
 
     if (!createResult || !createResult.status || !createResult.data) {
       return res.status(502).json({
@@ -689,7 +676,9 @@ router.get("/order/create", validateApiKey, async (req, res) => {
     const transactionDetails = createResult.data;
 
     await User.findByIdAndUpdate(user._id, {
-      $inc: { saldo: -modifiedPrice },
+      $inc: {
+        saldo: -modifiedPrice
+      },
     });
 
     const historyDataForDb = {
@@ -701,9 +690,9 @@ router.get("/order/create", validateApiKey, async (req, res) => {
       price: modifiedPrice.toString(),
       sn: transactionDetails.sn || null,
       status: transactionDetails.status,
-      created_at: transactionDetails.created_at
-        ? new Date(transactionDetails.created_at)
-        : new Date(),
+      created_at: transactionDetails.created_at ?
+        new Date(transactionDetails.created_at) :
+        new Date(),
     };
     await tambahHistoryOrder(user._id, historyDataForDb);
 
@@ -711,21 +700,18 @@ router.get("/order/create", validateApiKey, async (req, res) => {
     const startTime = Date.now();
     const intervalId = setInterval(async () => {
       try {
-        const checkStatusResponse = await axios.post(
-          `${BASE_URL}/transaksi/status`,
-          qs.stringify({
-            api_key: process.env.ATLAN_API_KEY,
-            id: transactionDetails.id,
-            type: "prabayar",
-          }),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
+        const checkStatusResponse = await cloudscraper.post(
+          `${BASE_URL}/transaksi/status`, {
+            body: qs.stringify({
+              api_key: process.env.ATLAN_API_KEY,
+              id: transactionDetails.id,
+              type: "prabayar",
+            }),
+            headers: cloudscraperHeaders,
           }
         );
 
-        const statusUpdateData = checkStatusResponse.data;
+        const statusUpdateData = JSON.parse(checkStatusResponse);
 
         if (statusUpdateData && statusUpdateData.status && statusUpdateData.data) {
           const currentTxStatus = statusUpdateData.data.status;
@@ -742,7 +728,9 @@ router.get("/order/create", validateApiKey, async (req, res) => {
 
           if (["failed", "cancel"].includes(currentTxStatus)) {
             await User.findByIdAndUpdate(user._id, {
-              $inc: { saldo: modifiedPrice },
+              $inc: {
+                saldo: modifiedPrice
+              },
             });
             clearInterval(intervalId);
           }
@@ -777,8 +765,12 @@ router.get("/order/create", validateApiKey, async (req, res) => {
 });
 
 router.get("/order/check", validateApiKey, async (req, res) => {
-  const { user } = req;
-  const { id } = req.query;
+  const {
+    user
+  } = req;
+  const {
+    id
+  } = req.query;
 
   if (!id) {
     return res.status(400).json({
@@ -788,10 +780,12 @@ router.get("/order/check", validateApiKey, async (req, res) => {
   }
 
   try {
-    const userWithOrder = await User.findOne(
-      { _id: user._id, "historyOrder.id": id },
-      { "historyOrder.$": 1 }
-    );
+    const userWithOrder = await User.findOne({
+      _id: user._id,
+      "historyOrder.id": id
+    }, {
+      "historyOrder.$": 1
+    });
 
     if (!userWithOrder || !userWithOrder.historyOrder.length) {
       return res.status(404).json({
@@ -806,17 +800,14 @@ router.get("/order/check", validateApiKey, async (req, res) => {
       type: "prabayar",
     };
 
-    const checkStatusResponse = await axios.post(
-      `${BASE_URL}/transaksi/status`,
-      qs.stringify(formDataToAtlanticStatus),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+    const checkStatusResponse = await cloudscraper.post(
+      `${BASE_URL}/transaksi/status`, {
+        body: qs.stringify(formDataToAtlanticStatus),
+        headers: cloudscraperHeaders,
       }
     );
 
-    const statusResult = checkStatusResponse.data;
+    const statusResult = JSON.parse(checkStatusResponse);
 
     if (!statusResult || !statusResult.status || !statusResult.data) {
       return res.status(502).json({
@@ -854,7 +845,10 @@ router.get("/order/check", validateApiKey, async (req, res) => {
 });
 
 router.get("/order-panel", validateApiKey, async (req, res) => {
-  const { username, paket } = req.query;
+  const {
+    username,
+    paket
+  } = req.query;
   const user = req.user;
   const availablePackets = ["1gb", "2gb", "3gb", "4gb", "5gb", "6gb", "7gb", "8gb", "9gb", "20gb", "unli"];
   if (!username) {
@@ -945,9 +939,9 @@ router.get("/order-panel", validateApiKey, async (req, res) => {
   }
   let modifiedHarga = harga;
   if (user.role === "user") {
-    modifiedHarga = Math.ceil(harga * 1.1);
+    modifiedHarga = harga + 10;
   } else if (user.role === "reseller") {
-    modifiedHarga = Math.ceil(harga * 1.05);
+    modifiedHarga = harga + 7;
   }
   if (user.saldo < modifiedHarga) {
     await tambahHistoryOrder(user._id, {
@@ -973,58 +967,62 @@ router.get("/order-panel", validateApiKey, async (req, res) => {
     const email = `${username}@gmail.com`;
     const password = `${username}${disk}`;
     const reff_id = generateReffId();
-    const createUserResponse = await axios.post(
-      `${domain}/api/application/users`,
-      {
-        email,
-        username,
-        first_name: username,
-        last_name: username,
-        language: "en",
-        password,
-      },
-      { headers }
+    const createUserResponse = await cloudscraper.post(
+      `${domain}/api/application/users`, {
+        body: JSON.stringify({
+          email,
+          username,
+          first_name: username,
+          last_name: username,
+          language: "en",
+          password,
+        }),
+        headers
+      }
     );
-    const newUser = createUserResponse.data.attributes;
-    const createServerResponse = await axios.post(
-      `${domain}/api/application/servers`,
-      {
-        name: username,
-        description: "Server dibuat via API Buy Panel",
-        user: newUser.id,
-        egg: 15,
-        docker_image: "ghcr.io/parkervcp/yolks:nodejs_18",
-        startup: "npm start",
-        environment: {
-          INST: "npm",
-          USER_UPLOAD: "0",
-          AUTO_UPDATE: "0",
-          CMD_RUN: "npm start",
-          JS_FILE: "index.js",
-        },
-        limits: {
-          memory: memo,
-          swap: 0,
-          disk,
-          io: 500,
-          cpu,
-        },
-        feature_limits: {
-          databases: 5,
-          backups: 5,
-          allocations: 5,
-        },
-        deploy: {
-          locations: [1],
-          dedicated_ip: false,
-          port_range: [],
-        },
-      },
-      { headers }
+    const newUser = JSON.parse(createUserResponse).attributes;
+    const createServerResponse = await cloudscraper.post(
+      `${domain}/api/application/servers`, {
+        body: JSON.stringify({
+          name: username,
+          description: "Server dibuat via API Buy Panel",
+          user: newUser.id,
+          egg: 15,
+          docker_image: "ghcr.io/parkervcp/yolks:nodejs_18",
+          startup: "npm start",
+          environment: {
+            INST: "npm",
+            USER_UPLOAD: "0",
+            AUTO_UPDATE: "0",
+            CMD_RUN: "npm start",
+            JS_FILE: "index.js",
+          },
+          limits: {
+            memory: memo,
+            swap: 0,
+            disk,
+            io: 500,
+            cpu,
+          },
+          feature_limits: {
+            databases: 5,
+            backups: 5,
+            allocations: 5,
+          },
+          deploy: {
+            locations: [1],
+            dedicated_ip: false,
+            port_range: [],
+          },
+        }),
+        headers
+      }
     );
-    const newServer = createServerResponse.data.attributes;
+    const newServer = JSON.parse(createServerResponse).attributes;
     await User.findByIdAndUpdate(user._id, {
-      $inc: { saldo: -modifiedHarga },
+      $inc: {
+        saldo: -modifiedHarga
+      },
     });
     await tambahHistoryOrder(user._id, {
       id: reff_id,
