@@ -333,7 +333,7 @@ app.post("/auth/login", async (req, res) => {
       success: true,
       message: "Login successful",
       role: user.role,
-      redirectUrl: user.role === "admin" ? "/admin" : "/dashboard",
+      redirectUrl: user.role === "admin" ? "/admin/dashboard" : "/dashboard",
       apiKey: user.apiKey,
     });
   } catch (error) {
