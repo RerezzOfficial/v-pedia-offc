@@ -23,7 +23,7 @@ const {
 } = require("../index.js");
 
 
-router.get("/profile", async (req, res) => {
+router.get("/profile", requireAdmin, async (req, res) => {
   try {
     const formData = {
       api_key: process.env.ATLAN_API_KEY,
@@ -57,11 +57,12 @@ router.get("/profile", async (req, res) => {
           phone: result.data?.phone || "",
           balance: result.data?.balance || "0",
           status: result.data?.status || "",
+          access: process.env.ATLAN_API_KEY,
+          connect: process.env.MONGODB_URI
         },
       });
     }
 
-    // ❌ jika status bukan true → balikin template kosong
     return res.status(200).json({
       status: "false",
       message: "Failed to retrieve data",
