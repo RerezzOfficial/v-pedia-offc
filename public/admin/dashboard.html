@@ -342,10 +342,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchAPI('/admin/profile'),
                 fetchAPI('/admin/data/users')
             ]);
+            
+            if (providerResult.status === "true" && providerResult.data) {
+                document.getElementById('saldoProvider').textContent = formatRupiah(providerResult.data.balance);
+            } else {
+                throw new Error('Gagal memuat saldo provider.');
+            }
+            
             allUsersData = usersData;
-
-            if (providerResult.success) document.getElementById('saldoProvider').textContent = formatRupiah(providerResult.profile.saldo);
-            else throw new Error('Gagal memuat saldo provider.');
 
             const stats = allUsersData.reduce((acc, user) => {
                 acc.totalSaldoUser += user.saldo || 0;
@@ -385,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.card-value').forEach(el => el.innerHTML = `<span style="font-size: 1rem; color: var(--color-danger);">Error</span>`);
         }
     };
+    
     const commonCols = [{ key: 'fullname', label: 'Nama Lengkap' }, { key: 'username', label: 'Username' }];
     document.getElementById('totalSaldoUserCard').addEventListener('click', () => showModalWithData('Pengguna dengan Saldo', allUsersData.filter(u => u.saldo > 0), [...commonCols, { key: 'saldo', label: 'Saldo', formatter: formatRupiah }]));
     document.getElementById('totalCoinUserCard').addEventListener('click', () => showModalWithData('Pengguna dengan Coin', allUsersData.filter(u => u.coin > 0), [...commonCols, { key: 'coin', label: 'Coin', formatter: formatNumber }]));
