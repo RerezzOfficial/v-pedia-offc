@@ -24,7 +24,7 @@ Dulu gue ngoding ampe tipes gara-gara pusing, sekarang udah ada AI jadi manfaati
 ### 📈 SIAPA AJA YANG MAMPIR?
 Nih, liat udah berapa banyak orang yang kepo ama repo burik ini:
 
-![Visitor Count](https://komarev.com/ghpvc/?username=RerezzOfficial/v-pedia-offc&label=Profile%20views&color=0e75b6&style=flat)
+![Visitor Count]([https://komarev.com/ghpvc/?username=RerezzOfficial/v-pedia-offc&label=Profile%20views&color=0e75b6&style=flat](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FRerezzOfficial%2Fv-pedia-offc&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=MAMPIR&edge_flat=false))
 
 ---
 
